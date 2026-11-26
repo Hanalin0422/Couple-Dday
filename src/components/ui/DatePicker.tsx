@@ -41,6 +41,7 @@ export function DatePicker({
   value,
   max,
   min,
+  today,
   title = "날짜 선택",
   confirmLabel = "선택",
 }: {
@@ -50,31 +51,43 @@ export function DatePicker({
   value: LocalDate | null;
   max: LocalDate;
   min?: LocalDate;
+  /** 오늘 표시 기준. 생략 시 max(시작일 선택처럼 오늘까지만 선택하는 경우) */
+  today?: LocalDate;
   title?: string;
   confirmLabel?: string;
 }) {
   return (
     <BottomSheet open={open} onClose={onClose} title={title} footer={null}>
-      {open && <DatePickerBody key={`${value}|${max}`} value={value} max={max} min={min} onConfirm={onConfirm} confirmLabel={confirmLabel} />}
+      {open && <DatePickerPanel key={`${value}|${max}|${min}`} value={value} max={max} min={min} today={today} onConfirm={onConfirm} confirmLabel={confirmLabel} />}
     </BottomSheet>
   );
 }
 
-function DatePickerBody({
+/**
+ * 날짜 선택 패널. 다른 Sheet 안에서 Sheet 를 중첩하지 않고 같은 Sheet 의 단계로 쓸 때 사용한다(BTS-010).
+ * onCancel 을 생략하면 Sheet 의 공통 닫기 경로를 사용한다.
+ */
+export function DatePickerPanel({
   value,
   max,
   min,
+  today,
   onConfirm,
-  confirmLabel,
+  onCancel,
+  confirmLabel = "선택",
 }: {
   value: LocalDate | null;
   max: LocalDate;
   min?: LocalDate;
+  today?: LocalDate;
   onConfirm: (date: LocalDate) => void;
-  confirmLabel: string;
+  onCancel?: () => void;
+  confirmLabel?: string;
 }) {
   const maxParts = parts(max);
-  const initial = parts(value && value <= max ? value : max);
+  const todayMark = today ?? max;
+  const clamp = (date: LocalDate) => (date > max ? max : min && date < min ? min : date);
+  const initial = parts(clamp(value ?? todayMark));
   const [view, setView] = useState<{ year: number; month: number }>({ year: initial.year, month: initial.month });
   const [mode, setMode] = useState<"days" | "years" | "months">("days");
   const [selected, setSelected] = useState<LocalDate | null>(value && value <= max && (!min || value >= min) ? value : null);
@@ -136,7 +149,7 @@ function DatePickerBody({
               if (!date) return <span key={`b${index}`} />;
               const disabled = date > max || (min !== undefined && date < min);
               const isSelected = date === selected;
-              const isToday = date === max;
+              const isToday = date === todayMark;
               return (
                 <button
                   key={date}
@@ -216,7 +229,13 @@ function DatePickerBody({
         <Button disabled={!selected || selected > max} onClick={() => selected && onConfirm(selected)}>
           {confirmLabel}
         </Button>
-        <SheetCancelButton />
+        {onCancel ? (
+          <Button variant="text" onClick={onCancel}>
+            취소
+          </Button>
+        ) : (
+          <SheetCancelButton />
+        )}
       </div>
     </div>
   );

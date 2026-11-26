@@ -6,7 +6,7 @@
  */
 import { createContext, useContext, type ReactNode } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import type { Couple, Photo, Settings } from "@/domain/entities";
+import type { AnniversaryException, Couple, CustomAnniversary, Photo, Settings } from "@/domain/entities";
 import type { CoupleDatabase } from "@/infrastructure/db/database";
 
 const DatabaseContext = createContext<CoupleDatabase | null>(null);
@@ -35,4 +35,14 @@ export function useSettings(): Settings | null | undefined {
 export function usePhoto(id: string | null | undefined): Photo | null | undefined {
   const db = useDatabase();
   return useLiveQuery(async () => (id ? ((await db.photos.get(id)) ?? null) : null), [db, id]);
+}
+
+export function useCustomAnniversaries(): CustomAnniversary[] | undefined {
+  const db = useDatabase();
+  return useLiveQuery(() => db.anniversaries.toArray(), [db]);
+}
+
+export function useAnniversaryExceptions(): AnniversaryException[] | undefined {
+  const db = useDatabase();
+  return useLiveQuery(() => db.anniversaryExceptions.toArray(), [db]);
 }

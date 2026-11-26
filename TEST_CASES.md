@@ -1,6 +1,6 @@
 # 커플 디데이 PWA — 테스트 케이스 명세
 
-- 버전: 0.4 (Phase 4 온보딩·메인·설정 반영, 2026-11-26)
+- 버전: 0.5 (Phase 5 기념일 타임라인·사용자 지정 기념일 반영, 2026-11-26)
 - 기준 문서: `REQUIREMENTS.md` v1.1, `ARCHITECTURE.md` v1.1, `.agents/skills/dday-design/SKILL.md`
 - 역할: 요구사항 ID ↔ 테스트 케이스 추적, 자동화/수동/실기기 검증 기준. 구현과 함께 계속 보완한다.
 
@@ -122,7 +122,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-ANN-007 | ANN-004, TML-015 | U | FX-OVERLAP, 0일 방식 | 2023-03-01에 `auto:year:23`과 `auto:day:8400`이 각각 존재, 안정적 순서 | 통과 `tests/unit/domain/auto-anniversary.test.ts` |
 | TC-ANN-008 | ANN-008 | U | 기념일 당일/미래 표시 값 | 당일 `D-DAY`, 미래 `D-N` | 통과 `tests/unit/domain/dday.test.ts` |
 | TC-ANN-009 | ANN-009 | U | FX-TODAY 가장 가까운 예정 기념일 | 200일(2027-01-16) | 통과 `tests/unit/domain/custom-timeline.test.ts` |
-| TC-ANN-010 | ANN-010, CUS-E04 | E | 자동 기념일 카드 | 수정/삭제/숨기기 조작 미제공 | 대기 |
+| TC-ANN-010 | ANN-010, CUS-E04 | E | 자동 기념일 카드 | 수정/삭제/숨기기 조작 미제공 | 통과 `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
 
 ### 3.4 메인 화면 진행률 및 주년 표시
 
@@ -203,24 +203,24 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 
 | ID | 관련 요구사항 | 레벨 | 시나리오 / 입력 | 기대 결과 | 상태 |
 |---|---|---|---|---|---|
-| TC-CUS-001 | CUS-001, BTS-012 | E | 기념일 화면 + 버튼 | 공통 Bottom Sheet 표시 | 대기 |
-| TC-CUS-002 | CUS-002, CUS-E01, DB-003 | U | 이름 빈 값/공백/30자/31자, 날짜 없음 | 30자만 허용, 나머지 저장 차단 | 대기 |
+| TC-CUS-001 | CUS-001, BTS-012 | E | 기념일 화면 + 버튼 | 공통 Bottom Sheet 표시 | 통과 `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
+| TC-CUS-002 | CUS-002, CUS-E01, DB-003 | U | 이름 빈 값/공백/30자/31자, 날짜 없음 | 30자만 허용, 나머지 저장 차단 | 통과 `tests/integration/services/anniversaries.test.ts` |
 | TC-CUS-003 | CUS-003, CUS-E02 | U | 시작일 이전 날짜 | 선택·저장 차단 | 통과 `tests/unit/domain/dday.test.ts` |
 | TC-CUS-004 | CUS-007 | U | 시작일 이후 과거, 오늘, 미래 | 모두 등록 가능 | 통과 `tests/unit/domain/dday.test.ts` |
 | TC-CUS-005 | CUS-004, ARC-A05 | U | 2026-08-15 매년 반복 등록 | 2026년부터 발생, 2025년 이전 소급 없음 | 통과 `tests/unit/domain/custom-timeline.test.ts` |
 | TC-CUS-006 | CUS-E07, ARC-A04 | U | 2024-02-29 매년 반복 | 2025-02-28, 2028-02-29 (원본 월/일 기준) | 통과 `tests/unit/domain/custom-timeline.test.ts` |
 | TC-CUS-007 | CUS-011 | U | 반복 발생 ID | `custom:{uuid}:{year}`, 일회성 `custom:{uuid}` | 통과 `tests/unit/domain/custom-timeline.test.ts` |
-| TC-CUS-008 | CUS-009, CUS-E03 | I | 같은 이름·날짜 2건 등록 | 서로 다른 UUID, 각각 카드 표시 | 대기 |
-| TC-CUS-009 | CUS-E03, BTS-009 | E | 저장 버튼 연속 탭 | 1건만 저장 | 대기 |
-| TC-CUS-010 | CUS-005 | I | 일회성 기념일 이름/날짜 수정 | ID 유지, 연결 추억 유지 | 대기 |
-| TC-CUS-011 | ARC-A02 | I | 반복 기념일 "해당 연도만" 수정 | `[seriesId, year]` override upsert, 발생 ID 유지 | 대기 |
-| TC-CUS-012 | ARC-A02 | I | "전체 반복" 수정 | 시리즈 규칙 변경, 기존 발생 ID 보존. 기존 override 처리 방식은 보류(§6) | 보류 |
-| TC-CUS-013 | CUS-006, ARC-A03, CUS-E05 | I | "해당 연도만" 삭제 (사진/메모 있음) | 영향 안내·확인 후 cancelled tombstone, 해당 발생 사진/메모만 삭제, 재생성 없음 | 대기 |
-| TC-CUS-014 | ARC-A03, SET-017 | I | "전체 반복" 삭제 | 시리즈·예외·모든 연결 사진/메모 단일 트랜잭션 삭제 | 대기 |
-| TC-CUS-015 | CUS-E06 | I | 저장/삭제 트랜잭션 실패 주입 | 기존 데이터 유지, 오류 안내 | 대기 |
-| TC-CUS-016 | CUS-008 | E | 자동+사용자 지정 혼합 | 날짜순 통합 표시 | 대기 |
+| TC-CUS-008 | CUS-009, CUS-E03 | I | 같은 이름·날짜 2건 등록 | 서로 다른 UUID, 각각 카드 표시 | 통과 `tests/integration/services/anniversaries.test.ts` |
+| TC-CUS-009 | CUS-E03, BTS-009 | E | 저장 버튼 연속 탭 | 1건만 저장 | 통과 `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
+| TC-CUS-010 | CUS-005 | I | 일회성 기념일 이름/날짜 수정 | ID 유지, 연결 추억 유지 | 통과 `tests/integration/services/anniversaries.test.ts` |
+| TC-CUS-011 | ARC-A02, ARC-A08 | I/E | 반복 기념일 "해당 연도만" 수정 | `[seriesId, year]` override upsert, 발생 ID 유지, 같은 연도 안에서만 이동, 차이 없으면 override 제거 | 통과 `tests/integration/services/anniversaries.test.ts`, `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
+| TC-CUS-012 | ARC-A02, ARC-A06, ARC-A07 | I/E | "전체 반복" 수정 | 시리즈 규칙 변경, 월·일만 변경(연도 변경 거부), 기존 개별 override·cancelled 유지, 발생 ID 보존 | 통과 `tests/integration/services/anniversaries.test.ts`, `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
+| TC-CUS-013 | CUS-006, ARC-A03, CUS-E05 | I | "해당 연도만" 삭제 (사진/메모 있음) | 영향 안내·확인 후 cancelled tombstone, 해당 발생 사진/메모만 삭제, 재생성 없음 | 통과 `tests/integration/services/anniversaries.test.ts` |
+| TC-CUS-014 | ARC-A03, SET-017 | I | "전체 반복" 삭제 | 시리즈·예외·모든 연결 사진/메모 단일 트랜잭션 삭제 | 통과 `tests/integration/services/anniversaries.test.ts` |
+| TC-CUS-015 | CUS-E06 | I | 저장/삭제 트랜잭션 실패 주입 | 기존 데이터 유지, 오류 안내 | 통과 `tests/integration/services/anniversaries.test.ts` |
+| TC-CUS-016 | CUS-008 | E | 자동+사용자 지정 혼합 | 날짜순 통합 표시 | 통과 `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
 | TC-CUS-017 | DB-009, DB-010 | I | 일회성 시리즈에 예외 추가 / cancelled 발생 건에 추억 저장 시도 | 거부 | 대기 |
-| TC-CUS-018 | CUS-004 (반복 유형 전환, 미확정) | I | 일회성↔매년 반복 전환 | 승인 전 기능 미제공 (§6) | 보류 |
+| TC-CUS-018 | CUS-004, ARC-A09 | I | 일회성↔매년 반복 전환 | 전환 기능 미제공, 다른 유형 수정 경로 거부 | 통과 `tests/integration/services/anniversaries.test.ts` |
 
 ### 3.8 타임라인
 
@@ -233,15 +233,15 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-TML-005 | ARC-C01, TML-016 | U | FX-TODAY + 사용자 지정 2026-12-01 | 강조 카드 진행률 48/54 ≈ 88.89%, 메인 48%와 분리 | 통과 `tests/unit/domain/custom-timeline.test.ts` |
 | TC-TML-006 | ARC-C02 | U | 가장 가까운 날짜에 2건 | 두 카드 모두 강조, 동일 진행률 | 통과 `tests/unit/domain/custom-timeline.test.ts` |
 | TC-TML-007 | ARC-C01 | U | 시작일 당일 사용자 지정 기념일 | 당일 100%, 분모 0 없음 | 통과 `tests/unit/domain/custom-timeline.test.ts` |
-| TC-TML-008 | TML-003, TML-004 | E | 필터 표시 | 지난 날 / 전체 / 다가오는 날, 동일 너비, 기본 전체 | 대기 |
-| TC-TML-009 | TML-002 | E | 전체 필터 | `오늘 · 148일째` 구분선 | 대기 |
-| TC-TML-010 | TML-007 | E | 최초 진입 | 오늘 근처 위치로 자동 스크롤 | 대기 |
+| TC-TML-008 | TML-003, TML-004 | E | 필터 표시 | 지난 날 / 전체 / 다가오는 날, 동일 너비, 기본 전체 | 통과 `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
+| TC-TML-009 | TML-002 | E | 전체 필터 | `오늘 · 148일째` 구분선 | 통과 `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
+| TC-TML-010 | TML-007 | E | 최초 진입 | 오늘 근처 위치로 자동 스크롤 | 통과 `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
 | TC-TML-011 | TML-008, TML-009, TML-010 | E | 긴 목록 스크롤 | 제목·필터·하단 메뉴 고정, 타임라인만 스크롤 | 대기 |
-| TC-TML-012 | TML-012, TML-013 | E | 당일/미래 카드 | 당일 D-DAY와 추억 등록 가능, 미래 D-N | 대기 |
-| TC-TML-013 | TML-011 | E | 사진 있는 지난 기념일 | 사진·메모 조회, 접기/펼치기 | 대기 |
+| TC-TML-012 | TML-012, TML-013 | E | 당일/미래 카드 | 당일 D-DAY와 추억 등록 가능, 미래 D-N | 통과 `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
+| TC-TML-013 | TML-011 | E | 사진 있는 지난 기념일 | 사진·메모 조회, 접기/펼치기 | 통과 `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
 | TC-TML-014 | TML-015 | E | 같은 날짜 기념일 | 개별 카드 | 대기 |
-| TC-TML-015 | TML-014 | E | 하단까지 스크롤하여 추가 로딩 | 중복 카드·스크롤 점프 없음 | 대기 |
-| TC-TML-016 | TML-005 | E | 과거 기념일 없음 / 필터 결과 없음 | 정상 빈 상태 (문구는 §6 보류) | 보류 |
+| TC-TML-015 | TML-014 | E | 하단까지 스크롤하여 추가 로딩 | 중복 카드·스크롤 점프 없음 | 통과 `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
+| TC-TML-016 | TML-005 | U/E | 과거 기념일 없음 / 필터 결과 없음 | 정상 빈 상태 표시(문구 초안: "아직 지난 기념일이 없어요.", 확인 필요) | 보류 |
 
 ### 3.9 추억 사진 및 메모
 
@@ -284,7 +284,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-SET-005 | SET-007, ARC-E03, SET-E04 | I | 저장 실패 주입 | 변경 전 데이터 유지, 성공 표시 없음, UI는 커밋 후에만 갱신 | 통과 `tests/integration/services/onboarding-settings.test.ts` |
 | TC-SET-006 | SET-E01 | E | 변경 Sheet 취소 | 기존 값 유지 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-SET-007 | SET-015, SET-E05, DB-012 | I | 시작일 07-01→07-05 변경 (`auto:day:100`에 사진 있음) | 100일 날짜 10-08→10-12, 사진/메모/대표/순서 유지 | 통과 `tests/integration/services/onboarding-settings.test.ts` |
-| TC-SET-008 | SET-E06, ARC-A01 | I | 시작일 이후로 변경하여 기존 사용자 지정 기념일이 시작일 이전이 됨 | 기념일·추억 유지, 신규 등록은 새 시작일 이상만 허용 | 대기 |
+| TC-SET-008 | SET-E06, ARC-A01 | I | 시작일 이후로 변경하여 기존 사용자 지정 기념일이 시작일 이전이 됨 | 기념일·추억 유지, 신규 등록은 새 시작일 이상만 허용 | 통과 `tests/integration/services/anniversaries.test.ts` |
 | TC-SET-009 | SET-008, SET-009, SET-010 | E | 설정 데이터 관리 카드 | 데이터 백업 / 데이터 복원 / 데이터 초기화(danger) 순서 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-SET-010 | SET-011 | E | 화면 꾸미기 카드 | 테마 `Dusty Rose` 표시, 추가 테마 선택 없음 (행 조작 여부 보류) | 대기 |
 | TC-SET-011 | SET-012 | E | 설정 스크롤 | 콘텐츠만 스크롤, 하단 메뉴 고정 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
@@ -476,8 +476,6 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 
 | 관련 테스트 | 미확정 사항 | 근거 |
 |---|---|---|
-| TC-CUS-012 | 전체 반복 수정 시 기존 override/cancelled 처리, 최초 연도 변경 | ARCHITECTURE.md §17 |
-| TC-CUS-018 | 반복 유형 전환 시 ID 매핑 | ARCHITECTURE.md §17 |
 | TC-TML-016 | 빈 상태 문구, 동률 정렬 우선순위 | ARCHITECTURE.md §17 |
 | TC-BTS-009 | Bottom Sheet 세부 픽셀 | REQUIREMENTS.md §14 |
 | TC-NAV-005 | 스와이프 임계값 | ARCHITECTURE.md §12, §17 |
@@ -499,3 +497,4 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | 2026-11-26 | `npx playwright test` | 통과 58/58 | 메인 비례 배치 수정(원만 줄어들던 문제) 및 앱 폭 480px 제한 후 |
 | 2026-11-26 | `npm run verify`, `npx playwright test --repeat-each=2` | 통과 240/240, E2E 116/116 | 공통 반응형 기준(AppFrame·--u 토큰) 적용 후 |
 | 2026-11-26 | `npm run verify`, `npx playwright test` | 통과, E2E 64/64 | 축하 효과 15초·100일 단위 재생(HOME-033) 반영 후. 실제 시간 캡처로 1.5s/7s/12.5s 분포와 16s 정리 확인 |
+| 2026-11-26 | `npm run verify`, `npx playwright test --repeat-each=2` (Phase 5) | 통과 267/267, E2E 168/168 | 기념일 타임라인·사용자 지정 기념일·반복 예외(ARC-A06~A09) |

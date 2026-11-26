@@ -71,7 +71,7 @@ function ReadyApp({ onDataMissing }: { onDataMissing: () => Promise<void> }) {
       screens={{
         settings: <SettingsScreen couple={couple} settings={settings} today={today} />,
         home: <HomeScreen couple={couple} settings={settings} today={today} />,
-        anniversary: <AnniversaryScreen />,
+        anniversary: <AnniversaryScreen couple={couple} settings={settings} today={today} />,
       }}
     />
   );
