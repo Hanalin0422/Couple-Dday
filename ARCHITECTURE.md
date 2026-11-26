@@ -592,7 +592,7 @@ couple/settings는 객체, 나머지 JSON은 배열. photos.json은 Photo에서 
 - requestAnimationFrame을 이용하여 프레임을 갱신한다.
 - 프레임 간 실제 경과 시간을 사용하여 기기 주사율에 따른 속도 차이를 방지한다.
 - devicePixelRatio를 고려하여 Canvas 해상도를 설정한다.
-- 애니메이션은 약 7초간 실행한다.
+- 애니메이션은 약 15초간 실행한다(2026-11-26 변경). 일부 입자는 시작 시 화면 상단에 떠 있고 나머지는 약 6초에 걸쳐 차례로 등장해 천천히 낙하하며, 마지막 2.5초 동안 투명해진다.
 - 종료 구간에서 입자 투명도를 점진적으로 감소시킨다.
 - 애니메이션 종료 후 Canvas를 초기화하고 실행 리소스를 정리한다.
 - 수동 재생 시 기존 애니메이션을 취소한 후 새 애니메이션을 시작한다.
@@ -600,7 +600,7 @@ couple/settings는 객체, 나머지 JSON은 배열. photos.json은 Photo에서 
 - 컴포넌트 unmount, 화면 이동, 앱 백그라운드 전환, 주년 날짜 종료 시 cancelAnimationFrame을 호출한다.
 - prefers-reduced-motion을 확인하여 자동 재생 여부를 결정한다. 모션 감소 설정에서도 원형 터치 수동 재생은 허용한다(HOME-027).
 - 애니메이션 실행 오류가 메인 화면 렌더링 실패로 이어지지 않도록 분리한다.
-- 일반 날짜에는 Canvas 애니메이션을 실행하지 않는다.
+- 재생 대상 날짜는 Domain `getCelebrationOccasion`(자동 주년 또는 100일 단위 자동 기념일 당일, HOME-033)으로 판정한다. 일반 날짜, 10·30·50일, 사용자 지정 기념일에는 Canvas 애니메이션을 실행하지 않는다.
 
 ### 12.0 화면 구현 노트 (Phase 4, 2026-11-26)
 
@@ -612,7 +612,9 @@ couple/settings는 객체, 나머지 JSON은 배열. photos.json은 Photo에서 
 | 스와이프 | Motion 가로 드래그(방향 잠금), 임계값 60px 또는 속도 500px/s, 양 끝 정지, Sheet 표시 중 비활성 | ARC-C04, NAV-004 |
 | 날짜 갱신 | `watchLocalDate`: focus·pageshow·visibilitychange 복귀와 다음 현지 자정 타이머로 오늘 재조회 | PWA-009 |
 | 시작 상태 | DB 조회 완료 전 빈 화면(온보딩 미표시), 오류/손상/버전 변경은 안내 화면(자동 삭제 버튼 없음) | PWA-008, PWA-E03 |
-| 메인 크기 | 원 `min(272px, 100vw-80px, 100dvh-380px-safe area)`, 원 내부 글자는 원 너비 비례(cqw), 다자릿수 주년은 원 너비 70% 안에 맞춰 축소 | HOME-E09, HOME-E16 |
+| 공통 반응형 기준 | `AppFrame`(최대 폭 480px size container)의 `.app-scale`에서 공통 단위 `--u` = clamp(0.5px, min(프레임 폭/390, 프레임 높이/720), 1.15px)를 한 번 정의(`@property` 등록 길이). 여백·모서리·컨트롤·하단 메뉴 높이·아이콘·글자 크기 토큰(`src/styles/tokens.css`)과 Tailwind 간격 단위(`--spacing` = 4u)가 모두 `--u`를 따른다. 페이지별 배율 없음. 터치 최소 44px, 글자 최소 크기 보장. 390×844에서 SKILL.md 수치 그대로 | SKILL.md §5.0, NFR-008, PWA-010, HOME-E09 |
+| 레이아웃 계층 | `AppFrame`: 공통 단위·상단 Safe Area·Bottom Sheet overlay(프레임 내부 렌더링). `AppShell`: 콘텐츠 영역(하단 메뉴 위)과 하단 메뉴·하단 Safe Area. 메인은 콘텐츠 영역 안에서 스크롤 없음, 설정·기념일은 화면 내부 지정 영역만 스크롤 | PWA-006, HOME-012, SET-012, TML-010 |
+| 메인 크기 | 원 272u·프로필 76u·TOGETHER 18u·간격 32u. 원 내부 글자도 같은 단위, 다자릿수 주년은 원 너비 70% 안에 맞춰 축소. 공통 단위가 프레임 높이를 반영하므로 지원 범위(폭 320~430, 높이 568 이상 세로 화면)에서 스크롤 없이 표시 | HOME-E09, HOME-E16 |
 | 축하 효과 | Canvas 오버레이(pointer-events none), 자동 재생 이력은 localStorage(날짜+시작일), 모션 감소 시 자동 재생 생략·터치 재생 허용 | §8, HOME-027 |
 | 임시 저장 | 입력 400ms 후 draft 저장(직렬 처리), 실패 시 안내하고 입력 유지 | ONB-012, ONB-E06 |
 | 편집 충돌 | Sheet를 연 시점의 revision으로 저장해 다른 탭 변경을 덮어쓰지 않음 | DB-015, PWA-E05 |

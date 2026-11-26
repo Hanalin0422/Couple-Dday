@@ -8,13 +8,14 @@ import { ProfileAvatar } from "@/components/ui/ProfileAvatar";
 import type { Couple, Photo } from "@/domain/entities";
 import { usePhoto } from "@/hooks/useDatabase";
 
-export function CoupleProfiles({ couple, size }: { couple: Couple; size: string }) {
+/** 시안: 사진 76px, 이름 16px/600, 사진-이름 간격 8px (공통 반응형 단위). */
+export function CoupleProfiles({ couple }: { couple: Couple }) {
   const myPhoto = usePhoto(couple.myPhotoId);
   const partnerPhoto = usePhoto(couple.partnerPhotoId);
   const person = (role: "self" | "partner", name: string, image: Photo | null | undefined) => (
-    <div className="flex w-[132px] flex-col items-center gap-2">
-      <ProfileAvatar role={role} photo={image} size={size} label={`${name} 프로필`} />
-      <p className="break-keep text-center text-[16px] font-semibold leading-snug text-text-primary" data-testid={`name-${role}`}>
+    <div className="flex w-33 flex-col items-center gap-2">
+      <ProfileAvatar role={role} photo={image} size={76} label={`${name} 프로필`} />
+      <p className="break-keep text-center text-ui-body font-semibold leading-snug text-text-primary" data-testid={`name-${role}`}>
         {name}
       </p>
     </div>
@@ -22,8 +23,8 @@ export function CoupleProfiles({ couple, size }: { couple: Couple; size: string 
   return (
     <div className="flex items-start justify-center">
       {person("self", couple.myName, myPhoto)}
-      <span className="flex text-accent" style={{ height: size, alignItems: "center" }}>
-        <HeartOutlineIcon size={14} />
+      <span className="flex h-19 items-center text-accent">
+        <HeartOutlineIcon className="size-3.5" />
       </span>
       {person("partner", couple.partnerName, partnerPhoto)}
     </div>

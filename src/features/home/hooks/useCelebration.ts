@@ -2,9 +2,9 @@
 
 /**
  * 축하 효과 재생 제어 (HOME-022~028, HOME-E20~E26, PWA-015).
- * - 자동 주년 당일 최초 메인 진입 시 1회 자동 재생(모션 감소 설정이면 자동 재생 생략).
+ * - 자동 주년 당일 및 100일 단위 자동 기념일 당일 최초 메인 진입 시 1회 자동 재생(모션 감소 설정이면 자동 재생 생략).
  * - 원형 터치로 수동 재생(모션 감소 설정에서도 허용, 2026-11-26 사용자 승인). 재생 중 재터치 시 처음부터 다시.
- * - 앱 백그라운드 전환·주년 종료·화면 이탈(언마운트) 시 중단.
+ * - 앱 백그라운드 전환·대상 날짜 종료(자정)·화면 이탈(언마운트) 시 중단.
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createLocalStorage } from "@/infrastructure/browser/key-value-storage";

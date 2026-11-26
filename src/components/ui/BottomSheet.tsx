@@ -8,11 +8,12 @@
  * - 처리 중(busy)에는 닫기 제한 (BTS-015), 긴 내용은 Sheet 내부만 스크롤 (BTS-007), Safe Area 반영 (BTS-011)
  * - 동시에 하나만 표시 (BTS-010): ui-store.activeSheet 로 관리
  *
- * 세부 픽셀(핸들 32×4, 제목 20px/600, 상단 모서리 24px)은 REQUIREMENTS.md §14의 이전 제안 수치를 잠정 적용한다.
+ * 세부 픽셀(핸들 32×4, 제목 20px/600, 상단 모서리 24px)은 REQUIREMENTS.md §14의 이전 제안 수치를 공통 반응형 토큰으로 잠정 적용한다.
  */
 import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useDragControls, type PanInfo } from "motion/react";
+import { OVERLAY_ROOT_ID } from "@/components/layout/AppFrame";
 import { useIsClient } from "@/hooks/useIsClient";
 import { useUIStore } from "@/stores/ui-store";
 import { Button } from "./primitives";
@@ -120,7 +121,7 @@ export function BottomSheet({ open, onClose, title, description, children, foote
     <SheetCloseContext.Provider value={requestClose}>
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-50" data-testid="bottom-sheet">
+        <div className="absolute inset-0" data-testid="bottom-sheet">
           <motion.div
             className="absolute inset-0 bg-text-primary/40"
             initial={{ opacity: 0 }}
@@ -135,7 +136,7 @@ export function BottomSheet({ open, onClose, title, description, children, foote
             aria-modal="true"
             aria-labelledby={title ? titleId : undefined}
             tabIndex={-1}
-            className="absolute inset-x-0 bottom-0 flex max-h-[90dvh] flex-col rounded-t-3xl bg-surface outline-none"
+            className="absolute inset-x-0 bottom-0 flex max-h-[90%] flex-col rounded-t-sheet bg-surface outline-none"
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
@@ -155,9 +156,9 @@ export function BottomSheet({ open, onClose, title, description, children, foote
               <span className="h-1 w-8 rounded-full bg-icon-inactive/50" />
             </div>
             {confirmingDiscard ? (
-              <div className="px-gutter pb-[calc(env(safe-area-inset-bottom)+16px)] pt-2">
-                <h2 className="text-[20px] font-semibold leading-snug text-text-primary">변경 사항을 취소할까요?</h2>
-                <p className="mt-2 text-[14px] text-text-secondary">입력한 내용은 저장되지 않아요.</p>
+              <div className="px-gutter pb-[calc(env(safe-area-inset-bottom)+16*var(--u))] pt-2">
+                <h2 className="text-ui-sheet-title font-semibold leading-snug text-text-primary">변경 사항을 취소할까요?</h2>
+                <p className="mt-2 text-ui-caption text-text-secondary">입력한 내용은 저장되지 않아요.</p>
                 <div className="mt-6 flex flex-col gap-2">
                   <Button onClick={onClose}>취소하기</Button>
                   <Button variant="text" onClick={() => setConfirmingDiscard(false)}>
@@ -169,15 +170,15 @@ export function BottomSheet({ open, onClose, title, description, children, foote
               <>
                 <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-gutter pt-2">
                   {title && (
-                    <h2 id={titleId} className="text-[20px] font-semibold leading-snug text-text-primary">
+                    <h2 id={titleId} className="text-ui-sheet-title font-semibold leading-snug text-text-primary">
                       {title}
                     </h2>
                   )}
-                  {description && <div className="mt-2 text-[14px] leading-relaxed text-text-secondary">{description}</div>}
+                  {description && <div className="mt-2 text-ui-caption leading-relaxed text-text-secondary">{description}</div>}
                   {children && <div className={title || description ? "mt-6" : undefined}>{children}</div>}
                 </div>
                 {footer !== null && (
-                  <div className="shrink-0 px-gutter pb-[calc(env(safe-area-inset-bottom)+16px)] pt-4">
+                  <div className="shrink-0 px-gutter pb-[calc(env(safe-area-inset-bottom)+16*var(--u))] pt-4">
                     {footer ?? (
                       <Button variant="text" className="w-full" onClick={requestClose} disabled={busy}>
                         닫기
@@ -192,7 +193,8 @@ export function BottomSheet({ open, onClose, title, description, children, foote
       )}
     </AnimatePresence>
     </SheetCloseContext.Provider>,
-    document.body,
+    // 앱 프레임 내부 overlay 영역에 렌더링하여 공통 반응형 토큰과 폭 제한을 상속한다.
+    document.getElementById(OVERLAY_ROOT_ID) ?? document.body,
   );
 }
 
@@ -245,7 +247,7 @@ export function ConfirmSheet({
       footer={
         <div className="flex flex-col gap-2">
           {error && (
-            <p role="alert" className="pb-2 text-center text-[14px] text-danger">
+            <p role="alert" className="pb-2 text-center text-ui-caption text-danger">
               {error}
             </p>
           )}

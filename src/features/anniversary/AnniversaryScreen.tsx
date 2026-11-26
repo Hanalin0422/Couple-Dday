@@ -13,8 +13,8 @@ export function AnniversaryScreen() {
       <PageHeader
         title="우리의 기념일"
         action={
-          <button type="button" aria-label="기념일 추가" className="flex h-11 w-11 items-center justify-center text-text-body" disabled>
-            <Plus size={24} aria-hidden="true" />
+          <button type="button" aria-label="기념일 추가" className="flex size-touch items-center justify-center text-text-body" disabled>
+            <Plus className="size-6" aria-hidden="true" />
           </button>
         }
       />

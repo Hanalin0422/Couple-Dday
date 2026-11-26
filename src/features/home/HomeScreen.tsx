@@ -7,6 +7,7 @@
  */
 import { useMemo } from "react";
 import type { Couple, LocalDate, Settings } from "@/domain/entities";
+import { getCelebrationOccasion } from "@/domain/anniversary/celebration";
 import { getHomeDdayDisplay } from "@/domain/anniversary/home-display";
 import { calculateHomeProgress } from "@/domain/anniversary/progress";
 import { formatDisplayDate } from "@/domain/date/local-date";
@@ -18,18 +19,24 @@ import { CoupleProfiles } from "./components/CoupleProfiles";
 import { useCelebration } from "./hooks/useCelebration";
 import { celebrationTargetId } from "./utils/celebration-history";
 
-/** 원 크기: 시안 272px, 작은 화면에서 너비·높이에 맞춰 비례 축소 (HOME-E09). */
-const CIRCLE_SIZE = "min(272px, calc(100vw - 80px), calc(100dvh - 380px - env(safe-area-inset-top) - env(safe-area-inset-bottom)))";
-const AVATAR_SIZE = "min(76px, 11dvh)";
+/**
+ * 메인 구성 (SKILL.md §7: 원형 SVG 272×272, 프로필 76px, TOGETHER 18px).
+ * 별도 배율을 두지 않고 AppFrame 의 공통 반응형 단위(--u)만 사용한다. 하단 메뉴·다른 화면과 같은 기준으로 크기가 정해지며
+ * 공통 단위가 프레임 높이(÷720)도 반영하므로 지원 범위의 기기에서 스크롤 없이 표시된다(HOME-012, HOME-E09).
+ */
+const u = (px: number) => `calc(${px} * var(--u))`;
+const CIRCLE_SIZE = u(272);
 
 export function HomeScreen({ couple, settings, today }: { couple: Couple; settings: Settings; today: LocalDate }) {
   const display = useMemo(() => getHomeDdayDisplay(couple.startDate, settings.dayOffset, today), [couple.startDate, settings.dayOffset, today]);
   const progress = useMemo(() => calculateHomeProgress(couple.startDate, settings.dayOffset, today), [couple.startDate, settings.dayOffset, today]);
-  const isAnniversary = display?.type === "anniversary";
+  // 축하 효과 대상: 자동 주년 당일 + 100일 단위 자동 기념일 당일(HOME-022, HOME-033). 100일 단위는 일반 디데이 표시 유지.
+  const occasion = useMemo(() => getCelebrationOccasion(couple.startDate, settings.dayOffset, today), [couple.startDate, settings.dayOffset, today]);
+  const celebrating = occasion !== null;
   const reducedMotion = useReducedMotion();
   const { runKey, replay, stop } = useCelebration({
-    active: isAnniversary,
-    targetId: isAnniversary ? celebrationTargetId(today, couple.startDate) : null,
+    active: celebrating,
+    targetId: celebrating ? celebrationTargetId(today, couple.startDate) : null,
     reducedMotion,
   });
 
@@ -37,31 +44,31 @@ export function HomeScreen({ couple, settings, today }: { couple: Couple; settin
   const circleLabel = display
     ? display.type === "anniversary"
       ? `우리가 함께한 지 ${display.label}, ${display.value}일째. 시작일 ${startDateLabel}. 눌러서 축하 효과 다시 보기`
-      : `우리가 함께한 지 ${display.value}일. 시작일 ${startDateLabel}`
+      : `우리가 함께한 지 ${display.value}일. 시작일 ${startDateLabel}${celebrating ? ". 눌러서 축하 효과 다시 보기" : ""}`
     : "기기 날짜를 확인해 주세요";
 
   const circleContent = (
-    <div data-circle className="relative flex items-center justify-center" style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE, containerType: "inline-size" }}>
+    <div data-circle className="relative flex items-center justify-center" style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE }}>
       <CircularProgress percentage={progress?.percentage ?? 0} />
       {display ? (
         <DdayInner display={display} startDateLabel={startDateLabel} />
       ) : (
-        <div className="px-[12cqw] text-center" role="alert">
-          <p className="text-[5.5cqw] font-semibold text-text-primary">기기 날짜를 확인해 주세요</p>
-          <p className="mt-[3cqw] text-[4.6cqw] text-text-secondary">오늘 날짜가 연애 시작일보다 이전으로 설정되어 있어요.</p>
+        <div className="px-8 text-center" role="alert">
+          <p className="text-ui-body font-semibold text-text-primary">기기 날짜를 확인해 주세요</p>
+          <p className="mt-2 text-ui-caption text-text-secondary">오늘 날짜가 연애 시작일보다 이전으로 설정되어 있어요.</p>
         </div>
       )}
     </div>
   );
 
   return (
-    <main className="relative flex h-full flex-col items-center justify-center overflow-hidden px-gutter pb-[2dvh] pt-[env(safe-area-inset-top)]" aria-label="메인">
+    <main className="relative h-full overflow-hidden" aria-label="메인">
       <h1 className="sr-only">메인</h1>
-      <div className="flex flex-col items-center gap-[min(32px,4dvh)]">
-        <p className="mb-[min(16px,2dvh)] font-maruburi text-[18px] font-semibold tracking-[0.3em] text-accent" aria-label="TOGETHER">
+      <div className="flex h-full flex-col items-center justify-center gap-8" data-testid="home-composition">
+        <p className="mb-4 font-maruburi text-ui-together font-semibold leading-[1.35] tracking-[0.3em] text-accent" aria-label="TOGETHER">
           TOGETHER
         </p>
-        {isAnniversary ? (
+        {celebrating ? (
           <button type="button" onClick={replay} aria-label={circleLabel} className="rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent">
             {circleContent}
           </button>
@@ -70,7 +77,7 @@ export function HomeScreen({ couple, settings, today }: { couple: Couple; settin
             {circleContent}
           </div>
         )}
-        <CoupleProfiles couple={couple} size={AVATAR_SIZE} />
+        <CoupleProfiles couple={couple} />
       </div>
       {runKey !== null && <CelebrationCanvas key={runKey} onDone={stop} />}
     </main>

@@ -3,7 +3,7 @@
 /**
  * 금빛 꽃가루 축하 효과 Canvas 오버레이 (ARCHITECTURE.md §12, SKILL.md §7.2, HOME-022~032).
  * - 메인 콘텐츠 영역 위 absolute 오버레이, pointer-events: none → 터치·스와이프·하단 메뉴를 가로채지 않는다.
- * - requestAnimationFrame + 실제 경과 시간, devicePixelRatio 반영, 약 7초 후 종료·Canvas 초기화.
+ * - requestAnimationFrame + 실제 경과 시간, devicePixelRatio 반영, 약 15초 후 종료·Canvas 초기화.
  * - 언마운트 시 cancelAnimationFrame 으로 정리. 실행 오류는 메인 렌더링과 분리(HOME-E25).
  * - 사운드 없음.
  */

@@ -46,7 +46,7 @@ export function SettingsScreen({ couple, settings, today }: { couple: Couple; se
   const roleName = (role: ProfileRole) => (role === "self" ? "내" : "상대방");
 
   const profile = (role: ProfileRole, name: string, image: Photo | null | undefined) => (
-    <div className="flex w-[120px] flex-col items-center gap-2">
+    <div className="flex w-30 flex-col items-center gap-2">
       <ProfileAvatar
         role={role}
         photo={image}
@@ -55,7 +55,7 @@ export function SettingsScreen({ couple, settings, today }: { couple: Couple; se
         label={`${roleName(role)} 프로필 사진 변경`}
         onClick={() => setEditing({ kind: "photo", role, revision: settings.revision })}
       />
-      <span className="break-keep text-center text-[14px] font-medium text-text-body">{name}</span>
+      <span className="break-keep text-center text-ui-caption font-medium text-text-body">{name}</span>
     </div>
   );
 
@@ -67,8 +67,8 @@ export function SettingsScreen({ couple, settings, today }: { couple: Couple; se
           <Card>
             <div className="flex items-start justify-center pb-3">
               {profile("self", couple.myName, myPhoto)}
-              <span className="flex h-[72px] items-center text-accent">
-                <HeartOutlineIcon size={14} />
+              <span className="flex h-18 items-center text-accent">
+                <HeartOutlineIcon className="size-3.5" />
               </span>
               {profile("partner", couple.partnerName, partnerPhoto)}
             </div>
@@ -78,35 +78,35 @@ export function SettingsScreen({ couple, settings, today }: { couple: Couple; se
           </Card>
 
           <Card>
-            <h2 className="text-[18px] font-semibold text-text-primary">디데이 설정</h2>
-            <p className="mb-3 mt-4 text-[14px] text-text-body">시작일 계산 방식</p>
+            <h2 className="text-ui-section font-semibold text-text-primary">디데이 설정</h2>
+            <p className="mb-3 mt-4 text-ui-caption text-text-body">시작일 계산 방식</p>
             <SegmentedControl
               label="시작일 계산 방식"
               options={DAY_OFFSET_OPTIONS}
               value={settings.dayOffset}
               onChange={(value) => setEditing({ kind: "offset", value, revision: settings.revision })}
             />
-            <p className="mt-3 text-[13px] text-text-secondary">처음 사귄 날을 {settings.dayOffset}일로 계산해요.</p>
+            <p className="mt-3 text-ui-caption-sm text-text-secondary">처음 사귄 날을 {settings.dayOffset}일로 계산해요.</p>
           </Card>
 
           <Card>
-            <h2 className="mb-2 text-[18px] font-semibold text-text-primary">화면 꾸미기</h2>
+            <h2 className="mb-2 text-ui-section font-semibold text-text-primary">화면 꾸미기</h2>
             <MenuRow
               label="테마"
               value="Dusty Rose"
               icon={
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-soft text-accent">
-                  <Palette size={17} aria-hidden="true" />
+                <span className="flex size-8 items-center justify-center rounded-full bg-accent-soft text-accent">
+                  <Palette className="size-4.25" aria-hidden="true" />
                 </span>
               }
             />
           </Card>
 
           <Card>
-            <h2 className="mb-2 text-[18px] font-semibold text-text-primary">데이터 관리</h2>
-            <MenuRow label="데이터 백업" icon={<Download size={20} className="text-text-secondary" aria-hidden="true" />} />
-            <MenuRow label="데이터 복원" icon={<Upload size={20} className="text-text-secondary" aria-hidden="true" />} />
-            <MenuRow label="데이터 초기화" tone="danger" icon={<Trash2 size={20} className="text-danger" aria-hidden="true" />} />
+            <h2 className="mb-2 text-ui-section font-semibold text-text-primary">데이터 관리</h2>
+            <MenuRow label="데이터 백업" icon={<Download className="size-5 text-text-secondary" aria-hidden="true" />} />
+            <MenuRow label="데이터 복원" icon={<Upload className="size-5 text-text-secondary" aria-hidden="true" />} />
+            <MenuRow label="데이터 초기화" tone="danger" icon={<Trash2 className="size-5 text-danger" aria-hidden="true" />} />
           </Card>
         </div>
       </div>
@@ -218,7 +218,7 @@ function NameSheet({
       footer={
         <div className="flex flex-col gap-2">
           {error && (
-            <p role="alert" className="pb-2 text-center text-[14px] text-danger">
+            <p role="alert" className="pb-2 text-center text-ui-caption text-danger">
               {error}
             </p>
           )}
@@ -274,7 +274,7 @@ function ProfilePhotoSheet({
         footer={
           <div className="flex flex-col gap-2">
             {error && (
-              <p role="alert" className="pb-2 text-center text-[14px] text-danger">
+              <p role="alert" className="pb-2 text-center text-ui-caption text-danger">
                 {error}
               </p>
             )}

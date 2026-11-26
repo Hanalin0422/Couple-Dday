@@ -80,11 +80,53 @@
   --font-family-maruburi: "MaruBuri", serif;
   --font-family-cormorant: "Cormorant Garamond", serif;
 
-  /* SKILL.md §5 공통 레이아웃 */
-  --page-gutter: 24px;
-  --card-radius: 20px;
-  --section-gap: 32px;
-
   /* Dusty Rose 단일 라이트모드 (SYS-007, PWA-011) */
   color-scheme: light;
+}
+
+/*
+ * 공통 반응형 기준 (AppFrame 의 .app-scale 에서 한 번 정의하고 모든 화면·하단 메뉴·Bottom Sheet 가 상속한다).
+ *
+ * --u: 시안 1px 에 해당하는 길이. 앱 프레임(최대 폭 480px) 크기 기준으로
+ *      min(프레임 폭 / 390, 프레임 높이 / 720) 을 0.5px ~ 1.15px 로 제한한다.
+ *      390×844(시안 기준 기기)에서 정확히 1px → SKILL.md 의 크기가 기본값이다.
+ * 모든 크기 토큰은 --u 의 배수로 정의하여 화면 간·하단 메뉴 간 비율을 유지한다.
+ * 터치 영역은 최소 44px, 글자는 최소 크기를 보장한다(NFR-008, 가독성).
+ * 페이지별 독립 배율(scale/zoom)은 사용하지 않는다.
+ */
+.app-scale {
+  --u: clamp(0.5px, min(calc(100cqw / 390), calc(100cqh / 720)), 1.15px);
+
+  /* SKILL.md §5 공통 레이아웃 */
+  --gutter: calc(24 * var(--u));
+  --card-radius: calc(20 * var(--u));
+  --card-padding: calc(20 * var(--u));
+  --section-gap: calc(32 * var(--u));
+  --sheet-radius: calc(24 * var(--u));
+  --control-radius: calc(14 * var(--u));
+  --segment-radius: calc(10 * var(--u));
+  --button-radius: calc(16 * var(--u));
+
+  /* 컨트롤 높이 (주요 버튼 52~56px, 메뉴 행 52~56px) — 최소 터치 영역 44px */
+  --touch: max(44px, calc(44 * var(--u)));
+  --button-h: max(44px, calc(56 * var(--u)));
+  --control-h: max(44px, calc(52 * var(--u)));
+  --row-h: max(44px, calc(52 * var(--u)));
+  --segment-h: max(44px, calc(48 * var(--u)));
+  --nav-h: max(48px, calc(64 * var(--u)));
+
+  /* SKILL.md §4 타이포그래피 (최소 글자 크기 보장) */
+  --fs-title: max(20px, calc(28 * var(--u)));
+  --fs-sheet-title: max(17px, calc(20 * var(--u)));
+  --fs-section: max(15px, calc(18 * var(--u)));
+  --fs-body: max(14px, calc(16 * var(--u)));
+  --fs-body-sm: max(13px, calc(15 * var(--u)));
+  --fs-caption: max(12px, calc(14 * var(--u)));
+  --fs-caption-sm: max(11px, calc(13 * var(--u)));
+  --fs-nav: max(10px, calc(11 * var(--u)));
+  --fs-together: max(12px, calc(18 * var(--u)));
+
+  /* 아이콘 */
+  --icon-nav: calc(22 * var(--u));
+  --icon-nav-heart: calc(30 * var(--u));
 }

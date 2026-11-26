@@ -4,14 +4,14 @@
  * 원 내부 표시 (SKILL.md §4, §7-3, §7.1, HOME-014~016, HOME-E16).
  * - 일반: "우리가 함께한 지" / 디데이 숫자(Pretendard 72/700) / DAYS / 시작일
  * - 자동 주년: "우리가 함께한 지" / N(Cormorant Garamond Italic 88/500) + 주년(마루 부리 38/400) 한 줄 / HAPPY ANNIVERSARY / 시작일
- * 모든 크기는 시안 원(272px) 기준이며 원 크기에 비례한다(cqw). 두 자릿수 이상 주년은 원 내부 가용 너비에 맞춰 축소하며
+ * 모든 크기는 공통 반응형 단위(--u)로 지정한다(원 272u 와 같은 기준). 두 자릿수 이상 주년은 원 내부 가용 너비에 맞춰 축소하며
  * 줄바꿈·말줄임·잘림을 허용하지 않는다.
  */
 import { useLayoutEffect, useRef } from "react";
 import type { HomeDdayDisplay } from "@/domain/anniversary/home-display";
 
-/** 시안 px → 원 너비 대비 cqw */
-const cq = (px: number) => `${((px / 272) * 100).toFixed(3)}cqw`;
+/** 시안 px → 공통 반응형 길이 */
+const cq = (px: number) => `calc(${px} * var(--u))`;
 const MAX_ROW_WIDTH_RATIO = 0.7;
 
 function useFitToCircle(deps: unknown[]) {

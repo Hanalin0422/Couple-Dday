@@ -15,6 +15,7 @@ import { DatabaseProvider, useCouple, useSettings } from "@/hooks/useDatabase";
 import { useLocalDateWatcher } from "@/hooks/useLocalDateWatcher";
 import { useDateStore } from "@/stores/date-store";
 import { useNavigationStore } from "@/stores/navigation-store";
+import { AppFrame } from "./AppFrame";
 import { AppShell } from "./AppShell";
 import { CorruptDataScreen, LoadingScreen, StorageErrorScreen, VersionChangedScreen } from "./StatusScreens";
 
@@ -42,7 +43,12 @@ export function App() {
       </DatabaseProvider>
     );
 
-  return <MotionConfig reducedMotion="user">{content}</MotionConfig>;
+  // 모든 상태 화면을 공통 AppFrame(반응형 기준·Safe Area·overlay) 안에서 표시한다.
+  return (
+    <MotionConfig reducedMotion="user">
+      <AppFrame>{content}</AppFrame>
+    </MotionConfig>
+  );
 }
 
 function ReadyApp({ onDataMissing }: { onDataMissing: () => Promise<void> }) {

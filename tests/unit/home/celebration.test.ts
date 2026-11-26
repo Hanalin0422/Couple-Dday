@@ -83,13 +83,25 @@ describe("입자 모델 (SKILL.md §7.2)", () => {
     expect(particles.every((p) => (CELEBRATION_COLORS as readonly string[]).includes(p.color))).toBe(true);
   });
 
-  it("약 7초 후 모든 입자가 사라지고, 종료 직전 투명도가 감소한다", () => {
+  it("약 15초간 재생: 15초에 모든 입자가 사라지고, 종료 직전 투명도가 감소한다 (HOME-025)", () => {
+    expect(CELEBRATION_DURATION_MS).toBe(15_000);
     const p = { ...particles[0], delay: 0 };
     expect(particleFrame(p, CELEBRATION_DURATION_MS)).toBeNull();
     const mid = particleFrame(p, 3_000)!;
     const late = particleFrame(p, CELEBRATION_DURATION_MS - 100)!;
     expect(late.alpha).toBeLessThan(mid.alpha);
     expect(late.alpha).toBeGreaterThanOrEqual(0);
+  });
+
+  it("15초 동안 화면에 보이는 입자가 계속 존재한다 (중간에 비지 않음)", () => {
+    const height = 700;
+    for (const t of [500, 3_000, 7_000, 10_000, 12_000]) {
+      const visible = particles.filter((p) => {
+        const f = particleFrame(p, t);
+        return f !== null && f.y >= 0 && f.y <= height && f.alpha > 0.05;
+      });
+      expect(visible.length, `${t}ms`).toBeGreaterThanOrEqual(15);
+    }
   });
 
   it("시간에 따라 아래로 떨어지며 좌우로 흔들린다", () => {

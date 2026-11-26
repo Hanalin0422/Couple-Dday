@@ -113,30 +113,30 @@ export function OnboardingScreen({
           fileInput.current?.open();
         }}
       />
-      <span className="text-[13px] font-medium text-text-secondary">{label}</span>
+      <span className="text-ui-caption-sm font-medium text-text-secondary">{label}</span>
     </div>
   );
 
   return (
-    <main className="fixed inset-0 overflow-y-auto bg-background" aria-label="시작하기">
-      <div className="mx-auto flex min-h-full max-w-[480px] flex-col px-gutter pb-[calc(env(safe-area-inset-bottom)+24px)] pt-[calc(env(safe-area-inset-top)+28px)]">
-        <OnboardingHeartGraphic size={56} />
-        <h1 className="mt-5 font-maruburi text-[28px] font-semibold leading-[1.35] text-text-primary">
+    <main className="absolute inset-0 overflow-y-auto bg-background" aria-label="시작하기" data-testid="onboarding-scroll">
+      <div className="flex min-h-full flex-col px-gutter pb-[calc(env(safe-area-inset-bottom)+24*var(--u))] pt-7">
+        <OnboardingHeartGraphic className="h-14 w-17.5" />
+        <h1 className="mt-5 font-maruburi text-ui-title font-semibold leading-[1.35] text-text-primary">
           우리의 시간을
           <br />
           시작해 볼까요?
         </h1>
-        <p className="mt-2 text-[14px] text-text-secondary">함께한 첫날부터 소중한 순간까지.</p>
+        <p className="mt-2 text-ui-caption text-text-secondary">함께한 첫날부터 소중한 순간까지.</p>
 
         <div className="mt-8 flex items-start justify-center gap-6">
           {avatar("self", "나")}
-          <span className="flex h-[76px] items-center text-accent">
-            <HeartOutlineIcon size={14} />
+          <span className="flex h-19 items-center text-accent">
+            <HeartOutlineIcon className="size-3.5" />
           </span>
           {avatar("partner", "상대방")}
         </div>
         {notice && (
-          <p role="status" className="mt-4 text-center text-[13px] text-danger">
+          <p role="status" className="mt-4 text-center text-ui-caption-sm text-danger">
             {notice}
           </p>
         )}
@@ -145,7 +145,7 @@ export function OnboardingScreen({
           <TextField label="내 이름" value={form.myName} onChange={(myName) => update({ myName })} maxLength={NAME_MAX_LENGTH} placeholder="이름 또는 애칭" />
           <TextField label="상대방 이름" value={form.partnerName} onChange={(partnerName) => update({ partnerName })} maxLength={NAME_MAX_LENGTH} placeholder="이름 또는 애칭" />
           <div className="flex flex-col gap-2">
-            <span id="start-date-label" className="text-[14px] font-medium text-text-body">
+            <span id="start-date-label" className="text-ui-caption font-medium text-text-body">
               처음 사귄 날
             </span>
             <button
@@ -153,24 +153,24 @@ export function OnboardingScreen({
               aria-labelledby="start-date-label"
               aria-haspopup="dialog"
               onClick={() => setPickerOpen(true)}
-              className="flex h-[52px] items-center gap-2 rounded-[14px] border border-accent-soft bg-surface px-4 text-left focus-visible:outline-2 focus-visible:outline-accent"
+              className="flex h-control items-center gap-2 rounded-control border border-accent-soft bg-surface px-4 text-left focus-visible:outline-2 focus-visible:outline-accent"
             >
-              <Calendar size={18} className="text-text-secondary" aria-hidden="true" />
-              <span className={form.startDate ? "flex-1 text-[16px] font-medium text-text-primary" : "flex-1 text-[16px] text-text-inactive"}>
+              <Calendar className="size-4.5 text-text-secondary" aria-hidden="true" />
+              <span className={form.startDate ? "flex-1 text-ui-body font-medium text-text-primary" : "flex-1 text-ui-body text-text-inactive"}>
                 {form.startDate ? formatDisplayDate(form.startDate) : "날짜 선택"}
               </span>
-              <ChevronDown size={18} className="text-text-secondary" aria-hidden="true" />
+              <ChevronDown className="size-4.5 text-text-secondary" aria-hidden="true" />
             </button>
           </div>
           <div className="flex flex-col gap-2">
-            <span className="text-[14px] font-medium text-text-body">시작일 계산 방식</span>
+            <span className="text-ui-caption font-medium text-text-body">시작일 계산 방식</span>
             <SegmentedControl label="시작일 계산 방식" options={DAY_OFFSET_OPTIONS} value={form.dayOffset} onChange={(dayOffset) => update({ dayOffset })} />
           </div>
         </div>
 
         <div className="mt-10 flex flex-col items-center gap-2">
           {submitError && (
-            <p role="alert" className="text-[14px] text-danger">
+            <p role="alert" className="text-ui-caption text-danger">
               {submitError}
             </p>
           )}

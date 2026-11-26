@@ -8,17 +8,17 @@ import { Button } from "@/components/ui/primitives";
 
 function StatusLayout({ title, description, action }: { title: string; description: string; action?: React.ReactNode }) {
   return (
-    <main className="fixed inset-0 flex flex-col items-center justify-center bg-background px-gutter text-center" role="alert">
-      <h1 className="text-[20px] font-semibold text-text-primary">{title}</h1>
-      <p className="mt-2 max-w-[320px] text-[14px] leading-relaxed text-text-secondary">{description}</p>
-      {action && <div className="mt-8 w-full max-w-[320px]">{action}</div>}
+    <main className="absolute inset-0 flex flex-col items-center justify-center bg-background px-gutter text-center" role="alert">
+      <h1 className="text-ui-sheet-title font-semibold text-text-primary">{title}</h1>
+      <p className="mt-2 max-w-80 text-ui-caption leading-relaxed text-text-secondary">{description}</p>
+      {action && <div className="mt-8 w-full max-w-80">{action}</div>}
     </main>
   );
 }
 
 export function LoadingScreen() {
   // DB 조회 완료 전에는 아무 화면(특히 온보딩)도 표시하지 않는다 (PWA-008).
-  return <main className="fixed inset-0 bg-background" aria-busy="true" />;
+  return <main className="absolute inset-0 bg-background" aria-busy="true" />;
 }
 
 export function StorageErrorScreen({ onRetry, newerVersion }: { onRetry: () => void; newerVersion: boolean }) {

@@ -18,14 +18,14 @@ export function ProfileAvatar({
 }: {
   role: "self" | "partner";
   photo: StoredImage | null | undefined;
-  /** px 또는 CSS 길이 */
-  size: number | string;
+  /** 시안 기준 지름(px). 공통 반응형 단위(--u)로 변환된다. */
+  size: number;
   badge?: "plus" | "camera";
   onClick?: () => void;
   label: string;
 }) {
   const url = useObjectUrl(photo);
-  const dimension = typeof size === "number" ? `${size}px` : size;
+  const dimension = `calc(${size} * var(--u))`;
   const content = (
     <span className="relative block" style={{ width: dimension, height: dimension }}>
       <span className="block h-full w-full overflow-hidden rounded-full">
@@ -37,8 +37,8 @@ export function ProfileAvatar({
         )}
       </span>
       {badge && (
-        <span className="absolute -bottom-0.5 -right-0.5 flex h-[26px] w-[26px] items-center justify-center rounded-full bg-surface text-text-secondary">
-          {badge === "plus" ? <Plus size={16} strokeWidth={2.4} aria-hidden="true" /> : <Camera size={14} strokeWidth={2.2} aria-hidden="true" />}
+        <span className="absolute -bottom-0.5 -right-0.5 flex size-6.5 items-center justify-center rounded-full bg-surface text-text-secondary">
+          {badge === "plus" ? <Plus className="size-4" strokeWidth={2.4} aria-hidden="true" /> : <Camera className="size-3.5" strokeWidth={2.2} aria-hidden="true" />}
         </span>
       )}
     </span>

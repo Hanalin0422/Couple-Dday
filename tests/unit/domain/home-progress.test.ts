@@ -143,3 +143,28 @@ describe("메인 디데이 표시 모델 (TC-HOME-009~014)", () => {
     expect(getHomeDdayDisplay(START, 1, "2026-11-25")).toEqual({ type: "days", value: 148, label: "148", subtitle: "DAYS" });
   });
 });
+
+describe("축하 효과 대상 날짜 (HOME-022, HOME-028, HOME-033)", () => {
+  it("100일 단위 자동 기념일 당일은 대상, 표시 형식은 일반 디데이 유지", async () => {
+    const { getCelebrationOccasion } = await import("@/domain/anniversary/celebration");
+    expect(getCelebrationOccasion(START, 1, "2026-10-08")).toEqual({ kind: "hundred-days", days: 100 });
+    expect(getCelebrationOccasion(START, 1, "2027-01-16")).toEqual({ kind: "hundred-days", days: 200 });
+    expect(getCelebrationOccasion(START, 0, "2026-10-09")).toEqual({ kind: "hundred-days", days: 100 });
+    expect(getHomeDdayDisplay(START, 1, "2026-10-08")).toMatchObject({ type: "days", value: 100 });
+  });
+
+  it("주년 당일은 주년으로 판정, 주년과 100일 단위가 겹치면 주년 우선", async () => {
+    const { getCelebrationOccasion } = await import("@/domain/anniversary/celebration");
+    expect(getCelebrationOccasion(START, 1, "2027-07-01")).toEqual({ kind: "anniversary", years: 1 });
+    expect(getCelebrationOccasion("2000-03-01", 0, "2023-03-01")).toEqual({ kind: "anniversary", years: 23 });
+  });
+
+  it("10·30·50일, 일반 날짜, 100일 전날·다음 날, 시작일 이전은 대상 아님", async () => {
+    const { getCelebrationOccasion } = await import("@/domain/anniversary/celebration");
+    for (const today of ["2026-07-10", "2026-07-30", "2026-08-19", "2026-11-25", "2026-10-07", "2026-10-09", "2026-07-01"]) {
+      expect(getCelebrationOccasion(START, 1, today), today).toBeNull();
+    }
+    expect(getCelebrationOccasion(START, 1, "2026-06-30")).toBeNull();
+    expect(getCelebrationOccasion(START, 0, "2026-10-08")).toBeNull(); // 0일 방식에서는 99일
+  });
+});

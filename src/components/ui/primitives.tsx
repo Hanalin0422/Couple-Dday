@@ -2,7 +2,8 @@
 
 /**
  * 공통 UI 기본 요소: Button, Card, PageHeader, SegmentedControl, MenuRow (SKILL.md §5).
- * 수치: 화면 좌우 24px, 카드 모서리 20px·내부 여백 20px, 주요 버튼 56px, 메뉴 행 52~56px.
+ * 모든 크기는 공통 반응형 토큰(src/styles/tokens.css .app-scale)을 사용한다.
+ * 시안 기준: 화면 좌우 24px, 카드 모서리 20px·내부 여백 20px, 주요 버튼 56px, 메뉴 행 52px, 터치 영역 최소 44px.
  */
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { ChevronRight } from "lucide-react";
@@ -26,9 +27,9 @@ export function Button({
       className={cx(
         "select-none transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         variant === "primary" &&
-          "h-14 w-full rounded-2xl bg-accent text-[16px] font-semibold text-surface disabled:bg-accent-soft disabled:text-accent/50",
-        variant === "text" && "min-h-11 px-3 text-[14px] font-medium text-text-secondary disabled:text-text-inactive",
-        variant === "danger-text" && "min-h-11 px-3 text-[14px] font-medium text-danger",
+          "h-button w-full rounded-button bg-accent text-ui-body font-semibold text-surface disabled:bg-accent-soft disabled:text-accent/50",
+        variant === "text" && "min-h-touch px-3 text-ui-caption font-medium text-text-secondary disabled:text-text-inactive",
+        variant === "danger-text" && "min-h-touch px-3 text-ui-caption font-medium text-danger",
         className,
       )}
       {...props}
@@ -37,14 +38,14 @@ export function Button({
 }
 
 export function Card({ children, className }: { children: ReactNode; className?: string }) {
-  return <section className={cx("rounded-card bg-surface p-5", className)}>{children}</section>;
+  return <section className={cx("rounded-card bg-surface p-(--card-padding)", className)}>{children}</section>;
 }
 
-/** 온보딩/설정/기념일 공통 페이지 제목: 마루 부리 28px 600, 왼쪽 정렬, 좌우 24px (SKILL.md §4). */
+/** 온보딩/설정/기념일 공통 페이지 제목: 마루 부리 28px 600, 왼쪽 정렬, 좌우 24px (SKILL.md §4). 상단 Safe Area 는 AppFrame 이 반영한다. */
 export function PageHeader({ title, action }: { title: ReactNode; action?: ReactNode }) {
   return (
-    <header className="flex items-center justify-between px-gutter pb-4 pt-[calc(env(safe-area-inset-top)+20px)]">
-      <h1 className="font-maruburi text-[28px] font-semibold leading-[1.35] text-text-primary">{title}</h1>
+    <header className="flex shrink-0 items-center justify-between px-gutter pb-4 pt-5">
+      <h1 className="font-maruburi text-ui-title font-semibold leading-[1.35] text-text-primary">{title}</h1>
       {action}
     </header>
   );
@@ -70,7 +71,7 @@ export function SegmentedControl<T extends string | number>({
   disabled?: boolean;
 }) {
   return (
-    <div role="radiogroup" aria-label={label} className="flex h-12 rounded-[14px] bg-input p-1">
+    <div role="radiogroup" aria-label={label} className="flex h-segment rounded-control bg-input p-1">
       {options.map((option) => {
         const selected = option.value === value;
         return (
@@ -82,7 +83,7 @@ export function SegmentedControl<T extends string | number>({
             disabled={disabled}
             onClick={() => !selected && onChange(option.value)}
             className={cx(
-              "flex-1 rounded-[10px] text-[15px] transition-colors focus-visible:outline-2 focus-visible:outline-accent",
+              "flex-1 rounded-segment text-ui-body-sm transition-colors focus-visible:outline-2 focus-visible:outline-accent",
               selected ? "bg-surface font-semibold text-text-primary" : "font-medium text-text-secondary",
             )}
           >
@@ -114,12 +115,12 @@ export function MenuRow({
     <button
       type="button"
       onClick={onClick}
-      className="flex h-[52px] w-full items-center gap-3 text-left focus-visible:outline-2 focus-visible:outline-accent"
+      className="flex h-row w-full items-center gap-3 text-left focus-visible:outline-2 focus-visible:outline-accent"
     >
       {icon}
-      <span className={cx("flex-1 text-[16px] font-medium", tone === "danger" ? "text-danger" : "text-text-body")}>{label}</span>
-      {value !== undefined && <span className="max-w-[55%] truncate text-[15px] text-text-secondary">{value}</span>}
-      {chevron && <ChevronRight size={18} className="shrink-0 text-icon-inactive" aria-hidden="true" />}
+      <span className={cx("flex-1 text-ui-body font-medium", tone === "danger" ? "text-danger" : "text-text-body")}>{label}</span>
+      {value !== undefined && <span className="max-w-[55%] truncate text-ui-body-sm text-text-secondary">{value}</span>}
+      {chevron && <ChevronRight className="size-4.5 shrink-0 text-icon-inactive" aria-hidden="true" />}
     </button>
   );
 }

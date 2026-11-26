@@ -147,7 +147,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-HOME-017 | HOME-006, HOME-007, HOME-008, ONB-004 | E | FX-NAMES, 사진 없음 | 원 아래 두 기본 프로필·하트·이름, 시작일 `2026.07.01` | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-HOME-018 | HOME-010, SET-007 | E | 설정에서 이름 변경 저장 후 메인 이동 | 즉시 반영 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-HOME-019 | HOME-011 | E | 메인 화면 텍스트 검사 | 다음 기념일 이름/남은 일수 미표시 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
-| TC-HOME-020 | HOME-012, HOME-E09 | E | 뷰포트 320×568, 375×667, 390×844, 430×932 | 문서 세로 스크롤 없음, 원·프로필 잘림 없음 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-HOME-020 | HOME-012, HOME-E09 | E | 뷰포트 320×568, 375×667, 390×844, 430×932 | 문서 세로 스크롤 없음, 원·프로필이 하단 메뉴 위에서 잘리지 않음 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-HOME-021 | HOME-013, NAV-001 | E | 메인 하단 메뉴 | 중앙 하트 활성(accent), 텍스트 없음 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-HOME-022 | HOME-016, HOME-E16 | E | 1, 2, 10, 99주년 표시 | 숫자 Cormorant Garamond Italic, '주년' 마루 부리, 한 줄, 원 내부에서 잘림·줄바꿈·말줄임 없음 | 대기 |
 | TC-HOME-023 | HOME-029 | E | 일반일/주년 당일 레이아웃 비교 | 원 크기, 프로필 위치, 하단 메뉴 위치 동일 | 대기 |
@@ -164,18 +164,19 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-CEL-005 | RST-006 | I | 전체 초기화 | `couple-dday:celebration:last-auto-played` 키 제거 | 대기 |
 | TC-CEL-006 | BAK-001 | I | 백업 생성 | 축하 재생 이력 미포함 | 대기 |
 | TC-CEL-007 | HOME-E22 | I | 재생 중 다시 재생 요청 | 이전 rAF 취소 후 1개 루프만 실행 | 대기 |
-| TC-CEL-008 | HOME-025 | I | 가짜 시계로 7초 진행 | 종료 구간에서 투명도 감소 후 종료, 입자 0, 캔버스 초기화 | 대기 |
+| TC-CEL-008 | HOME-025 | U | 입자 모델 15초 진행 | 15초 동안 화면에 입자가 계속 보이고, 종료 구간에서 투명도 감소 후 15초에 모두 종료 | 통과 `tests/unit/home/celebration.test.ts` |
 | TC-CEL-009 | HOME-022 | E | 주년 당일 최초 메인 진입 | 오버레이 캔버스 재생 시작 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-CEL-010 | HOME-E20, HOME-E21 | E | 같은 날 설정/기념일 다녀오기, 앱 재실행 | 자동 재생 반복 없음, 주년 디자인 유지 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-CEL-011 | HOME-024, HOME-031 | E | 원형 디데이 영역 터치 | 재생, 별도 재생 버튼/설정 메뉴 없음 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-CEL-012 | HOME-026 | E | 재생 중 하단 메뉴 탭, 좌우 스와이프 | 정상 이동 (캔버스 `pointer-events: none`) | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-CEL-013 | HOME-E23, HOME-E26, PWA-015 | E | 재생 중 화면 이동 / `visibilitychange: hidden` | cancelAnimationFrame 호출, 리소스 정리 | 대기 |
 | TC-CEL-014 | HOME-027, HOME-E24 | E | `reducedMotion: 'reduce'`로 주년 당일 진입 후 원형 터치 | 자동 재생 없음, 주년 디자인 유지, 터치 시 재생 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
-| TC-CEL-015 | HOME-028 | E | 일반 날짜, 100일 당일 | 캔버스 애니메이션 실행 없음 | 대기 |
+| TC-CEL-015 | HOME-028 | U/E | 일반 날짜, 50일, 10·30일, 사용자 지정 기념일 당일 | 캔버스 애니메이션·재생 버튼 없음 | 통과 `tests/unit/domain/home-progress.test.ts`, `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-CEL-016 | HOME-E25 | E | Canvas `getContext`가 null을 반환하도록 주입 | 메인 정상 렌더링, 주년 디자인 표시 | 대기 |
 | TC-CEL-017 | HOME-030, HOME-E27, PWA-014 | E | SW 캐시 후 오프라인에서 주년 당일 | 주년 폰트·애니메이션 정상 | 대기 |
 | TC-CEL-018 | HOME-032 | R | 코드 검토 | Audio/사운드 API 미사용 | 통과 (코드 검토: Audio API 미사용) |
 | TC-CEL-019 | HOME-025 | R | 입자 설정 검토 | 약 65개, 2~6px, 타원 꽃가루+4각 별빛, celebration 토큰 색상, 경과 시간 기반 프레임, devicePixelRatio 반영 | 통과 `tests/unit/home/celebration.test.ts`, 코드 검토 |
+| TC-CEL-020 | HOME-033 | U/E | 1일 방식 100일(2026-10-08)·200일(2027-01-16), 0일 방식 100일, 주년·8400일 중복 | 일반 디데이(숫자·DAYS) 유지, 최초 1회 자동 재생·재실행 시 반복 없음, 모션 감소 시 터치 재생, 주년과 겹치면 주년 | 통과 `tests/unit/domain/home-progress.test.ts`, `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 
 ### 3.6 온보딩
 
@@ -401,6 +402,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-DSN-010 | NFR-011, ARC-E02 | V | 1주년 / 2주년 / 10주년, 축하 효과 종료 후 | 승인 기준 이미지와 일치 (입자 비활성) | 대기 |
 | TC-DSN-011 | NFR-011, ARC-E02 | V | 온보딩 / 설정 / 기념일 화면 | 승인 기준 이미지와 일치 | 대기 |
 | TC-DSN-012 | NFR-011 | V | 긴 이름(10자), 사진 있음/없음 | 레이아웃 잘림 없음 | 대기 |
+| TC-DSN-013 | NFR-008, NFR-011, PWA-010 | E | 320×568~860×810에서 설정·메인·기념일 전환 | 같은 viewport에서 하단 메뉴 크기·위치 동일, 하단 메뉴 높이·아이콘·원·제목이 공통 단위(--u)의 배수, 터치 영역 ≥44px, 문서 스크롤 없음, 앱 폭 ≤480px, 390×844에서 SKILL.md 수치(제목 28, 원 272, 하단 메뉴 64, 아이콘 22) | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 
 ### 3.18 서비스 범위 및 비기능
 
@@ -494,3 +496,6 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | 2026-11-26 | `npm test` (Phase 1) | 통과 155/155 | Domain 단위 테스트 추가. 오프셋 결함 주입 시 11건 실패 확인 후 복원 |
 | 2026-11-26 | `npm test` (Phase 2) | 통과 215/215 | DB 스키마·무결성·revision 트랜잭션·시작 상태 판정. revision 검사 제거 결함 주입 시 2건 실패 확인 후 복원 |
 | 2026-11-26 | `npm test`, `npx playwright test --repeat-each=3` (Phase 4) | 통과 240/240, E2E 168/168 | 온보딩·메인·주년·설정·스와이프 E2E(chromium, webkit). 사진 Blob→ArrayBuffer 전환(ARC-B08) 후 WebKit 사진 저장 통과 |
+| 2026-11-26 | `npx playwright test` | 통과 58/58 | 메인 비례 배치 수정(원만 줄어들던 문제) 및 앱 폭 480px 제한 후 |
+| 2026-11-26 | `npm run verify`, `npx playwright test --repeat-each=2` | 통과 240/240, E2E 116/116 | 공통 반응형 기준(AppFrame·--u 토큰) 적용 후 |
+| 2026-11-26 | `npm run verify`, `npx playwright test` | 통과, E2E 64/64 | 축하 효과 15초·100일 단위 재생(HOME-033) 반영 후. 실제 시간 캡처로 1.5s/7s/12.5s 분포와 16s 정리 확인 |

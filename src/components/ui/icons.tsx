@@ -5,6 +5,7 @@
  */
 import type { SVGProps } from "react";
 
+/** size: 기본 크기(px). 반응형 크기는 className(예: size-(--icon-nav))으로 지정하면 CSS 가 우선한다. */
 type IconProps = SVGProps<SVGSVGElement> & { size?: number };
 
 function gearPath(): string {
@@ -89,9 +90,9 @@ export function DefaultProfileGraphic({ role }: { role: "self" | "partner" }) {
 }
 
 /** 온보딩 상단 하트 그래픽과 작은 반짝임 (SKILL.md §6-1, 승인된 그래픽 예외). 앱 아이콘(src/app/icon.svg)과 같은 디자인. */
-export function OnboardingHeartGraphic({ size = 64 }: { size?: number }) {
+export function OnboardingHeartGraphic({ className }: { className?: string }) {
   return (
-    <svg width={size * 1.25} height={size} viewBox="40 60 440 352" aria-hidden="true">
+    <svg className={className} viewBox="40 60 440 352" aria-hidden="true">
       <defs>
         <linearGradient id="obHeartFill" x1="0.2" y1="0.05" x2="0.8" y2="1">
           <stop offset="0" stopColor="#E7B4C2" />

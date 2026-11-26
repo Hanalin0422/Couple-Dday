@@ -39,9 +39,47 @@
   --font-maruburi: var(--font-family-maruburi);
   --font-cormorant: var(--font-family-cormorant);
 
-  --spacing-gutter: var(--page-gutter);
+  /*
+   * 간격·크기 단위: Tailwind 기본 간격(0.25rem)을 공통 반응형 단위로 교체한다.
+   * inline 이므로 p-4, gap-6, size-10 등이 사용 위치에서 상속된 --u 로 계산된다(시안 기준 4px 단위).
+   */
+  --spacing: calc(var(--u) * 4);
+  --spacing-gutter: var(--gutter);
   --spacing-section: var(--section-gap);
+  --spacing-touch: var(--touch);
+  --spacing-button: var(--button-h);
+  --spacing-control: var(--control-h);
+  --spacing-row: var(--row-h);
+  --spacing-segment: var(--segment-h);
+  --spacing-nav: var(--nav-h);
+
   --radius-card: var(--card-radius);
+  --radius-sheet: var(--sheet-radius);
+  --radius-control: var(--control-radius);
+  --radius-segment: var(--segment-radius);
+  --radius-button: var(--button-radius);
+  --radius-xl: calc(12 * var(--u));
+
+  --text-ui-title: var(--fs-title);
+  --text-ui-sheet-title: var(--fs-sheet-title);
+  --text-ui-section: var(--fs-section);
+  --text-ui-body: var(--fs-body);
+  --text-ui-body-sm: var(--fs-body-sm);
+  --text-ui-caption: var(--fs-caption);
+  --text-ui-caption-sm: var(--fs-caption-sm);
+  --text-ui-nav: var(--fs-nav);
+  --text-ui-together: var(--fs-together);
+}
+
+/*
+ * 공통 반응형 단위(--u, tokens.css .app-scale). 등록된 <length> 로 선언하여
+ * 정의한 요소(.app-scale)에서 px 로 계산된 값이 하위로 상속된다(하위의 다른 container query 기준에 영향받지 않음).
+ * .app-scale 밖에서는 초기값 1px(시안 크기).
+ */
+@property --u {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 1px;
 }
 
 html,

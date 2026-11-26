@@ -104,19 +104,19 @@ function DatePickerBody({
         <button
           type="button"
           onClick={() => setMode(mode === "days" ? "years" : "days")}
-          className="flex min-h-11 items-center gap-1 text-[17px] font-semibold text-text-primary"
+          className="flex min-h-touch items-center gap-1 text-ui-section font-semibold text-text-primary"
           aria-expanded={mode !== "days"}
         >
           {view.year}년 {view.month}월
-          <ChevronDown size={18} className={cx("text-text-secondary transition-transform", mode !== "days" && "rotate-180")} aria-hidden="true" />
+          <ChevronDown className={cx("size-4.5 text-text-secondary transition-transform", mode !== "days" && "rotate-180")} aria-hidden="true" />
         </button>
         {mode === "days" && (
           <div className="flex">
-            <button type="button" aria-label="이전 달" disabled={!canPrev} onClick={() => move(-1)} className="flex h-11 w-11 items-center justify-center text-text-body disabled:text-icon-inactive">
-              <ChevronLeft size={22} aria-hidden="true" />
+            <button type="button" aria-label="이전 달" disabled={!canPrev} onClick={() => move(-1)} className="flex size-touch items-center justify-center text-text-body disabled:text-icon-inactive">
+              <ChevronLeft className="size-5.5" aria-hidden="true" />
             </button>
-            <button type="button" aria-label="다음 달" disabled={!canNext} onClick={() => move(1)} className="flex h-11 w-11 items-center justify-center text-text-body disabled:text-icon-inactive">
-              <ChevronRight size={22} aria-hidden="true" />
+            <button type="button" aria-label="다음 달" disabled={!canNext} onClick={() => move(1)} className="flex size-touch items-center justify-center text-text-body disabled:text-icon-inactive">
+              <ChevronRight className="size-5.5" aria-hidden="true" />
             </button>
           </div>
         )}
@@ -124,7 +124,7 @@ function DatePickerBody({
 
       {mode === "days" && (
         <div className="mt-3" role="grid" aria-label={`${view.year}년 ${view.month}월`}>
-          <div className="grid grid-cols-7 text-center text-[13px] text-text-secondary">
+          <div className="grid grid-cols-7 text-center text-ui-caption-sm text-text-secondary">
             {WEEKDAYS.map((w) => (
               <span key={w} className="py-2">
                 {w}
@@ -145,11 +145,11 @@ function DatePickerBody({
                   aria-pressed={isSelected}
                   aria-label={date}
                   onClick={() => setSelected(date)}
-                  className="flex h-11 items-center justify-center"
+                  className="flex h-touch items-center justify-center"
                 >
                   <span
                     className={cx(
-                      "flex h-10 w-10 items-center justify-center rounded-full text-[16px]",
+                      "flex size-10 items-center justify-center rounded-full text-ui-body",
                       isSelected && "bg-accent font-semibold text-surface",
                       !isSelected && disabled && "text-text-inactive/50",
                       !isSelected && !disabled && (isToday ? "font-semibold text-accent" : "text-text-body"),
@@ -165,7 +165,7 @@ function DatePickerBody({
       )}
 
       {mode === "years" && (
-        <div className="mt-3 grid max-h-[300px] grid-cols-4 gap-2 overflow-y-auto" role="listbox" aria-label="연도 선택">
+        <div className="mt-3 grid max-h-75 grid-cols-4 gap-2 overflow-y-auto" role="listbox" aria-label="연도 선택">
           {years.map((year) => (
             <button
               key={year}
@@ -176,7 +176,7 @@ function DatePickerBody({
                 setView({ year, month: year === maxParts.year ? Math.min(view.month, maxParts.month) : view.month });
                 setMode("months");
               }}
-              className={cx("h-11 rounded-xl text-[15px]", year === view.year ? "bg-accent font-semibold text-surface" : "bg-input text-text-body")}
+              className={cx("h-touch rounded-xl text-ui-body-sm", year === view.year ? "bg-accent font-semibold text-surface" : "bg-input text-text-body")}
             >
               {year}
             </button>
@@ -201,7 +201,7 @@ function DatePickerBody({
                   setMode("days");
                 }}
                 className={cx(
-                  "h-11 rounded-xl text-[15px] disabled:text-text-inactive/50",
+                  "h-touch rounded-xl text-ui-body-sm disabled:text-text-inactive/50",
                   month === view.month ? "bg-accent font-semibold text-surface" : "bg-input text-text-body",
                 )}
               >
@@ -212,7 +212,7 @@ function DatePickerBody({
         </div>
       )}
 
-      <div className="mt-6 flex flex-col gap-2 pb-[calc(env(safe-area-inset-bottom)+16px)]">
+      <div className="mt-6 flex flex-col gap-2 pb-[calc(env(safe-area-inset-bottom)+16*var(--u))]">
         <Button disabled={!selected || selected > max} onClick={() => selected && onConfirm(selected)}>
           {confirmLabel}
         </Button>

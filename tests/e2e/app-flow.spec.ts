@@ -142,6 +142,64 @@ test.describe("메인", () => {
     });
   }
 
+  test("공통 반응형 기준: 세 화면과 하단 메뉴가 같은 단위로 조절되고, 화면 전환 시 하단 메뉴 크기·위치가 같다", async ({ page }) => {
+    await onboard(page);
+    const read = () =>
+      page.evaluate(() => {
+        const box = (el: Element | null) => el!.getBoundingClientRect();
+        const nav = document.querySelector("[data-testid=bottom-navigation]")!;
+        const navButton = nav.querySelector("button")!;
+        const title = document.querySelector("[data-screen] h1:not(.sr-only)");
+        const circle = document.querySelector("[data-circle]");
+        return {
+          u: parseFloat(getComputedStyle(document.querySelector(".app-scale")!).getPropertyValue("--u")),
+          nav: { top: Math.round(box(nav).top), height: Math.round(box(nav).height), icon: Math.round(box(navButton.querySelector("svg")).width), buttonH: box(navButton).height, buttonW: box(navButton).width },
+          title: title ? parseFloat(getComputedStyle(title).fontSize) : null,
+          circle: circle ? box(circle).width : null,
+          frame: box(document.querySelector("[data-testid=app-frame]")).width,
+          scroll: document.documentElement.scrollHeight > window.innerHeight,
+        };
+      });
+    const goto = async (label: string) => {
+      await page.getByTestId("bottom-navigation").getByRole("button", { name: label }).click();
+      await page.waitForTimeout(300);
+      return read();
+    };
+    for (const viewport of [
+      { width: 320, height: 568 },
+      { width: 375, height: 667 },
+      { width: 390, height: 844 },
+      { width: 430, height: 932 },
+      { width: 860, height: 810 },
+    ]) {
+      await page.setViewportSize(viewport);
+      const settings = await goto("설정");
+      const home = await goto("메인");
+      const anniversary = await goto("기념일");
+      const u = home.u;
+      // 같은 viewport 에서 하단 메뉴는 화면과 무관하게 동일
+      expect(settings.nav).toEqual(home.nav);
+      expect(anniversary.nav).toEqual(home.nav);
+      // 모든 요소가 같은 공통 단위(--u)의 배수 (최소 크기 보장 포함)
+      expect(home.nav.height).toBeCloseTo(Math.max(48, 64 * u), 0);
+      expect(home.nav.icon).toBeCloseTo(22 * u, 0);
+      expect(home.circle!).toBeCloseTo(272 * u, 0);
+      expect(settings.title!).toBeCloseTo(Math.max(20, 28 * u), 1);
+      expect(anniversary.title).toBe(settings.title);
+      // 터치 영역 최소 44px, 문서 스크롤 없음
+      expect(home.nav.buttonH).toBeGreaterThanOrEqual(44);
+      expect(home.nav.buttonW).toBeGreaterThanOrEqual(44);
+      for (const m of [settings, home, anniversary]) expect(m.scroll).toBe(false);
+      expect(home.frame).toBeLessThanOrEqual(480);
+    }
+    // 시안 기준 기기(390×844)에서는 SKILL.md 크기 그대로
+    await page.setViewportSize({ width: 390, height: 844 });
+    const settings = await goto("설정");
+    const home = await goto("메인");
+    expect(home.u).toBe(1);
+    expect({ title: settings.title, circle: home.circle, navHeight: home.nav.height, navIcon: home.nav.icon }).toEqual({ title: 28, circle: 272, navHeight: 64, navIcon: 22 });
+  });
+
   test("기기 날짜가 시작일보다 이전이면 음수 대신 안내를 표시한다 (DATE-E05)", async ({ page }) => {
     await onboard(page);
     await page.clock.setFixedTime(new Date("2026-06-20T10:00:00+09:00"));
@@ -187,6 +245,45 @@ test.describe("자동 주년 당일", () => {
       await page.getByRole("button", { name: "메인" }).click();
       await page.waitForTimeout(500);
       await expect(page.getByTestId("celebration-canvas")).toHaveCount(0);
+      await page.reload();
+      await page.waitForTimeout(500);
+      await expect(page.getByTestId("celebration-canvas")).toHaveCount(0);
+    });
+  });
+});
+
+test.describe("100일 단위 자동 기념일 당일 (HOME-033)", () => {
+  test("일반 디데이 표시를 유지하고, 모션 감소 시 자동 재생 없이 원 터치로 꽃가루 재생", async ({ page }) => {
+    await onboard(page);
+    await page.clock.setFixedTime(new Date("2026-10-08T10:00:00+09:00")); // 1일 방식 100일
+    await page.reload();
+    await expect(page.getByTestId("dday-number")).toHaveText("100");
+    await expect(page.getByText("DAYS", { exact: true })).toBeVisible();
+    await expect(page.getByTestId("anniversary-label")).toHaveCount(0);
+    await page.waitForTimeout(500);
+    await expect(page.getByTestId("celebration-canvas")).toHaveCount(0);
+    await page.getByRole("button", { name: /축하 효과 다시 보기/ }).click();
+    await expect(page.getByTestId("celebration-canvas")).toHaveCount(1);
+  });
+
+  test("50일 등 100일 단위가 아닌 자동 기념일에는 꽃가루와 재생 버튼이 없다 (HOME-028)", async ({ page }) => {
+    await onboard(page);
+    await page.clock.setFixedTime(new Date("2026-08-19T10:00:00+09:00")); // 50일
+    await page.reload();
+    await expect(page.getByTestId("dday-number")).toHaveText("50");
+    await expect(page.getByRole("button", { name: /축하 효과 다시 보기/ })).toHaveCount(0);
+    await expect(page.getByTestId("celebration-canvas")).toHaveCount(0);
+  });
+
+  test.describe("모션 허용 환경", () => {
+    test.use({ reducedMotion: "no-preference" });
+
+    test("200일 당일 최초 진입 시 1회 자동 재생, 재실행 후 반복하지 않는다", async ({ page }) => {
+      await onboard(page);
+      await page.clock.setFixedTime(new Date("2027-01-16T10:00:00+09:00")); // 200일
+      await page.reload();
+      await expect(page.getByTestId("dday-number")).toHaveText("200");
+      await expect(page.getByTestId("celebration-canvas")).toHaveCount(1);
       await page.reload();
       await page.waitForTimeout(500);
       await expect(page.getByTestId("celebration-canvas")).toHaveCount(0);
