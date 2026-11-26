@@ -15,7 +15,7 @@ export function CoupleProfiles({ couple }: { couple: Couple }) {
   const person = (role: "self" | "partner", name: string, image: Photo | null | undefined) => (
     <div className="flex w-33 flex-col items-center gap-2">
       <ProfileAvatar role={role} photo={image} size={76} label={`${name} 프로필`} />
-      <p className="break-keep text-center text-ui-body font-semibold leading-snug text-text-primary" data-testid={`name-${role}`}>
+      <p className="w-full break-keep text-center [overflow-wrap:anywhere] text-ui-body font-semibold leading-snug text-text-primary" data-testid={`name-${role}`}>
         {name}
       </p>
     </div>

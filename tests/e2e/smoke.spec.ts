@@ -80,4 +80,7 @@ test("Service Worker가 앱 셸과 로컬 폰트를 precache 목록에 포함한
   const body = await res.text();
   for (const face of FONT_FACES) expect(body, face.file).toContain(face.file);
   expect(body).toMatch(/url:\s*"\/"/);
+  // manifest·탭 아이콘도 오프라인에서 제공 (TC-PWA-012)
+  expect(body).toMatch(/url:\s*"\/manifest\.webmanifest"/);
+  expect(body).toMatch(/url:\s*"\/icon\.svg"/);
 });

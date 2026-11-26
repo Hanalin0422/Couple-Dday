@@ -55,6 +55,8 @@ export function BackupSheet({ open, onClose, lastBackupAt }: { open: boolean; on
           커플 정보, 기념일, 사진과 메모를 ZIP 파일 하나로 저장해요.
           <br />
           백업 파일은 <strong className="font-semibold text-text-body">암호화되지 않으며</strong> 이름·사진·메모 같은 개인정보가 포함돼요. 안전한 곳에 보관해 주세요.
+          <br />
+          iPhone에서는 Safari와 홈 화면 앱의 데이터가 따로 저장될 수 있고, 저장 공간 정리 등으로 앱 데이터가 지워질 수 있어요. 주기적으로 백업해 주세요.
         </>
       }
       footer={

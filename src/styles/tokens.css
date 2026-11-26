@@ -112,7 +112,7 @@
   --button-h: max(44px, calc(56 * var(--u)));
   --control-h: max(44px, calc(52 * var(--u)));
   --row-h: max(44px, calc(52 * var(--u)));
-  --segment-h: max(44px, calc(48 * var(--u)));
+  --segment-h: max(52px, calc(52 * var(--u))); /* 안쪽 항목(패딩 4px×2 제외) ≥ 44px */
   --nav-h: max(48px, calc(64 * var(--u)));
 
   /* SKILL.md §4 타이포그래피 (최소 글자 크기 보장) */

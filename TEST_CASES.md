@@ -1,6 +1,6 @@
 # 커플 디데이 PWA — 테스트 케이스 명세
 
-- 버전: 0.7 (Phase 7 백업·복원·초기화 반영, 2026-11-26)
+- 버전: 0.8 (Phase 8 PWA·품질·시각 회귀 반영, 2026-11-26)
 - 기준 문서: `REQUIREMENTS.md` v1.1, `ARCHITECTURE.md` v1.1, `.agents/skills/dday-design/SKILL.md`
 - 역할: 요구사항 ID ↔ 테스트 케이스 추적, 자동화/수동/실기기 검증 기준. 구현과 함께 계속 보완한다.
 
@@ -106,7 +106,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-DATE-014 | DATE-002, DATE-003, DATE-005 | E | 온보딩과 설정에서 DatePicker 열기 | 동일 컴포넌트, 미래 날짜 비활성, 다음 달 이동 불가 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-DATE-015 | DATE-006 | E | DatePicker에서 날짜 변경 후 취소 | 기존 값 유지 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-DATE-016 | DATE-007, DATE-E06 | E | 23:59에 DatePicker를 열고 자정 경과(clock 조작) | 선택 가능 범위가 새 오늘로 갱신, 저장 직전 재검증 | 대기 |
-| TC-DATE-017 | DATE-E03, DATE-E04, HOME-009, PWA-009 | E | 앱 활성 상태에서 자정 경과 / `visibilitychange`·`pageshow`·`focus` 복귀 | 오늘 재조회, 디데이/진행률 갱신 | 대기 |
+| TC-DATE-017 | DATE-E03, DATE-E04, HOME-009, PWA-009 | E | 앱 활성 상태에서 자정 경과 / `visibilitychange`·`pageshow`·`focus` 복귀 | 오늘 재조회, 디데이/진행률 갱신 | 부분 통과 `tests/e2e/pwa-quality.spec.ts` (chromium, webkit): 자정 경과 갱신. 앱 복귀 이벤트 경로는 미검증 |
 | TC-DATE-018 | DATE-E05 | E | 기기 날짜를 시작일 이전으로 설정 후 실행, 다시 정상 날짜로 복귀 | 날짜 확인 안내, 음수 미표시, DB 변경 없음, 복귀 시 재계산 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 
 ### 3.3 자동 기념일
@@ -151,7 +151,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-HOME-021 | HOME-013, NAV-001 | E | 메인 하단 메뉴 | 중앙 하트 활성(accent), 텍스트 없음 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-HOME-022 | HOME-016, HOME-E16 | E | 1, 2, 10, 99주년 표시 | 숫자 Cormorant Garamond Italic, '주년' 마루 부리, 한 줄, 원 내부에서 잘림·줄바꿈·말줄임 없음 | 대기 |
 | TC-HOME-023 | HOME-029 | E | 일반일/주년 당일 레이아웃 비교 | 원 크기, 프로필 위치, 하단 메뉴 위치 동일 | 대기 |
-| TC-HOME-024 | HOME-E18 | E | 주년 당일 23:59:59 → 자정 경과 | 애니메이션 정리, 일반 디데이 디자인 복귀 | 대기 |
+| TC-HOME-024 | HOME-E18 | E | 주년 당일 23:59:59 → 자정 경과 | 애니메이션 정리, 일반 디데이 디자인 복귀 | 부분 통과 `tests/e2e/pwa-quality.spec.ts` (chromium, webkit): 일반 디자인 복귀. 모션 감소 조건이라 애니메이션 정리는 미확인 |
 
 ### 3.5 주년 축하 애니메이션
 
@@ -173,7 +173,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-CEL-014 | HOME-027, HOME-E24 | E | `reducedMotion: 'reduce'`로 주년 당일 진입 후 원형 터치 | 자동 재생 없음, 주년 디자인 유지, 터치 시 재생 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-CEL-015 | HOME-028 | U/E | 일반 날짜, 50일, 10·30일, 사용자 지정 기념일 당일 | 캔버스 애니메이션·재생 버튼 없음 | 통과 `tests/unit/domain/home-progress.test.ts`, `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-CEL-016 | HOME-E25 | E | Canvas `getContext`가 null을 반환하도록 주입 | 메인 정상 렌더링, 주년 디자인 표시 | 대기 |
-| TC-CEL-017 | HOME-030, HOME-E27, PWA-014 | E | SW 캐시 후 오프라인에서 주년 당일 | 주년 폰트·애니메이션 정상 | 대기 |
+| TC-CEL-017 | HOME-030, HOME-E27, PWA-014 | E | SW 캐시 후 오프라인에서 주년 당일 | 주년 폰트·애니메이션 정상 | 통과 `tests/e2e/pwa-quality.spec.ts` (chromium). WebKit 은 SW 오프라인 미지원으로 실기기 검증 |
 | TC-CEL-018 | HOME-032 | R | 코드 검토 | Audio/사운드 API 미사용 | 통과 (코드 검토: Audio API 미사용) |
 | TC-CEL-019 | HOME-025 | R | 입자 설정 검토 | 약 65개, 2~6px, 타원 꽃가루+4각 별빛, celebration 토큰 색상, 경과 시간 기반 프레임, devicePixelRatio 반영 | 통과 `tests/unit/home/celebration.test.ts`, 코드 검토 |
 | TC-CEL-020 | HOME-033 | U/E | 1일 방식 100일(2026-10-08)·200일(2027-01-16), 0일 방식 100일, 주년·8400일 중복 | 일반 디데이(숫자·DAYS) 유지, 최초 1회 자동 재생·재실행 시 반복 없음, 모션 감소 시 터치 재생, 주년과 겹치면 주년 | 통과 `tests/unit/domain/home-progress.test.ts`, `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
@@ -305,7 +305,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-DB-009 | NFR-010 | I | 신규 DB 기본값 | dayOffset=1, lastBackupAt=null, onboardingCompleted=false | 통과 `tests/integration/db/app-bootstrap.test.ts` |
 | TC-DB-010 | ARC-E01 | I | Zod 스키마로 각 엔티티 검증 | 유효/무효 픽스처 판정 | 통과 `tests/unit/application/entity-schemas.test.ts` |
 | TC-DB-011 | ARC-E01 | I | `useLiveQuery` 반영 | 커밋 후에만 UI 데이터 갱신, Optimistic Update 없음 | 대기 |
-| TC-DB-012 | PWA-E05 | E | 두 탭에서 동시 수정 | 최신 상태 반영, 충돌 안내 | 대기 |
+| TC-DB-012 | PWA-E05 | E | 두 탭에서 동시 수정 | 최신 상태 반영, 충돌 안내 | 통과 `tests/e2e/pwa-quality.spec.ts` (chromium, webkit) |
 
 ### 3.12 백업
 
@@ -377,14 +377,14 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-PWA-002 | SYS-005, PWA-003, PWA-004, PWA-014 | E | `/serwist/sw.js` precache 목록 | 앱 셸 `/`, 로컬 폰트 5종 포함, `Service-Worker-Allowed: /` | 통과 `tests/e2e/smoke.spec.ts` (chromium, webkit) |
 | TC-PWA-003 | PWA-004 | E | 페이지 로드 시 폰트 요청 | 동일 출처 `/fonts/*`만 요청, 5종 모두 로드 | 통과 `tests/e2e/smoke.spec.ts` (chromium, webkit) |
 | TC-PWA-004 | PWA-011, SYS-007 | E | `colorScheme: dark` 에뮬레이션 | 배경 `#FFF8FA` 유지 | 통과 `tests/e2e/smoke.spec.ts` (chromium, webkit) |
-| TC-PWA-005 | PWA-003, PWA-E01 | E | SW 활성화 후 오프라인 재실행 | 앱 셸·폰트·데이터 정상 | 대기 |
+| TC-PWA-005 | PWA-003, PWA-E01 | E | SW 활성화 후 오프라인 재실행 | 앱 셸·폰트·데이터 정상 | 통과 `tests/e2e/pwa-quality.spec.ts` (chromium). WebKit·실기기 미검증 |
 | TC-PWA-006 | PWA-E02 | E | 최초 캐싱 전 오프라인 | 실행 가능한 범위에서 연결 필요 안내 (앱 미로딩 시 보장 불가) | 대기 |
 | TC-PWA-007 | PWA-005 | E | 새 빌드 배포 후 SW 업데이트 | 개인 데이터 유지, 저장/복원/백업 중 강제 reload 없음 | 대기 |
 | TC-PWA-008 | PWA-006, PWA-010 | E/D | 다양한 뷰포트·Safe Area | 콘텐츠 가림 없음 | 대기 |
-| TC-PWA-009 | NFR-014 | I | `navigator.storage.persist` 지원/미지원 | 지원 시 요청, 실패해도 정상 동작, 영구 보존 보장 문구 없음 | 대기 |
+| TC-PWA-009 | NFR-014 | I | `navigator.storage.persist` 지원/미지원 | 지원 시 요청, 실패해도 정상 동작, 영구 보존 보장 문구 없음 | 통과 `tests/e2e/pwa-quality.spec.ts` (chromium, webkit), 코드 검토(보장 문구 없음) |
 | TC-PWA-010 | PWA-E06, PWA-E07 | D | iOS 저장소 삭제, Safari↔설치형 저장소 분리 | 백업/복원 안내로 복구 경로 제공 | 대기 |
 | TC-PWA-011 | PWA-015 | E | 앱 백그라운드 전환 | 실행 중 애니메이션 정리 (TC-CEL-013) | 대기 |
-| TC-PWA-012 | PWA-005 | R | manifest precache | Phase 8에서 `manifest.webmanifest` precache 포함 여부 확인 (현재 미포함) | 대기 |
+| TC-PWA-012 | PWA-005 | R | manifest precache | `manifest.webmanifest`·`icon.svg` precache 포함 | 통과 `tests/e2e/smoke.spec.ts` (manifest·icon.svg precache 포함) |
 
 ### 3.17 UI 및 디자인 일치 (SKILL.md)
 
@@ -398,10 +398,10 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-DSN-006 | NFR-011 | E | 주년 타이포그래피 | 주년 숫자 Cormorant Garamond Italic 88px 500(비례 축소 허용), '주년' MaruBuri 38px 400, HAPPY ANNIVERSARY 12px 400 자간 2px accent, 색 text-primary | 대기 |
 | TC-DSN-007 | NFR-011 | E | 원형 진행률 | 12시 시작 시계 방향, 둥근 끝, 시안 272×272/r121/트랙 5/진행 7 비례 | 대기 |
 | TC-DSN-008 | NFR-011 | R | 실제 iOS 상태바/홈 인디케이터를 HTML로 복제하지 않음, 임의 장식·버튼·메뉴 없음 | 위반 없음 | 대기 |
-| TC-DSN-009 | NFR-011, ARC-E02 | V | 일반 디데이 화면 (FX-TODAY, 모션 감소) | 승인 기준 이미지와 일치 | 대기 |
-| TC-DSN-010 | NFR-011, ARC-E02 | V | 1주년 / 2주년 / 10주년, 축하 효과 종료 후 | 승인 기준 이미지와 일치 (입자 비활성) | 대기 |
-| TC-DSN-011 | NFR-011, ARC-E02 | V | 온보딩 / 설정 / 기념일 화면 | 승인 기준 이미지와 일치 | 대기 |
-| TC-DSN-012 | NFR-011 | V | 긴 이름(10자), 사진 있음/없음 | 레이아웃 잘림 없음 | 대기 |
+| TC-DSN-009 | NFR-011, ARC-E02 | V | 일반 디데이 화면 (FX-TODAY, 모션 감소) | 승인 기준 이미지와 일치 | 기준 이미지 생성 `tests/e2e/visual.spec.ts` (chromium, webkit) — 사용자 승인 대기 |
+| TC-DSN-010 | NFR-011, ARC-E02 | V | 1주년 / 2주년 / 10주년, 축하 효과 종료 후 | 승인 기준 이미지와 일치 (입자 비활성) | 기준 이미지 생성 `tests/e2e/visual.spec.ts` (chromium, webkit) — 사용자 승인 대기 |
+| TC-DSN-011 | NFR-011, ARC-E02 | V | 온보딩 / 설정 / 기념일 화면 | 승인 기준 이미지와 일치 | 기준 이미지 생성 `tests/e2e/visual.spec.ts` (chromium, webkit) — 사용자 승인 대기 |
+| TC-DSN-012 | NFR-011 | V | 긴 이름(10자), 사진 있음/없음 | 레이아웃 잘림 없음 | 기준 이미지 생성 `tests/e2e/visual.spec.ts` (chromium, webkit) — 사용자 승인 대기 |
 | TC-DSN-013 | NFR-008, NFR-011, PWA-010 | E | 320×568~860×810에서 설정·메인·기념일 전환 | 같은 viewport에서 하단 메뉴 크기·위치 동일, 하단 메뉴 높이·아이콘·원·제목이 공통 단위(--u)의 배수, 터치 영역 ≥44px, 문서 스크롤 없음, 앱 폭 ≤480px, 390×844에서 SKILL.md 수치(제목 28, 원 272, 하단 메뉴 64, 아이콘 22) | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 
 ### 3.18 서비스 범위 및 비기능
@@ -409,12 +409,12 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | ID | 관련 요구사항 | 레벨 | 시나리오 / 입력 | 기대 결과 | 상태 |
 |---|---|---|---|---|---|
 | TC-SYS-001 | SYS-001, SYS-002, SYS-003, SYS-011 | R | 코드·의존성 검토 | 로그인/광고/계정/공유/동기화 코드 및 의존성 없음 | 통과 (Phase 0 의존성 검토) |
-| TC-SYS-002 | SYS-004, NFR-003, NFR-004 | E | 전체 흐름 중 네트워크 요청 감시 | 동일 출처 정적 리소스 외 요청 없음, 개인 데이터 전송 없음, 추적 스크립트 없음 | 대기 |
+| TC-SYS-002 | SYS-004, NFR-003, NFR-004 | E | 전체 흐름 중 네트워크 요청 감시 | 동일 출처 정적 리소스 외 요청 없음, 개인 데이터 전송 없음, 추적 스크립트 없음 | 통과 `tests/e2e/pwa-quality.spec.ts` (chromium, webkit) |
 | TC-SYS-003 | SYS-010 | I | 커플 레코드 2건 저장 시도 | 1건만 허용 (DB-001) | 통과 `tests/unit/application/entity-schemas.test.ts` |
 | TC-SYS-004 | SYS-012 | R | 디자인 변경 PR 검토 | SKILL.md 변경 및 사용자 승인 근거 존재 | 대기 |
 | TC-NFR-001 | NFR-001 | E | 실행 후 메인 표시 시간 | 로컬 조회 후 빠른 표시 (기준은 실기기 측정 후 확정) | 대기 |
-| TC-NFR-002 | NFR-005 | U/E | 이름·메모에 `<img src=x onerror=...>` 입력 | 텍스트로 표시, 스크립트 실행 없음, `dangerouslySetInnerHTML` 미사용 | 대기 |
-| TC-NFR-003 | NFR-008 | E | 주요 버튼·메뉴 | 터치 영역 44×44px 이상, 접근 가능한 이름, 키보드 포커스 | 대기 |
+| TC-NFR-002 | NFR-005 | U/E | 이름·메모에 `<img src=x onerror=...>` 입력 | 텍스트로 표시, 스크립트 실행 없음, `dangerouslySetInnerHTML` 미사용 | 통과 `tests/e2e/pwa-quality.spec.ts` (chromium, webkit), 코드 검토(`dangerouslySetInnerHTML` 미사용) |
+| TC-NFR-003 | NFR-008 | E | 주요 버튼·메뉴 | 터치 영역 44×44px 이상, 접근 가능한 이름, 키보드 포커스 | 부분 통과 `tests/e2e/pwa-quality.spec.ts` (chromium, webkit): 온보딩·메인·설정·기념일 터치 영역 44px. 접근 가능한 이름·키보드 포커스 전수 검사는 미실시 |
 | TC-NFR-004 | NFR-009 | E | 색상 대비 측정 | 결과 기록. 디자인 변경이 필요하면 승인 요청(임의 수정 금지) | 대기 |
 | TC-NFR-005 | NFR-012 | R | 요구사항 ID 추적 | 모든 요구사항 ID가 본 문서에 존재 | 통과 `tests/unit/traceability.test.ts` |
 | TC-NFR-006 | NFR-013 | D | 실기기 검증 | §5 체크리스트 수행 | 대기 |
@@ -502,3 +502,4 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | 2026-11-26 | `npm run verify`, `npx playwright test --repeat-each=2` | 통과 286/286, E2E 208/208 | 추억 저장 흐름 개편(메모만·저장 한 번·보기 화면 삭제/닫기), 개발 모드 사진 깨짐 수정(객체 URL 캐시) — 개발 서버에서 편집·보기·카드 이미지 정상 확인 |
 | 2026-11-26 | `npx playwright test` | 통과 104/104 | 버튼 색을 종류(variant)로 고정: 추억 보기 "삭제" 글씨 대비 1.15→3.77:1, "수정" 강조색 적용 |
 | 2026-11-26 | `npm run verify`, `npx playwright test --repeat-each=2` (Phase 7) | 통과 306/306, E2E 232/232 | 백업·복원(악성 ZIP 13종 차단 포함)·초기화. 온보딩 복원 revision 경쟁 버그 수정 |
+| 2026-11-26 | `npm run verify`, `npx playwright test --repeat-each=2` (Phase 8) | 통과 306/306, E2E 286 통과·2 skip(WebKit SW 오프라인) | 오프라인·자정·여러 탭·외부 요청·XSS·터치 영역·시각 회귀 기준 이미지 18장. 세그먼트 터치 영역·긴 이름 겹침 수정 |

@@ -684,6 +684,15 @@ couple/settings는 객체, 나머지 JSON은 배열. photos.json은 Photo에서 
 - 실제 iPhone에서 주년 애니메이션의 프레임 성능, 발열, 메모리 사용량 및 오프라인 실행을 검증한다.
 - 백그라운드에서 애니메이션을 지속 실행하지 않는다.
 
+### 13.1 구현 노트 (Phase 8, 2026-11-26)
+
+- precache: Next 빌드 산출물 + `/`·`/manifest.webmanifest`·`/icon.svg`(git HEAD 기반 revision) + `public/` 폰트·아이콘. Chromium E2E에서 SW 제어 후 오프라인 재실행 시 앱 셸·폰트 3종·데이터·주년 표시·축하 Canvas 동작 확인. Playwright WebKit(Linux)은 SW 오프라인 제어를 지원하지 않아 실기기 검증으로 남긴다.
+- 업데이트: `skipWaiting`/`clientsClaim` 미사용 → 새 SW는 열린 화면이 모두 닫힌 뒤 다음 실행에서 활성화(저장·복원·백업 중 교체·강제 reload 없음). `reloadOnOnline=false`. 앱 복귀(`visibilitychange`) 시 최대 30분 간격으로 `registration.update()` 호출. 업데이트 안내 UI는 두지 않음(명세 없음).
+- 저장소 지속성: 앱(메인 진입) 마운트 시 `navigator.storage.persist()` 요청(`src/infrastructure/browser/storage-persistence.ts`), 결과는 UI에 노출하지 않고 보장 표현 금지. iOS 저장소 유실·Safari/설치형 분리 안내는 데이터 백업 Sheet 설명에 포함.
+- 시각 회귀: `tests/e2e/visual.spec.ts`(고정 날짜, 가상 데이터, 모션 감소, CSS 애니메이션 비활성, 축하 Canvas mask). 기준 이미지 `tests/e2e/visual.spec.ts-snapshots/`(프로젝트·OS별 파일)는 사용자 승인 후 확정.
+- 터치 영역: SegmentedControl 높이 토큰 `--segment-h`를 `max(52px, 52u)`로 조정(안쪽 항목 44px 확보, NFR-008).
+- 메인 프로필 이름: 띄어쓰기 없는 긴 이름이 칸을 넘지 않도록 넘칠 때만 줄바꿈(`overflow-wrap:anywhere`, 말줄임 없음).
+
 ## 14. 프로젝트 구조
 
 ```text

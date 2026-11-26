@@ -13,6 +13,7 @@ import { SettingsScreen } from "@/features/settings/SettingsScreen";
 import { useAppBootstrap } from "@/hooks/useAppBootstrap";
 import { DatabaseProvider, useCouple, useSettings } from "@/hooks/useDatabase";
 import { useLocalDateWatcher } from "@/hooks/useLocalDateWatcher";
+import { requestPersistentStorage } from "@/infrastructure/browser/storage-persistence";
 import { useDateStore } from "@/stores/date-store";
 import { useNavigationStore } from "@/stores/navigation-store";
 import { AppFrame } from "./AppFrame";
@@ -58,6 +59,10 @@ function ReadyApp({ onDataMissing }: { onDataMissing: () => Promise<void> }) {
   const resetNavigation = useNavigationStore((s) => s.reset);
 
   useEffect(() => resetNavigation(), [resetNavigation]);
+  // 커플 데이터가 생긴 뒤 저장소 영구 보존을 요청한다(지원 시, 보장 아님 — NFR-014)
+  useEffect(() => {
+    void requestPersistentStorage();
+  }, []);
 
   // 다른 탭의 초기화 등으로 완료 데이터가 사라지면 시작 상태를 다시 판정한다.
   const missing = couple === null || settings === null || settings?.onboardingCompleted === false;
