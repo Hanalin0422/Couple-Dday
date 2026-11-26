@@ -1,6 +1,6 @@
 # 커플 디데이 PWA — 테스트 케이스 명세
 
-- 버전: 0.6 (Phase 6 추억 사진·메모 반영, 2026-11-26)
+- 버전: 0.7 (Phase 7 백업·복원·초기화 반영, 2026-11-26)
 - 기준 문서: `REQUIREMENTS.md` v1.1, `ARCHITECTURE.md` v1.1, `.agents/skills/dday-design/SKILL.md`
 - 역할: 요구사항 ID ↔ 테스트 케이스 추적, 자동화/수동/실기기 검증 기준. 구현과 함께 계속 보완한다.
 
@@ -162,7 +162,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-CEL-003 | HOME-E29 | I | localStorage 접근 시 예외 발생 | 앱 오류 없음, 같은 실행 세션에서 재자동재생 없음, 주년 디자인 유지 | 통과 `tests/unit/home/celebration.test.ts` |
 | TC-CEL-004 | HOME-024 | I | 수동 재생 후 이력 확인 | 자동 재생 이력 변경 없음 | 통과 `tests/unit/home/celebration.test.ts` |
 | TC-CEL-005 | RST-006 | I | 전체 초기화 | `couple-dday:celebration:last-auto-played` 키 제거 | 대기 |
-| TC-CEL-006 | BAK-001 | I | 백업 생성 | 축하 재생 이력 미포함 | 대기 |
+| TC-CEL-006 | BAK-001 | I | 백업 생성 | 축하 재생 이력 미포함 | 통과 `tests/integration/backup/backup.test.ts` |
 | TC-CEL-007 | HOME-E22 | I | 재생 중 다시 재생 요청 | 이전 rAF 취소 후 1개 루프만 실행 | 대기 |
 | TC-CEL-008 | HOME-025 | U | 입자 모델 15초 진행 | 15초 동안 화면에 입자가 계속 보이고, 종료 구간에서 투명도 감소 후 15초에 모두 종료 | 통과 `tests/unit/home/celebration.test.ts` |
 | TC-CEL-009 | HOME-022 | E | 주년 당일 최초 메인 진입 | 오버레이 캔버스 재생 시작 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
@@ -194,8 +194,8 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-ONB-010 | ONB-E06 | I | draft 저장 실패 주입 | 오류 안내, 현재 입력 유지 | 대기 |
 | TC-ONB-011 | ONB-013 | I | 완료 / 복원 성공 | draft 제거 | 통과 `tests/integration/services/onboarding-settings.test.ts` |
 | TC-ONB-012 | ONB-004, ONB-E03 | E | 사진 선택 취소 | 기본 이미지 또는 기존 선택 유지 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
-| TC-ONB-013 | ONB-010, RES-007 | E | "기존 데이터 복원하기" | 복원 흐름 진입 | 대기 |
-| TC-ONB-014 | ONB-E08 | E | 온보딩 복원 취소/실패 | 기존 임시 입력 유지 | 대기 |
+| TC-ONB-013 | ONB-010, RES-007 | E | "기존 데이터 복원하기" | 복원 흐름 진입 | 통과 `tests/e2e/backup.spec.ts` (chromium, webkit) |
+| TC-ONB-014 | ONB-E08 | E | 온보딩 복원 취소/실패 | 기존 임시 입력 유지 | 통과 `tests/e2e/backup.spec.ts` (chromium, webkit) |
 | TC-ONB-015 | ONB-011 | E | 온보딩 화면 | 하단 내비게이션 없음 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-ONB-016 | ONB-E09 | E | 완료 후 재실행, 설정 변경, 프로필 삭제 | 온보딩 재표시 없음 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 
@@ -269,7 +269,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-MEM-020 | MEM-016 | E | 사진 등록 Sheet | 손잡이, 기념일명, "소중한 순간을 남겨보세요", 안내, "사진 선택하기", "다음에" 순서 | 통과 `tests/e2e/memories.spec.ts` (chromium, webkit) |
 | TC-MEM-021 | MEM-E01 | E | 파일 선택 취소 | 상태 변경 없음 | 대기 |
 | TC-MEM-022 | MEM-E12 | E | 사진 없는 기록 | 예시 사진 미표시 | 대기 |
-| TC-MEM-023 | MEM-008 | I | 백업→복원 왕복 | 사진·메모·대표·순서 동일 (TC-RES-001과 함께) | 대기 |
+| TC-MEM-023 | MEM-008 | I | 백업→복원 왕복 | 사진·메모·대표·순서 동일 (TC-RES-001과 함께) | 통과 `tests/integration/backup/backup.test.ts` |
 | TC-MEM-024 | NFR-002 | I | 썸네일 표시/해제 | 사용 종료 시 revokeObjectURL 호출 | 통과 `tests/unit/hooks/object-url-cache.test.ts` |
 | TC-MEM-025 | ARC-B08, MEM-007 | I/E | 사진을 이미지 바이트(ArrayBuffer)+mimeType으로 저장·조회, WebKit(임시 세션)에서 프로필 사진 저장·표시 | Blob 저장 실패 없이 저장·재조회·표시 | 통과 `tests/integration/db/database.test.ts`, `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 
@@ -288,7 +288,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-SET-009 | SET-008, SET-009, SET-010 | E | 설정 데이터 관리 카드 | 데이터 백업 / 데이터 복원 / 데이터 초기화(danger) 순서 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-SET-010 | SET-011 | E | 화면 꾸미기 카드 | 테마 `Dusty Rose` 표시, 추가 테마 선택 없음 (행 조작 여부 보류) | 대기 |
 | TC-SET-011 | SET-012 | E | 설정 스크롤 | 콘텐츠만 스크롤, 하단 메뉴 고정 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
-| TC-SET-012 | SET-013, ARC-D01 | E | 백업 성공 후 / 복원 후 | 마지막 백업 일시 표시(상세 배치 보류), 복원 후 백업 생성 일시 | 대기 |
+| TC-SET-012 | SET-013, ARC-D01 | E | 백업 성공 후 / 복원 후 | 마지막 백업 일시 표시(상세 배치 보류), 복원 후 백업 생성 일시 | 통과 `tests/e2e/backup.spec.ts` (chromium, webkit) |
 
 ### 3.11 데이터베이스 및 무결성
 
@@ -311,43 +311,43 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 
 | ID | 관련 요구사항 | 레벨 | 시나리오 / 입력 | 기대 결과 | 상태 |
 |---|---|---|---|---|---|
-| TC-BAK-001 | BAK-001, BAK-002, BAK-003, BAK-004, BAK-005, BAK-006 | I | 전체 데이터 백업 생성 | §10 구조의 ZIP, 모든 JSON·이미지 포함, 예외/tombstone 포함 | 대기 |
-| TC-BAK-002 | BAK-007, BAK-008 | I | manifest | format, formatVersion 1, databaseVersion, createdAt(UTC), encrypted=false, counts 일치 | 대기 |
-| TC-BAK-003 | BAK-001 | I | 제외 항목 | 자동 기념일 목록, draft, 앱 캐시, 축하 재생 이력 미포함 | 대기 |
-| TC-BAK-004 | BAK-010 | I | ZIP 생성 실패 주입 | DB 변경 없음, lastBackupAt 유지 | 대기 |
-| TC-BAK-005 | BAK-012, ARC-D04 | I | 공유 취소 / 공유 완료 / 다운로드 | 취소 시 유지, 성공 시 파일 생성 일시로 갱신 | 대기 |
+| TC-BAK-001 | BAK-001, BAK-002, BAK-003, BAK-004, BAK-005, BAK-006 | I | 전체 데이터 백업 생성 | §10 구조의 ZIP, 모든 JSON·이미지 포함, 예외/tombstone 포함 | 통과 `tests/integration/backup/backup.test.ts` |
+| TC-BAK-002 | BAK-007, BAK-008 | I | manifest | format, formatVersion 1, databaseVersion, createdAt(UTC), encrypted=false, counts 일치 | 통과 `tests/integration/backup/backup.test.ts` |
+| TC-BAK-003 | BAK-001 | I | 제외 항목 | 자동 기념일 목록, draft, 앱 캐시, 축하 재생 이력 미포함 | 통과 `tests/integration/backup/backup.test.ts` |
+| TC-BAK-004 | BAK-010 | I | ZIP 생성 실패 주입 | DB 변경 없음, lastBackupAt 유지 | 통과 `tests/integration/backup/backup.test.ts` |
+| TC-BAK-005 | BAK-012, ARC-D04 | I | 공유 취소 / 공유 완료 / 다운로드 | 취소 시 유지, 성공 시 파일 생성 일시로 갱신 | 통과 `tests/integration/backup/backup.test.ts`, `tests/e2e/backup.spec.ts` (chromium, webkit) (다운로드 경로; 공유 시트는 실기기) |
 | TC-BAK-006 | ARC-D03 | I | 해제 총량이 256MiB를 넘는 데이터 | 백업 성공 처리하지 않음, 오류 안내, 데이터 삭제 없음 | 대기 |
-| TC-BAK-007 | BAK-011 | E | 백업 시작 | 암호화 없음·개인정보/사진 포함 사전 안내 | 대기 |
+| TC-BAK-007 | BAK-011 | E | 백업 시작 | 암호화 없음·개인정보/사진 포함 사전 안내 | 통과 `tests/e2e/backup.spec.ts` (chromium, webkit) |
 | TC-BAK-008 | BAK-009 | E | 오프라인 백업 | 생성 가능 | 대기 |
-| TC-BAK-009 | BAK-012 | I | 백업 중 다른 탭에서 초기화(revision 변경) | 오래된 백업 완료가 새 데이터 이력을 덮어쓰지 않음 | 대기 |
+| TC-BAK-009 | BAK-012 | I | 백업 중 다른 탭에서 초기화(revision 변경) | 오래된 백업 완료가 새 데이터 이력을 덮어쓰지 않음 | 통과 `tests/integration/backup/backup.test.ts` |
 
 ### 3.13 복원
 
 | ID | 관련 요구사항 | 레벨 | 시나리오 / 입력 | 기대 결과 | 상태 |
 |---|---|---|---|---|---|
-| TC-RES-001 | RES-001, RES-002, RES-005, MEM-008 | I | 백업→초기화→복원 왕복 | 모든 기록·ID·사진 해시 동일 | 대기 |
-| TC-RES-002 | RES-003, RES-E04 | I | formatVersion 2, databaseVersion 미지원 | 호환성 오류, 기존 데이터 유지 | 대기 |
-| TC-RES-003 | RES-E01 | I | ZIP 아님 / 잘린 ZIP | 거부 | 대기 |
-| TC-RES-004 | RES-E02 | I | 필수 JSON 누락 / JSON 문법 오류 / Zod 위반 | 거부 | 대기 |
-| TC-RES-005 | RES-E03 | I | 이미지 누락, 고아 참조, ID 충돌, contentHash 불일치, 대표/순서 위반 | 거부. 동일 이름·날짜는 충돌 아님 | 대기 |
-| TC-RES-006 | RES-E05, ARC-D03 | I | 압축 폭탄(실제 해제 256MiB 초과), `../` 경로, 절대 경로, 중복 경로, 과다 파일, 중첩 아카이브, 암호화 엔트리, 예상 외 엔트리 | 검증 단계에서 차단, 트랜잭션 진입 없음 | 대기 |
-| TC-RES-007 | RES-E09, ARC-D02 | I | 백업 시작일이 기기 오늘보다 미래 | 복원 차단, 날짜 확인 안내 | 대기 |
-| TC-RES-008 | RES-E06, RES-006 | I | 교체 트랜잭션 실패/Quota 주입 | 기존 데이터 유지 | 대기 |
-| TC-RES-009 | RES-004, RES-E07 | E | 교체 확인 취소 / 파일 선택 취소 | 변경 없음, 백업 권장 안내 표시 | 대기 |
-| TC-RES-010 | RES-008, RES-009 | E | 복원 성공 | 메인 이동, 현재 날짜 기준 재계산 | 대기 |
-| TC-RES-011 | RES-010, BTS-015 | E | 복원 중 재실행/닫기 시도 | 차단 | 대기 |
-| TC-RES-012 | RES-E08 | I | 커밋 전 중단 / 커밋 후 | 기존 데이터 유지 / 완전한 복원 데이터만 존재 | 대기 |
-| TC-RES-013 | ARC-D01 | I | 복원 후 settings | lastBackupAt = manifest.createdAt, 로컬 revision 증가(백업 revision 미사용), draft 제거 | 대기 |
+| TC-RES-001 | RES-001, RES-002, RES-005, MEM-008 | I | 백업→초기화→복원 왕복 | 모든 기록·ID·사진 해시 동일 | 통과 `tests/integration/backup/backup.test.ts` |
+| TC-RES-002 | RES-003, RES-E04 | I | formatVersion 2, databaseVersion 미지원 | 호환성 오류, 기존 데이터 유지 | 통과 `tests/integration/backup/backup.test.ts` |
+| TC-RES-003 | RES-E01 | I | ZIP 아님 / 잘린 ZIP | 거부 | 통과 `tests/integration/backup/backup.test.ts` |
+| TC-RES-004 | RES-E02 | I | 필수 JSON 누락 / JSON 문법 오류 / Zod 위반 | 거부 | 통과 `tests/integration/backup/backup.test.ts` |
+| TC-RES-005 | RES-E03 | I | 이미지 누락, 고아 참조, ID 충돌, contentHash 불일치, 대표/순서 위반 | 거부. 동일 이름·날짜는 충돌 아님 | 통과 `tests/integration/backup/backup.test.ts` |
+| TC-RES-006 | RES-E05, ARC-D03 | I | 압축 폭탄(실제 해제 256MiB 초과), `../` 경로, 절대 경로, 중복 경로, 과다 파일, 중첩 아카이브, 암호화 엔트리, 예상 외 엔트리 | 검증 단계에서 차단, 트랜잭션 진입 없음 | 통과 `tests/integration/backup/backup.test.ts` |
+| TC-RES-007 | RES-E09, ARC-D02 | I | 백업 시작일이 기기 오늘보다 미래 | 복원 차단, 날짜 확인 안내 | 통과 `tests/integration/backup/backup.test.ts` |
+| TC-RES-008 | RES-E06, RES-006 | I | 교체 트랜잭션 실패/Quota 주입 | 기존 데이터 유지 | 통과 `tests/integration/backup/backup.test.ts` |
+| TC-RES-009 | RES-004, RES-E07 | E | 교체 확인 취소 / 파일 선택 취소 | 변경 없음, 백업 권장 안내 표시 | 통과 `tests/e2e/backup.spec.ts` (chromium, webkit) |
+| TC-RES-010 | RES-008, RES-009 | E | 복원 성공 | 메인 이동, 현재 날짜 기준 재계산 | 통과 `tests/e2e/backup.spec.ts` (chromium, webkit) |
+| TC-RES-011 | RES-010, BTS-015 | E | 복원 중 재실행/닫기 시도 | 차단 | 통과 `tests/e2e/backup.spec.ts` (chromium, webkit) |
+| TC-RES-012 | RES-E08 | I | 커밋 전 중단 / 커밋 후 | 기존 데이터 유지 / 완전한 복원 데이터만 존재 | 통과 `tests/integration/backup/backup.test.ts` |
+| TC-RES-013 | ARC-D01 | I | 복원 후 settings | lastBackupAt = manifest.createdAt, 로컬 revision 증가(백업 revision 미사용), draft 제거 | 통과 `tests/integration/backup/backup.test.ts` |
 | TC-RES-014 | ARC-A01 | I | 시작일 이전 사용자 지정 기록이 있는 백업 | 허용 | 대기 |
 
 ### 3.14 전체 데이터 초기화
 
 | ID | 관련 요구사항 | 레벨 | 시나리오 / 입력 | 기대 결과 | 상태 |
 |---|---|---|---|---|---|
-| TC-RST-001 | RST-001, RST-002, RST-003, RST-004, RST-005, RST-006 | I | 전체 초기화 | 개인 데이터·예외·사진·draft 삭제, 기본 settings 재생성(내부 revision 유지·증가), lastBackupAt=null | 대기 |
-| TC-RST-002 | RST-009 | I | 초기화 트랜잭션 실패 주입 | 기존 데이터 유지, 오류 안내 | 대기 |
-| TC-RST-003 | RST-007 | E | 초기화 진입 | 확인 및 백업 권장 안내, 취소 시 변경 없음 | 대기 |
-| TC-RST-004 | RST-008 | E | 초기화 성공 | 온보딩 이동 | 대기 |
+| TC-RST-001 | RST-001, RST-002, RST-003, RST-004, RST-005, RST-006 | I | 전체 초기화 | 개인 데이터·예외·사진·draft 삭제, 기본 settings 재생성(내부 revision 유지·증가), lastBackupAt=null | 통과 `tests/integration/backup/backup.test.ts` |
+| TC-RST-002 | RST-009 | I | 초기화 트랜잭션 실패 주입 | 기존 데이터 유지, 오류 안내 | 통과 `tests/integration/backup/backup.test.ts` |
+| TC-RST-003 | RST-007 | E | 초기화 진입 | 확인 및 백업 권장 안내, 취소 시 변경 없음 | 통과 `tests/e2e/backup.spec.ts` (chromium, webkit) |
+| TC-RST-004 | RST-008 | E | 초기화 성공 | 온보딩 이동 | 통과 `tests/e2e/backup.spec.ts` (chromium, webkit) |
 | TC-RST-005 | RST-001 | E | 초기화 후 SW 캐시 | 앱 리소스 캐시 유지(오프라인 실행 가능) | 대기 |
 
 ### 3.15 공통 Bottom Sheet 및 화면 이동
@@ -501,3 +501,4 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | 2026-11-26 | `npm run verify`, `npx playwright test --repeat-each=2` (Phase 6) | 통과 284/284, E2E 200/200 | 추억 사진·메모·대표·순서, 부분 실패, EXIF 제거, 미래 제한 |
 | 2026-11-26 | `npm run verify`, `npx playwright test --repeat-each=2` | 통과 286/286, E2E 208/208 | 추억 저장 흐름 개편(메모만·저장 한 번·보기 화면 삭제/닫기), 개발 모드 사진 깨짐 수정(객체 URL 캐시) — 개발 서버에서 편집·보기·카드 이미지 정상 확인 |
 | 2026-11-26 | `npx playwright test` | 통과 104/104 | 버튼 색을 종류(variant)로 고정: 추억 보기 "삭제" 글씨 대비 1.15→3.77:1, "수정" 강조색 적용 |
+| 2026-11-26 | `npm run verify`, `npx playwright test --repeat-each=2` (Phase 7) | 통과 306/306, E2E 232/232 | 백업·복원(악성 ZIP 13종 차단 포함)·초기화. 온보딩 복원 revision 경쟁 버그 수정 |

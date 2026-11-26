@@ -3,3 +3,6 @@
  * 사용자 확정(2026-11-26): "D-Day".
  */
 export const APP_NAME = "D-Day";
+
+/** 백업 manifest 에 기록하는 앱 버전 (ARCHITECTURE.md §10). */
+export const APP_VERSION = "0.1.0";

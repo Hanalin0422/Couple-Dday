@@ -12,6 +12,11 @@ import { createCelebrationHistory } from "../utils/celebration-history";
 
 const history = createCelebrationHistory(createLocalStorage());
 
+/** 전체 데이터 초기화 시 축하 효과 자동 재생 이력도 제거한다 (ARCHITECTURE.md §8, RST-006). */
+export function clearCelebrationHistory(): void {
+  history.clear();
+}
+
 export function useCelebration({ active, targetId, reducedMotion }: { active: boolean; targetId: string | null; reducedMotion: boolean }) {
   const [run, setRun] = useState<{ id: number; target: string } | null>(null);
 

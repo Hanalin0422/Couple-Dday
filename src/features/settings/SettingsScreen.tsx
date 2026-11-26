@@ -4,7 +4,7 @@
  * 설정 화면 (SKILL.md §8, REQUIREMENTS.md §10 SET-001~014).
  * 카드 순서: 프로필 및 정보 → 디데이 설정 → 화면 꾸미기 → 데이터 관리. 콘텐츠만 스크롤, 하단 메뉴 고정.
  * 항목별 저장, DB 커밋 성공 후 반영. 편집을 연 시점의 revision 으로 저장하여 다른 탭의 변경을 덮어쓰지 않는다.
- * 데이터 백업/복원/초기화 동작은 Phase 7, 테마 행 조작 여부는 사용자 확인 후 연결한다.
+ * 데이터 백업/복원/초기화(SET-008~010, SET-013)는 features/backup 의 Sheet 를 사용한다. 테마 행 조작 여부는 사용자 확인 후 연결한다.
  */
 import { useRef, useState } from "react";
 import { Download, Palette, Trash2, Upload } from "lucide-react";
@@ -27,6 +27,9 @@ import { Button, Card, MenuRow, PageHeader, SegmentedControl } from "@/component
 import { ProfileAvatar } from "@/components/ui/ProfileAvatar";
 import { TextField } from "@/components/ui/TextField";
 import { useDatabase, usePhoto } from "@/hooks/useDatabase";
+import { useNavigationStore } from "@/stores/navigation-store";
+import { useTimelineStore } from "@/stores/timeline-store";
+import { BackupSheet, formatBackupTime, ResetSheet, RestoreSheet } from "../backup/DataSheets";
 import { DAY_OFFSET_OPTIONS } from "../onboarding/OnboardingScreen";
 
 type Editing =
@@ -35,12 +38,17 @@ type Editing =
   | { kind: "start-date-pick"; revision: number }
   | { kind: "start-date-confirm"; date: LocalDate; revision: number }
   | { kind: "offset"; value: DayOffset; revision: number }
+  | { kind: "backup" }
+  | { kind: "restore"; revision: number }
+  | { kind: "reset"; revision: number }
   | null;
 
 export function SettingsScreen({ couple, settings, today }: { couple: Couple; settings: Settings; today: LocalDate }) {
   const db = useDatabase();
   const [editing, setEditing] = useState<Editing>(null);
   const close = () => setEditing(null);
+  const resetNavigation = useNavigationStore((s) => s.reset);
+  const resetTimeline = useTimelineStore((s) => s.reset);
   const myPhoto = usePhoto(couple.myPhotoId);
   const partnerPhoto = usePhoto(couple.partnerPhotoId);
   const roleName = (role: ProfileRole) => (role === "self" ? "내" : "상대방");
@@ -104,13 +112,46 @@ export function SettingsScreen({ couple, settings, today }: { couple: Couple; se
 
           <Card>
             <h2 className="mb-2 text-ui-section font-semibold text-text-primary">데이터 관리</h2>
-            <MenuRow label="데이터 백업" icon={<Download className="size-5 text-text-secondary" aria-hidden="true" />} />
-            <MenuRow label="데이터 복원" icon={<Upload className="size-5 text-text-secondary" aria-hidden="true" />} />
-            <MenuRow label="데이터 초기화" tone="danger" icon={<Trash2 className="size-5 text-danger" aria-hidden="true" />} />
+            <MenuRow
+              label="데이터 백업"
+              value={settings.lastBackupAt ? formatBackupTime(settings.lastBackupAt).slice(0, 10) : undefined}
+              icon={<Download className="size-5 text-text-secondary" aria-hidden="true" />}
+              onClick={() => setEditing({ kind: "backup" })}
+            />
+            <MenuRow label="데이터 복원" icon={<Upload className="size-5 text-text-secondary" aria-hidden="true" />} onClick={() => setEditing({ kind: "restore", revision: settings.revision })} />
+            <MenuRow
+              label="데이터 초기화"
+              tone="danger"
+              icon={<Trash2 className="size-5 text-danger" aria-hidden="true" />}
+              onClick={() => setEditing({ kind: "reset", revision: settings.revision })}
+            />
           </Card>
         </div>
       </div>
 
+      <BackupSheet open={editing?.kind === "backup"} onClose={close} lastBackupAt={settings.lastBackupAt} />
+      <RestoreSheet
+        open={editing?.kind === "restore"}
+        onClose={close}
+        today={today}
+        revision={editing?.kind === "restore" ? editing.revision : settings.revision}
+        hasCurrentData
+        onRestored={() => {
+          // 복원 성공 후 메인으로 이동 (RES-008)
+          resetNavigation();
+          resetTimeline();
+        }}
+      />
+      <ResetSheet
+        open={editing?.kind === "reset"}
+        onClose={close}
+        revision={editing?.kind === "reset" ? editing.revision : settings.revision}
+        onReset={() => {
+          // 커플 데이터가 사라지면 앱이 시작 상태를 다시 판정해 온보딩으로 이동한다 (RST-008)
+          resetNavigation();
+          resetTimeline();
+        }}
+      />
       <NameSheet
         key={editing?.kind === "name" ? `name-${editing.role}` : "name"}
         open={editing?.kind === "name"}

@@ -25,6 +25,7 @@ import { Button, SegmentedControl } from "@/components/ui/primitives";
 import { ProfileAvatar } from "@/components/ui/ProfileAvatar";
 import { TextField } from "@/components/ui/TextField";
 import { useDatabase } from "@/hooks/useDatabase";
+import { RestoreSheet } from "../backup/DataSheets";
 
 export const DAY_OFFSET_OPTIONS = [
   { value: 0 as DayOffset, label: "0일부터" },
@@ -61,6 +62,7 @@ export function OnboardingScreen({
   const touched = useRef(false);
   const fileInput = useRef<ImageFileInputHandle>(null);
   const pickingRole = useRef<"self" | "partner">("self");
+  const [restoreRevision, setRestoreRevision] = useState<number | null>(null);
 
   const issues = useMemo(() => validateOnboardingInput(form, today), [form, today]);
   const canSubmit = !hasIssues(issues) && !submitting;
@@ -71,9 +73,15 @@ export function OnboardingScreen({
   };
 
   // 입력 변경 후 잠시 뒤 임시 저장 (ONB-012). 저장은 순서대로 직렬 처리한다.
+  // 복원 Sheet 가 열려 있는 동안에는 자동 저장을 멈춘다(복원 트랜잭션과 revision 이 엇갈리지 않도록).
+  const pendingSave = useRef<(() => void) | null>(null);
   useEffect(() => {
-    if (!touched.current) return;
-    const timer = setTimeout(() => {
+    if (!touched.current || restoreRevision !== null) return;
+    let done = false;
+    const save = () => {
+      if (done) return; // 수동 실행 후 타이머가 다시 실행해도 한 번만 저장
+      done = true;
+      pendingSave.current = null;
       queue.current = queue.current.then(async () => {
         try {
           revision.current = await saveOnboardingDraft(db, form, { expectedRevision: revision.current });
@@ -82,9 +90,14 @@ export function OnboardingScreen({
           setNotice("입력 내용을 임시 저장하지 못했어요. 입력은 화면에 그대로 남아 있어요.");
         }
       });
-    }, AUTOSAVE_DELAY_MS);
-    return () => clearTimeout(timer);
-  }, [db, form]);
+    };
+    pendingSave.current = save;
+    const timer = setTimeout(save, AUTOSAVE_DELAY_MS);
+    return () => {
+      clearTimeout(timer);
+      if (pendingSave.current === save) pendingSave.current = null;
+    };
+  }, [db, form, restoreRevision]);
 
   const submit = async () => {
     if (!canSubmit) return;
@@ -177,8 +190,15 @@ export function OnboardingScreen({
           <Button onClick={submit} disabled={!canSubmit}>
             시작하기
           </Button>
-          {/* 복원 기능은 Phase 7(백업/복원)에서 연결한다 (ONB-010). */}
-          <Button variant="text" onClick={() => undefined}>
+          <Button
+            variant="text"
+            onClick={async () => {
+              // 대기 중인 임시 저장을 바로 실행하고 끝난 뒤의 revision 으로 복원한다 (ONB-010, RES-007)
+              pendingSave.current?.();
+              await queue.current;
+              setRestoreRevision(revision.current);
+            }}
+          >
             기존 데이터 복원하기
           </Button>
         </div>
@@ -194,6 +214,14 @@ export function OnboardingScreen({
           update({ startDate });
           setPickerOpen(false);
         }}
+      />
+      <RestoreSheet
+        open={restoreRevision !== null}
+        onClose={() => setRestoreRevision(null)}
+        today={today}
+        revision={restoreRevision ?? 0}
+        hasCurrentData={false}
+        onRestored={onCompleted}
       />
       <ImageFileInput
         ref={fileInput}

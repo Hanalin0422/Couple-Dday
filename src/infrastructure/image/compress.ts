@@ -94,3 +94,14 @@ export async function resizeAndEncode(file: Blob, maxWidth: number, maxHeight: n
     drawable.release();
   }
 }
+
+/** 실제 디코딩 가능 여부 (복원 시 이미지 검증, ARCHITECTURE.md §11.1-4). */
+export async function canDecodeImage(data: ArrayBuffer, mimeType: string): Promise<boolean> {
+  try {
+    const drawable = await decode(new Blob([data], { type: mimeType }));
+    drawable.release();
+    return true;
+  } catch {
+    return false;
+  }
+}
