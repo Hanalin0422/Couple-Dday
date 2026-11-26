@@ -1,0 +1,90 @@
+/*
+ * 커플 디데이 디자인 토큰 — 단일 정의 위치.
+ * 값의 기준(SSOT)은 .agents/skills/dday-design/SKILL.md §3 이며,
+ * tests/unit/design-tokens.test.ts 가 두 파일의 일치 여부를 검증한다.
+ * 사용자 승인 없이 값을 변경하지 않는다.
+ */
+
+/* ── 로컬 폰트 (오프라인 precache 대상, 외부 CDN 사용 금지) ── */
+@font-face {
+  font-family: "Pretendard";
+  src: url("/fonts/pretendard/PretendardVariable.woff2") format("woff2-variations"),
+    url("/fonts/pretendard/PretendardVariable.woff2") format("woff2");
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "MaruBuri";
+  src: url("/fonts/maruburi/MaruBuri-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "MaruBuri";
+  src: url("/fonts/maruburi/MaruBuri-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/fonts/cormorant-garamond/cormorant-garamond-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/fonts/cormorant-garamond/cormorant-garamond-latin-500-italic.woff2") format("woff2");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  /* SKILL.md §3 디자인 토큰 (고정) */
+  --background: #FFF8FA;
+  --surface: #FFFFFF;
+  --accent: #B57889;
+  --accent-soft: #F0DFE5;
+  --input: #F3EDF0;
+  --text-primary: #191F28;
+  --text-body: #333D4B;
+  --text-secondary: #6B7684;
+  --icon-inactive: #B0B8C1;
+  --text-inactive: #8B95A1;
+  --timeline-track: #E8CFD6;
+  --timeline-past: #DCC3CB;
+  --anniversary-surface: #F3E2E8;
+  --anniversary-text: #A16678;
+  --profile-self-bg: #F0DFE5;
+  --profile-self-icon: #C895A4;
+  --profile-partner-bg: #EAE4F0;
+  --profile-partner-icon: #B5A4C5;
+  --danger: #C65363;
+  /* celebration 계열: 자동 주년 당일 축하 애니메이션 전용 */
+  --celebration-gold: #D4AF37;
+  --celebration-light: #F5D77B;
+  --celebration-warm: #E9C65B;
+  --celebration-highlight: #FFF0B0;
+  --celebration-deep: #C9A24C;
+
+  /* SKILL.md §4 폰트 패밀리 */
+  --font-family-pretendard: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-family-maruburi: "MaruBuri", serif;
+  --font-family-cormorant: "Cormorant Garamond", serif;
+
+  /* SKILL.md §5 공통 레이아웃 */
+  --page-gutter: 24px;
+  --card-radius: 20px;
+  --section-gap: 32px;
+
+  /* Dusty Rose 단일 라이트모드 (SYS-007, PWA-011) */
+  color-scheme: light;
+}

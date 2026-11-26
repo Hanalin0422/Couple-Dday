@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="heartFill" x1="0.2" y1="0.05" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#E7B4C2"/>
+      <stop offset="0.55" stop-color="#C98C9D"/>
+      <stop offset="1" stop-color="#B57889"/>
+    </linearGradient>
+    <radialGradient id="heartShade" cx="0.5" cy="0.95" r="0.6">
+      <stop offset="0" stop-color="#A16678" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#A16678" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="gloss" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#B57889" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" fill="#FFF8FA"/>
+  <g transform="translate(256 262) scale(0.74) translate(-256 -257)">
+    <path id="heart" filter="url(#softShadow)" fill="url(#heartFill)"
+      d="M256 438C240 426 88 330 72 206C62 128 116 76 178 76C216 76 242 98 256 124C270 98 296 76 334 76C396 76 450 128 440 206C424 330 272 426 256 438Z"/>
+    <path fill="url(#heartShade)"
+      d="M256 438C240 426 88 330 72 206C62 128 116 76 178 76C216 76 242 98 256 124C270 98 296 76 334 76C396 76 450 128 440 206C424 330 272 426 256 438Z"/>
+    <ellipse cx="160" cy="150" rx="62" ry="38" transform="rotate(-32 160 150)" fill="url(#gloss)"/>
+    <circle cx="214" cy="118" r="9" fill="#FFFFFF" fill-opacity="0.7"/>
+  </g>
+  <path fill="#D9A3B3" d="M398 96C401 116 408 123 428 126C408 129 401 136 398 156C395 136 388 129 368 126C388 123 395 116 398 96Z"/>
+  <path fill="#E7C2CD" d="M436 168C438 178 441 181 451 183C441 185 438 188 436 198C434 188 431 185 421 183C431 181 434 178 436 168Z"/>
+</svg>

@@ -1,0 +1,68 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+/*
+ * Tailwind 유틸리티 이름 ↔ 디자인 토큰 매핑.
+ * 값은 tokens.css 의 CSS 변수만 참조하며 여기서 색상값을 중복 선언하지 않는다.
+ */
+@theme inline {
+  --color-*: initial;
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-input: var(--input);
+  --color-text-primary: var(--text-primary);
+  --color-text-body: var(--text-body);
+  --color-text-secondary: var(--text-secondary);
+  --color-icon-inactive: var(--icon-inactive);
+  --color-text-inactive: var(--text-inactive);
+  --color-timeline-track: var(--timeline-track);
+  --color-timeline-past: var(--timeline-past);
+  --color-anniversary-surface: var(--anniversary-surface);
+  --color-anniversary-text: var(--anniversary-text);
+  --color-profile-self-bg: var(--profile-self-bg);
+  --color-profile-self-icon: var(--profile-self-icon);
+  --color-profile-partner-bg: var(--profile-partner-bg);
+  --color-profile-partner-icon: var(--profile-partner-icon);
+  --color-danger: var(--danger);
+  --color-celebration-gold: var(--celebration-gold);
+  --color-celebration-light: var(--celebration-light);
+  --color-celebration-warm: var(--celebration-warm);
+  --color-celebration-highlight: var(--celebration-highlight);
+  --color-celebration-deep: var(--celebration-deep);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --font-sans: var(--font-family-pretendard);
+  --font-pretendard: var(--font-family-pretendard);
+  --font-maruburi: var(--font-family-maruburi);
+  --font-cormorant: var(--font-family-cormorant);
+
+  --spacing-gutter: var(--page-gutter);
+  --spacing-section: var(--section-gap);
+  --radius-card: var(--card-radius);
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--background);
+  color: var(--text-body);
+  font-family: var(--font-family-pretendard);
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  overscroll-behavior: none;
+}
+
+/* SKILL.md §5: 스크롤바는 평상시 노출하지 않는다. */
+* {
+  scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
