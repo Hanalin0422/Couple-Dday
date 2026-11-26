@@ -1,6 +1,6 @@
 # 커플 디데이 PWA — 테스트 케이스 명세
 
-- 버전: 0.1 (Phase 0 초안, 2026-11-26)
+- 버전: 0.2 (Phase 1 Domain 엔진 반영, 2026-11-26)
 - 기준 문서: `REQUIREMENTS.md` v1.1, `ARCHITECTURE.md` v1.1, `.agents/skills/dday-design/SKILL.md`
 - 역할: 요구사항 ID ↔ 테스트 케이스 추적, 자동화/수동/실기기 검증 기준. 구현과 함께 계속 보완한다.
 
@@ -90,19 +90,19 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 
 | ID | 관련 요구사항 | 레벨 | 시나리오 / 입력 | 기대 결과 | 상태 |
 |---|---|---|---|---|---|
-| TC-DATE-001 | DATE-010, DB-014 | U | `validateLocalDate`: `2026-07-01`, `2024-02-29` | 유효 | 대기 |
-| TC-DATE-002 | DATE-E02, DB-014 | U | `2026-02-30`, `2025-02-29`, `2026-13-01`, `2026-7-1`, `2026-07-01T00:00`, 빈 문자열 | 모두 거부, 자동 보정 없음 | 대기 |
-| TC-DATE-003 | HOME-002, HOME-003 | U | FX-START, 1일 방식, 오늘 2026-07-01 / 07-10 / 10-08 / 11-25 / 2027-07-01 | 1 / 10 / 100 / 148 / 366 | 대기 |
-| TC-DATE-004 | HOME-003, ONB-006 | U | 같은 날짜, 0일 방식 | 0 / 9 / 99 / 147 / 365 | 대기 |
+| TC-DATE-001 | DATE-010, DB-014 | U | `validateLocalDate`: `2026-07-01`, `2024-02-29` | 유효 | 통과 `tests/unit/domain/local-date.test.ts` |
+| TC-DATE-002 | DATE-E02, DB-014 | U | `2026-02-30`, `2025-02-29`, `2026-13-01`, `2026-7-1`, `2026-07-01T00:00`, 빈 문자열 | 모두 거부, 자동 보정 없음 | 통과 `tests/unit/domain/local-date.test.ts` |
+| TC-DATE-003 | HOME-002, HOME-003 | U | FX-START, 1일 방식, 오늘 2026-07-01 / 07-10 / 10-08 / 11-25 / 2027-07-01 | 1 / 10 / 100 / 148 / 366 | 통과 `tests/unit/domain/dday.test.ts` |
+| TC-DATE-004 | HOME-003, ONB-006 | U | 같은 날짜, 0일 방식 | 0 / 9 / 99 / 147 / 365 | 통과 `tests/unit/domain/dday.test.ts` |
 | TC-DATE-005 | ONB-007 | U | 신규 기본 설정 | dayOffset = 1 | 대기 |
-| TC-DATE-006 | DATE-010 | U | 2028-07-01(윤일 포함 구간), 1일 방식 | 732 | 대기 |
-| TC-DATE-007 | DATE-010 | U | 계산 구현 검토 | `differenceInCalendarDays`/`addDays`/`addYears` 사용, 밀리초/86400000 나눗셈 및 `new Date('YYYY-MM-DD')` 미사용 | 대기 |
-| TC-DATE-008 | DATE-E03 | U | 다른 TZ(UTC, America/Los_Angeles)에서 동일 현지 날짜 문자열로 계산 | 결과 동일 (현지 달력 날짜 기준) | 대기 |
-| TC-DATE-009 | DATE-E05, HOME-E08, HOME-E28 | U | 오늘(2026-06-30) < 시작일 | 오류 상태 반환, 음수 디데이/진행률 없음, 주년 아님 | 대기 |
-| TC-DATE-010 | ANN-008 | U | 남은 일수: FX-TODAY → 200일(2027-01-16) | 52 (오프셋 미가산) | 대기 |
-| TC-DATE-011 | DATE-001, DATE-004 | U | 시작일 입력 검증: 오늘 / 내일 | 오늘 허용, 내일 거부 | 대기 |
-| TC-DATE-012 | DATE-008, DATE-E01 | U | 저장 직전 재검증에 미래 날짜를 직접 전달(UI 우회) | 저장 거부 | 대기 |
-| TC-DATE-013 | DATE-009, CUS-003 | U | 사용자 지정 기념일 날짜: 시작일 전날 / 시작일 / 미래 | 거부 / 허용 / 허용 | 대기 |
+| TC-DATE-006 | DATE-010 | U | 2028-07-01(윤일 포함 구간), 1일 방식 | 732 | 통과 `tests/unit/domain/dday.test.ts` |
+| TC-DATE-007 | DATE-010 | U | 계산 구현 검토 | `differenceInCalendarDays`/`addDays`/`addYears` 사용, 밀리초/86400000 나눗셈 및 `new Date('YYYY-MM-DD')` 미사용 | 통과 `tests/unit/domain/dday.test.ts` |
+| TC-DATE-008 | DATE-E03 | U | 다른 TZ(UTC, America/Los_Angeles)에서 동일 현지 날짜 문자열로 계산 | 결과 동일 (현지 달력 날짜 기준) | 통과 `tests/unit/domain/local-date.test.ts` |
+| TC-DATE-009 | DATE-E05, HOME-E08, HOME-E28 | U | 오늘(2026-06-30) < 시작일 | 오류 상태 반환, 음수 디데이/진행률 없음, 주년 아님 | 통과 `tests/unit/domain/dday.test.ts` |
+| TC-DATE-010 | ANN-008 | U | 남은 일수: FX-TODAY → 200일(2027-01-16) | 52 (오프셋 미가산) | 통과 `tests/unit/domain/dday.test.ts` |
+| TC-DATE-011 | DATE-001, DATE-004 | U | 시작일 입력 검증: 오늘 / 내일 | 오늘 허용, 내일 거부 | 통과 `tests/unit/domain/dday.test.ts` |
+| TC-DATE-012 | DATE-008, DATE-E01 | U | 저장 직전 재검증에 미래 날짜를 직접 전달(UI 우회) | 저장 거부 | 통과 `tests/unit/domain/dday.test.ts` |
+| TC-DATE-013 | DATE-009, CUS-003 | U | 사용자 지정 기념일 날짜: 시작일 전날 / 시작일 / 미래 | 거부 / 허용 / 허용 | 통과 `tests/unit/domain/dday.test.ts` |
 | TC-DATE-014 | DATE-002, DATE-003, DATE-005 | E | 온보딩과 설정에서 DatePicker 열기 | 동일 컴포넌트, 미래 날짜 비활성, 다음 달 이동 불가 | 대기 |
 | TC-DATE-015 | DATE-006 | E | DatePicker에서 날짜 변경 후 취소 | 기존 값 유지 | 대기 |
 | TC-DATE-016 | DATE-007, DATE-E06 | E | 23:59에 DatePicker를 열고 자정 경과(clock 조작) | 선택 가능 범위가 새 오늘로 갱신, 저장 직전 재검증 | 대기 |
@@ -113,36 +113,36 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 
 | ID | 관련 요구사항 | 레벨 | 시나리오 / 입력 | 기대 결과 | 상태 |
 |---|---|---|---|---|---|
-| TC-ANN-001 | ANN-001, ANN-002 | U | FX-START, 1일 방식 생성 | §1.3 표의 10/30/50/100/200/300/400일 날짜, 100일 이후 100일 단위 계속 생성 | 대기 |
-| TC-ANN-002 | ANN-006 | U | 같은 시작일, 0일 방식 | 일수 기념일이 하루씩 뒤로 이동(100일 2026-10-09) | 대기 |
-| TC-ANN-003 | ANN-003, ANN-007 | U | 0일/1일 방식 각각 주년 생성 | 1주년 2027-07-01, 2주년 2028-07-01로 동일 | 대기 |
-| TC-ANN-004 | ANN-003, HOME-E14 | U | FX-LEAP 주년 1~4 | 2025-02-28, 2026-02-28, 2027-02-28, 2028-02-29 (원 시작일 기준, 누적 가산 없음) | 대기 |
-| TC-ANN-005 | ANN-004, ANN-005 | U | 시작일 2026-07-01 → 2026-07-05 변경 후 재생성 | 1일 방식 100일 2026-10-12, 날짜순 정렬 | 대기 |
-| TC-ANN-006 | ANN-011 | U | 자동 기념일 ID | `auto:day:100`, `auto:year:1` 형식, 시작일/오프셋 변경에도 ID 동일 | 대기 |
-| TC-ANN-007 | ANN-004, TML-015 | U | FX-OVERLAP, 0일 방식 | 2023-03-01에 `auto:year:23`과 `auto:day:8400`이 각각 존재, 안정적 순서 | 대기 |
-| TC-ANN-008 | ANN-008 | U | 기념일 당일/미래 표시 값 | 당일 `D-DAY`, 미래 `D-N` | 대기 |
-| TC-ANN-009 | ANN-009 | U | FX-TODAY 가장 가까운 예정 기념일 | 200일(2027-01-16) | 대기 |
+| TC-ANN-001 | ANN-001, ANN-002 | U | FX-START, 1일 방식 생성 | §1.3 표의 10/30/50/100/200/300/400일 날짜, 100일 이후 100일 단위 계속 생성 | 통과 `tests/unit/domain/auto-anniversary.test.ts` |
+| TC-ANN-002 | ANN-006 | U | 같은 시작일, 0일 방식 | 일수 기념일이 하루씩 뒤로 이동(100일 2026-10-09) | 통과 `tests/unit/domain/auto-anniversary.test.ts` |
+| TC-ANN-003 | ANN-003, ANN-007 | U | 0일/1일 방식 각각 주년 생성 | 1주년 2027-07-01, 2주년 2028-07-01로 동일 | 통과 `tests/unit/domain/auto-anniversary.test.ts` |
+| TC-ANN-004 | ANN-003, HOME-E14 | U | FX-LEAP 주년 1~4 | 2025-02-28, 2026-02-28, 2027-02-28, 2028-02-29 (원 시작일 기준, 누적 가산 없음) | 통과 `tests/unit/domain/auto-anniversary.test.ts` |
+| TC-ANN-005 | ANN-004, ANN-005 | U | 시작일 2026-07-01 → 2026-07-05 변경 후 재생성 | 1일 방식 100일 2026-10-12, 날짜순 정렬 | 통과 `tests/unit/domain/auto-anniversary.test.ts` |
+| TC-ANN-006 | ANN-011 | U | 자동 기념일 ID | `auto:day:100`, `auto:year:1` 형식, 시작일/오프셋 변경에도 ID 동일 | 통과 `tests/unit/domain/auto-anniversary.test.ts` |
+| TC-ANN-007 | ANN-004, TML-015 | U | FX-OVERLAP, 0일 방식 | 2023-03-01에 `auto:year:23`과 `auto:day:8400`이 각각 존재, 안정적 순서 | 통과 `tests/unit/domain/auto-anniversary.test.ts` |
+| TC-ANN-008 | ANN-008 | U | 기념일 당일/미래 표시 값 | 당일 `D-DAY`, 미래 `D-N` | 통과 `tests/unit/domain/dday.test.ts` |
+| TC-ANN-009 | ANN-009 | U | FX-TODAY 가장 가까운 예정 기념일 | 200일(2027-01-16) | 통과 `tests/unit/domain/custom-timeline.test.ts` |
 | TC-ANN-010 | ANN-010, CUS-E04 | E | 자동 기념일 카드 | 수정/삭제/숨기기 조작 미제공 | 대기 |
 
 ### 3.4 메인 화면 진행률 및 주년 표시
 
 | ID | 관련 요구사항 | 레벨 | 시나리오 / 입력 | 기대 결과 | 상태 |
 |---|---|---|---|---|---|
-| TC-HOME-001 | HOME-E01 | U | FX-START, 오늘 2026-07-01 | 메인 진행률 0% | 대기 |
-| TC-HOME-002 | HOME-004, HOME-005 | U | 오늘 2026-07-05 (첫 목표 10일 2026-07-10) | 이전 기준 시작일, 4/9 ≈ 44.44% | 대기 |
-| TC-HOME-003 | HOME-E02, HOME-E03 | U | 2026-10-08 / 2026-10-09 | 100% / 1% | 대기 |
-| TC-HOME-004 | HOME-E04 | U | FX-TODAY | 48% (이전 2026-10-08, 목표 2027-01-16) | 대기 |
-| TC-HOME-005 | HOME-E05 | U | 199일 / 200일 / 201일 (2027-01-15/16/17) | 99% / 100% / 1% | 대기 |
-| TC-HOME-006 | HOME-E06, HOME-E15 | U | FX-OVERLAP 당일 및 다음 날 | 당일 100%, 목표 중복 제거로 분모 0 없음, 다음 날 다음 구간 | 대기 |
-| TC-HOME-007 | HOME-E07, HOME-E17 | U | 시작일/오프셋 변경 후 재계산 | 목표 날짜·주년 여부가 새 설정 기준으로 갱신 | 대기 |
-| TC-HOME-008 | HOME-005, CUS-010 | U | FX-TODAY, 사용자 지정 2026-12-01 추가 | 메인 48% 유지 | 대기 |
-| TC-HOME-009 | HOME-014, HOME-015, HOME-E11 | U | `getHomeDdayDisplay` 2027-07-01 | `type: 'anniversary'`, anniversaryYear 1, label `1주년`, subtitle `HAPPY ANNIVERSARY`, value 366 | 대기 |
-| TC-HOME-010 | HOME-E10, HOME-E12, HOME-021 | U | 2027-06-30 / 2027-07-02 | `type: 'days'`, subtitle `DAYS` | 대기 |
-| TC-HOME-011 | HOME-017, HOME-E13 | U | 2027-07-01에 0일↔1일 변경 | 주년 표시 유지, value만 365↔366 | 대기 |
-| TC-HOME-012 | HOME-018 | U | FX-OVERLAP 2023-03-01 | 메인 표시 `23주년` 우선 | 대기 |
-| TC-HOME-013 | HOME-019, HOME-E19 | U | 사용자 지정 기념일 당일(주년 아님) | `type: 'days'` | 대기 |
-| TC-HOME-014 | HOME-020 | U | 주년 당일 진행률 | 100% | 대기 |
-| TC-HOME-015 | HOME-E14 | U | FX-LEAP 2025-02-28 / 2028-02-29 / 2028-02-28 | 주년 / 주년(4주년) / 일반 | 대기 |
+| TC-HOME-001 | HOME-E01 | U | FX-START, 오늘 2026-07-01 | 메인 진행률 0% | 통과 `tests/unit/domain/home-progress.test.ts` |
+| TC-HOME-002 | HOME-004, HOME-005 | U | 오늘 2026-07-05 (첫 목표 10일 2026-07-10) | 이전 기준 시작일, 4/9 ≈ 44.44% | 통과 `tests/unit/domain/home-progress.test.ts` |
+| TC-HOME-003 | HOME-E02, HOME-E03 | U | 2026-10-08 / 2026-10-09 | 100% / 1% | 통과 `tests/unit/domain/home-progress.test.ts` |
+| TC-HOME-004 | HOME-E04 | U | FX-TODAY | 48% (이전 2026-10-08, 목표 2027-01-16) | 통과 `tests/unit/domain/home-progress.test.ts` |
+| TC-HOME-005 | HOME-E05 | U | 199일 / 200일 / 201일 (2027-01-15/16/17) | 99% / 100% / 1% | 통과 `tests/unit/domain/home-progress.test.ts` |
+| TC-HOME-006 | HOME-E06, HOME-E15 | U | FX-OVERLAP 당일 및 다음 날 | 당일 100%, 목표 중복 제거로 분모 0 없음, 다음 날 다음 구간 | 통과 `tests/unit/domain/home-progress.test.ts` |
+| TC-HOME-007 | HOME-E07, HOME-E17 | U | 시작일/오프셋 변경 후 재계산 | 목표 날짜·주년 여부가 새 설정 기준으로 갱신 | 통과 `tests/unit/domain/home-progress.test.ts` |
+| TC-HOME-008 | HOME-005, CUS-010 | U | FX-TODAY, 사용자 지정 2026-12-01 추가 | 메인 48% 유지 | 통과 `tests/unit/domain/home-progress.test.ts` |
+| TC-HOME-009 | HOME-014, HOME-015, HOME-E11 | U | `getHomeDdayDisplay` 2027-07-01 | `type: 'anniversary'`, anniversaryYear 1, label `1주년`, subtitle `HAPPY ANNIVERSARY`, value 366 | 통과 `tests/unit/domain/home-progress.test.ts` |
+| TC-HOME-010 | HOME-E10, HOME-E12, HOME-021 | U | 2027-06-30 / 2027-07-02 | `type: 'days'`, subtitle `DAYS` | 통과 `tests/unit/domain/home-progress.test.ts` |
+| TC-HOME-011 | HOME-017, HOME-E13 | U | 2027-07-01에 0일↔1일 변경 | 주년 표시 유지, value만 365↔366 | 통과 `tests/unit/domain/home-progress.test.ts` |
+| TC-HOME-012 | HOME-018 | U | FX-OVERLAP 2023-03-01 | 메인 표시 `23주년` 우선 | 통과 `tests/unit/domain/home-progress.test.ts` |
+| TC-HOME-013 | HOME-019, HOME-E19 | U | 사용자 지정 기념일 당일(주년 아님) | `type: 'days'` | 통과 `tests/unit/domain/home-progress.test.ts` |
+| TC-HOME-014 | HOME-020 | U | 주년 당일 진행률 | 100% | 통과 `tests/unit/domain/home-progress.test.ts` |
+| TC-HOME-015 | HOME-E14 | U | FX-LEAP 2025-02-28 / 2028-02-29 / 2028-02-28 | 주년 / 주년(4주년) / 일반 | 통과 `tests/unit/domain/home-progress.test.ts` |
 | TC-HOME-016 | HOME-001, ONB-E09 | E | 완료된 데이터로 앱 실행 | 메인 기본 진입, 온보딩 미표시 | 대기 |
 | TC-HOME-017 | HOME-006, HOME-007, HOME-008, ONB-004 | E | FX-NAMES, 사진 없음 | 원 아래 두 기본 프로필·하트·이름, 시작일 `2026.07.01` | 대기 |
 | TC-HOME-018 | HOME-010, SET-007 | E | 설정에서 이름 변경 저장 후 메인 이동 | 즉시 반영 | 대기 |
@@ -204,11 +204,11 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 |---|---|---|---|---|---|
 | TC-CUS-001 | CUS-001, BTS-012 | E | 기념일 화면 + 버튼 | 공통 Bottom Sheet 표시 | 대기 |
 | TC-CUS-002 | CUS-002, CUS-E01, DB-003 | U | 이름 빈 값/공백/30자/31자, 날짜 없음 | 30자만 허용, 나머지 저장 차단 | 대기 |
-| TC-CUS-003 | CUS-003, CUS-E02 | U | 시작일 이전 날짜 | 선택·저장 차단 | 대기 |
-| TC-CUS-004 | CUS-007 | U | 시작일 이후 과거, 오늘, 미래 | 모두 등록 가능 | 대기 |
-| TC-CUS-005 | CUS-004, ARC-A05 | U | 2026-08-15 매년 반복 등록 | 2026년부터 발생, 2025년 이전 소급 없음 | 대기 |
-| TC-CUS-006 | CUS-E07, ARC-A04 | U | 2024-02-29 매년 반복 | 2025-02-28, 2028-02-29 (원본 월/일 기준) | 대기 |
-| TC-CUS-007 | CUS-011 | U | 반복 발생 ID | `custom:{uuid}:{year}`, 일회성 `custom:{uuid}` | 대기 |
+| TC-CUS-003 | CUS-003, CUS-E02 | U | 시작일 이전 날짜 | 선택·저장 차단 | 통과 `tests/unit/domain/dday.test.ts` |
+| TC-CUS-004 | CUS-007 | U | 시작일 이후 과거, 오늘, 미래 | 모두 등록 가능 | 통과 `tests/unit/domain/dday.test.ts` |
+| TC-CUS-005 | CUS-004, ARC-A05 | U | 2026-08-15 매년 반복 등록 | 2026년부터 발생, 2025년 이전 소급 없음 | 통과 `tests/unit/domain/custom-timeline.test.ts` |
+| TC-CUS-006 | CUS-E07, ARC-A04 | U | 2024-02-29 매년 반복 | 2025-02-28, 2028-02-29 (원본 월/일 기준) | 통과 `tests/unit/domain/custom-timeline.test.ts` |
+| TC-CUS-007 | CUS-011 | U | 반복 발생 ID | `custom:{uuid}:{year}`, 일회성 `custom:{uuid}` | 통과 `tests/unit/domain/custom-timeline.test.ts` |
 | TC-CUS-008 | CUS-009, CUS-E03 | I | 같은 이름·날짜 2건 등록 | 서로 다른 UUID, 각각 카드 표시 | 대기 |
 | TC-CUS-009 | CUS-E03, BTS-009 | E | 저장 버튼 연속 탭 | 1건만 저장 | 대기 |
 | TC-CUS-010 | CUS-005 | I | 일회성 기념일 이름/날짜 수정 | ID 유지, 연결 추억 유지 | 대기 |
@@ -225,13 +225,13 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 
 | ID | 관련 요구사항 | 레벨 | 시나리오 / 입력 | 기대 결과 | 상태 |
 |---|---|---|---|---|---|
-| TC-TML-001 | TML-001 | U | 통합 목록 정렬 | 과거→미래 오름차순, 동률은 결정적 순서 | 대기 |
-| TC-TML-002 | TML-005, TML-006 | U | `filterAnniversaries` FX-TODAY 경계 | 지난 날: date < 오늘, 다가오는 날: date >= 오늘, 당일은 전체·다가오는 날에 포함 | 대기 |
-| TC-TML-003 | TML-014, ARC-C03 | U | 초기 범위 [2026-11-25, 2027-11-25), 1년 추가 | 경계 중복 없음, 추가 구간 연속 | 대기 |
-| TC-TML-004 | TML-014 | U | 5년 뒤 일회성 사용자 지정 기념일 | 자동 범위와 무관하게 포함 | 대기 |
-| TC-TML-005 | ARC-C01, TML-016 | U | FX-TODAY + 사용자 지정 2026-12-01 | 강조 카드 진행률 48/54 ≈ 88.89%, 메인 48%와 분리 | 대기 |
-| TC-TML-006 | ARC-C02 | U | 가장 가까운 날짜에 2건 | 두 카드 모두 강조, 동일 진행률 | 대기 |
-| TC-TML-007 | ARC-C01 | U | 시작일 당일 사용자 지정 기념일 | 당일 100%, 분모 0 없음 | 대기 |
+| TC-TML-001 | TML-001 | U | 통합 목록 정렬 | 과거→미래 오름차순, 동률은 결정적 순서 | 통과 `tests/unit/domain/custom-timeline.test.ts` |
+| TC-TML-002 | TML-005, TML-006 | U | `filterAnniversaries` FX-TODAY 경계 | 지난 날: date < 오늘, 다가오는 날: date >= 오늘, 당일은 전체·다가오는 날에 포함 | 통과 `tests/unit/domain/custom-timeline.test.ts` |
+| TC-TML-003 | TML-014, ARC-C03 | U | 초기 범위 [2026-11-25, 2027-11-25), 1년 추가 | 경계 중복 없음, 추가 구간 연속 | 통과 `tests/unit/domain/custom-timeline.test.ts` |
+| TC-TML-004 | TML-014 | U | 5년 뒤 일회성 사용자 지정 기념일 | 자동 범위와 무관하게 포함 | 통과 `tests/unit/domain/custom-timeline.test.ts` |
+| TC-TML-005 | ARC-C01, TML-016 | U | FX-TODAY + 사용자 지정 2026-12-01 | 강조 카드 진행률 48/54 ≈ 88.89%, 메인 48%와 분리 | 통과 `tests/unit/domain/custom-timeline.test.ts` |
+| TC-TML-006 | ARC-C02 | U | 가장 가까운 날짜에 2건 | 두 카드 모두 강조, 동일 진행률 | 통과 `tests/unit/domain/custom-timeline.test.ts` |
+| TC-TML-007 | ARC-C01 | U | 시작일 당일 사용자 지정 기념일 | 당일 100%, 분모 0 없음 | 통과 `tests/unit/domain/custom-timeline.test.ts` |
 | TC-TML-008 | TML-003, TML-004 | E | 필터 표시 | 지난 날 / 전체 / 다가오는 날, 동일 너비, 기본 전체 | 대기 |
 | TC-TML-009 | TML-002 | E | 전체 필터 | `오늘 · 148일째` 구분선 | 대기 |
 | TC-TML-010 | TML-007 | E | 최초 진입 | 오늘 근처 위치로 자동 스크롤 | 대기 |
@@ -296,7 +296,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-DB-002 | DB-002, PWA-007 | I | 완료 플래그 true + couple 없음 | 손상 상태로 판정, 자동 덮어쓰기 없음 | 대기 |
 | TC-DB-003 | DB-011 | I | 존재하지 않는 발생 ID로 추억 저장 | 거부 | 대기 |
 | TC-DB-004 | DB-013, NFR-006 | I | 복합 변경 중 실패 | 전체 롤백 | 대기 |
-| TC-DB-005 | DB-014 | U | Instant `2026-11-25T06:30:00Z` 유효, 오프셋 없는 시각/잘못된 형식 거부 | 엄격 검증 | 대기 |
+| TC-DB-005 | DB-014 | U | Instant `2026-11-25T06:30:00Z` 유효, 오프셋 없는 시각/잘못된 형식 거부 | 엄격 검증 | 통과 `tests/unit/domain/local-date.test.ts` |
 | TC-DB-006 | DB-015, PWA-E05 | I | 두 연결에서 같은 revision 기반으로 수정 | 두 번째 쓰기 충돌 감지, 덮어쓰기 없음 | 대기 |
 | TC-DB-007 | NFR-007, PWA-E04 | I | v1→v2 migration 실패 주입 | 데이터 보존, 오류 안내, 자동 삭제 없음 | 대기 |
 | TC-DB-008 | PWA-E03 | I | DB open 실패 / 일부 store 누락 | 오류·재시도 화면, 신규 사용자로 판단하지 않음 | 대기 |
@@ -371,10 +371,10 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 
 | ID | 관련 요구사항 | 레벨 | 시나리오 / 입력 | 기대 결과 | 상태 |
 |---|---|---|---|---|---|
-| TC-PWA-001 | PWA-001, PWA-002, SYS-006 | E | manifest 및 아이콘 조회 | name/short_name `D-Day`, display standalone, start_url `/`, background_color `#FFF8FA`, lang ko, 192/512/maskable 아이콘과 apple-touch-icon 200 응답 | 통과 `tests/e2e/smoke.spec.ts` (chromium) |
-| TC-PWA-002 | SYS-005, PWA-003, PWA-004, PWA-014 | E | `/serwist/sw.js` precache 목록 | 앱 셸 `/`, 로컬 폰트 5종 포함, `Service-Worker-Allowed: /` | 통과 `tests/e2e/smoke.spec.ts` (chromium) |
-| TC-PWA-003 | PWA-004 | E | 페이지 로드 시 폰트 요청 | 동일 출처 `/fonts/*`만 요청, 5종 모두 로드 | 통과 `tests/e2e/smoke.spec.ts` (chromium) |
-| TC-PWA-004 | PWA-011, SYS-007 | E | `colorScheme: dark` 에뮬레이션 | 배경 `#FFF8FA` 유지 | 통과 `tests/e2e/smoke.spec.ts` (chromium) |
+| TC-PWA-001 | PWA-001, PWA-002, SYS-006 | E | manifest 및 아이콘 조회 | name/short_name `D-Day`, display standalone, start_url `/`, background_color `#FFF8FA`, lang ko, 192/512/maskable 아이콘과 apple-touch-icon 200 응답 | 통과 `tests/e2e/smoke.spec.ts` (chromium, webkit) |
+| TC-PWA-002 | SYS-005, PWA-003, PWA-004, PWA-014 | E | `/serwist/sw.js` precache 목록 | 앱 셸 `/`, 로컬 폰트 5종 포함, `Service-Worker-Allowed: /` | 통과 `tests/e2e/smoke.spec.ts` (chromium, webkit) |
+| TC-PWA-003 | PWA-004 | E | 페이지 로드 시 폰트 요청 | 동일 출처 `/fonts/*`만 요청, 5종 모두 로드 | 통과 `tests/e2e/smoke.spec.ts` (chromium, webkit) |
+| TC-PWA-004 | PWA-011, SYS-007 | E | `colorScheme: dark` 에뮬레이션 | 배경 `#FFF8FA` 유지 | 통과 `tests/e2e/smoke.spec.ts` (chromium, webkit) |
 | TC-PWA-005 | PWA-003, PWA-E01 | E | SW 활성화 후 오프라인 재실행 | 앱 셸·폰트·데이터 정상 | 대기 |
 | TC-PWA-006 | PWA-E02 | E | 최초 캐싱 전 오프라인 | 실행 가능한 범위에서 연결 필요 안내 (앱 미로딩 시 보장 불가) | 대기 |
 | TC-PWA-007 | PWA-005 | E | 새 빌드 배포 후 SW 업데이트 | 개인 데이터 유지, 저장/복원/백업 중 강제 reload 없음 | 대기 |
@@ -390,7 +390,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 |---|---|---|---|---|---|
 | TC-DSN-001 | NFR-011, SYS-008 | U | SKILL.md §3 토큰 표 ↔ `src/styles/tokens.css` | 24개 토큰 값 일치, 임의 색상 토큰 없음, 다크모드 분기 없음 | 통과 `tests/unit/design-tokens.test.ts` |
 | TC-DSN-002 | PWA-004, PWA-014 | U | 로컬 폰트 파일·라이선스 | 5개 @font-face, `/fonts/` 로컬 경로, 유효한 WOFF2, OFL 1.1 라이선스 동봉 | 통과 `tests/unit/fonts.test.ts` |
-| TC-DSN-003 | SYS-009 | E | 기본 셸 | `<html lang="ko">`, 제목 `D-Day`, 콘솔 오류 없음 | 통과 `tests/e2e/smoke.spec.ts` (chromium) |
+| TC-DSN-003 | SYS-009 | E | 기본 셸 | `<html lang="ko">`, 제목 `D-Day`, 콘솔 오류 없음 | 통과 `tests/e2e/smoke.spec.ts` (chromium, webkit) |
 | TC-DSN-004 | NFR-011 | E | 페이지 제목 계산 스타일 | 온보딩/설정/기념일 제목 MaruBuri 28px 600, 동일 정렬·여백 | 대기 |
 | TC-DSN-005 | NFR-011 | E | 메인 타이포그래피 | TOGETHER MaruBuri 18px 600 중앙, 디데이 Pretendard 72px 700, 하단 메뉴 11px 500 | 대기 |
 | TC-DSN-006 | NFR-011 | E | 주년 타이포그래피 | 주년 숫자 Cormorant Garamond Italic 88px 500(비례 축소 허용), '주년' MaruBuri 38px 400, HAPPY ANNIVERSARY 12px 400 자간 2px accent, 색 text-primary | 대기 |
@@ -490,3 +490,5 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | 2026-11-26 | `npm run build` | 통과 | Next 16.4.6 Turbopack, SW precache 20개 3.5MB |
 | 2026-11-26 | `npm run test:e2e -- --project=chromium-iphone` | 통과 5/5 | 시스템 라이브러리(libnss3 등) 부재로 로컬 우회 경로 사용. webkit-iphone 미실행(시스템 라이브러리 필요) |
 | 2026-11-26 | `npm run verify`, chromium E2E | 통과 (24 / 5) | 앱 이름 D-Day·아이콘 반영 후 재실행. SW precache 25개 3.6MB |
+| 2026-11-26 | `npx playwright test --project=webkit-iphone` | 통과 5/5 | 사용자 install-deps 후. chromium도 우회 경로 없이 통과 |
+| 2026-11-26 | `npm test` (Phase 1) | 통과 155/155 | Domain 단위 테스트 추가. 오프셋 결함 주입 시 11건 실패 확인 후 복원 |

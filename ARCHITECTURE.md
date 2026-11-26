@@ -381,6 +381,23 @@ type HomeDdayDisplay =
 - 앱 실행, 복귀, 자정 경과 및 설정 변경 시 다시 계산한다.
 - 메인 표시 모델은 타임라인의 기념일 표시 규칙에 영향을 주지 않는다.
 
+### 7.4 Domain 구현 노트 (Phase 1, 2026-11-26)
+
+구현 위치: `src/domain/date/{local-date,instant,dday}.ts`, `src/domain/anniversary/{occurrence-id,generator,exceptions,timeline,progress,anniversary-year,home-display,types}.ts`, `src/domain/policies/date-rules.ts`, `src/domain/entities/index.ts`. 테스트: `tests/unit/domain/*.test.ts`.
+
+확정 정책을 바꾸지 않는 범위에서 다음 구현 세칙을 정했다(되돌리기 쉬운 결정).
+
+| 항목 | 결정 | 근거 |
+|---|---|---|
+| 날짜 연산 | LocalDate 문자열을 현지 자정 Date로 변환해 date-fns `differenceInCalendarDays`/`addDays`/`addYears` 사용. 여러 시간대(서머타임 포함)에서 동일 결과 검증 | §7, DATE-010 |
+| 시작일 이전 기기 날짜 | `calculateDday`는 `{status: 'before-start'}`, `calculateProgress`/`getHomeDdayDisplay`는 `null` 반환. §7.3의 `HomeDdayDisplay` 타입은 변경하지 않음 | DATE-E05, HOME-E28 |
+| 사용자 지정 ID 저장 형식 | `CustomAnniversary.id`와 `AnniversaryException.seriesId`는 UUID 원값. 발생 ID는 §6 형식(`custom:{uuid}`, `custom:{uuid}:{year}`)으로 계산 | §6 |
+| 반복 전개 상한 | `generateCustomOccurrences(…, until)`: 매년 반복은 등록 연도부터 `until` 이전 실제 날짜까지. 일회성은 상한과 무관하게 항상 포함. 상한 밖 연도의 override가 상한 이전 날짜로 이동한 경우도 포함 | TML-014, §7.2 |
+| 동일 날짜 정렬(잠정) | 자동 주년 → 자동 일수 → 사용자 지정(생성 일시, ID). §17 "동률 정렬" 확인 전 기본값 | ANN-004, HOME-018 |
+| 진행률 이전 기준 | 시작일 이전 날짜는 이전 기준으로 사용하지 않음(§7.1 구현 제안 반영) | ARC-A01 |
+| 다음 목표 탐색 | `today + 1년 + 1일`까지 생성하면 표시 범위와 무관하게 다음 목표를 찾음(`getTargetSearchEnd`) | §7.2 |
+| 진행률 값 | 0~100 실수로 반환하고 표시 반올림은 UI에서 처리 | §7.1 |
+
 ## 8. 상태 관리와 동시성
 
 IndexedDB가 영속 데이터의 SSOT. Zustand persist/localStorage에 동일 정보를 복제하지 않는다.
