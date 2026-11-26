@@ -40,10 +40,10 @@ export function useSheetClose(): () => void {
 }
 
 /** 공통 닫기 경로를 따르는 취소 버튼. */
-export function SheetCancelButton({ label = "취소", disabled }: { label?: string; disabled?: boolean }) {
+export function SheetCancelButton({ label = "취소", disabled, variant = "text" }: { label?: string; disabled?: boolean; variant?: "text" | "primary" }) {
   const requestClose = useSheetClose();
   return (
-    <Button variant="text" onClick={requestClose} disabled={disabled}>
+    <Button variant={variant} onClick={requestClose} disabled={disabled}>
       {label}
     </Button>
   );
@@ -251,7 +251,7 @@ export function ConfirmSheet({
               {error}
             </p>
           )}
-          <Button onClick={confirm} disabled={busy} className={tone === "danger" ? "bg-danger" : undefined}>
+          <Button variant={tone === "danger" ? "danger" : "primary"} onClick={confirm} disabled={busy}>
             {confirmLabel}
           </Button>
           <SheetCancelButton label={cancelLabel} disabled={busy} />

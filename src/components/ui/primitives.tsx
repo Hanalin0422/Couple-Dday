@@ -14,7 +14,12 @@ function cx(...classes: (string | false | null | undefined)[]): string {
 
 export { cx };
 
-type ButtonVariant = "primary" | "text" | "danger-text";
+/**
+ * 버튼 종류. 색상은 className 으로 덧씌우지 않고 종류로만 지정한다(유틸리티 충돌로 글씨·배경색이 뒤바뀌는 문제 방지).
+ * - primary: accent 배경 / danger: danger 배경(되돌릴 수 없는 삭제 확인) / danger-soft: input 배경 + danger 글씨(보조 삭제)
+ * - text / accent-text / danger-text: 글씨 버튼
+ */
+type ButtonVariant = "primary" | "danger" | "danger-soft" | "text" | "accent-text" | "danger-text";
 
 export function Button({
   variant = "primary",
@@ -26,10 +31,14 @@ export function Button({
       type="button"
       className={cx(
         "select-none transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
-        variant === "primary" &&
-          "h-button w-full rounded-button bg-accent text-ui-body font-semibold text-surface disabled:bg-accent-soft disabled:text-accent/50",
-        variant === "text" && "min-h-touch px-3 text-ui-caption font-medium text-text-secondary disabled:text-text-inactive",
-        variant === "danger-text" && "min-h-touch px-3 text-ui-caption font-medium text-danger",
+        (variant === "primary" || variant === "danger" || variant === "danger-soft") && "h-button w-full rounded-button text-ui-body font-semibold",
+        variant === "primary" && "bg-accent text-surface disabled:bg-accent-soft disabled:text-accent/50",
+        variant === "danger" && "bg-danger text-surface disabled:opacity-50",
+        variant === "danger-soft" && "bg-input text-danger disabled:opacity-50",
+        (variant === "text" || variant === "accent-text" || variant === "danger-text") && "min-h-touch px-3 text-ui-caption font-medium disabled:text-text-inactive",
+        variant === "text" && "text-text-secondary",
+        variant === "accent-text" && "text-accent",
+        variant === "danger-text" && "text-danger",
         className,
       )}
       {...props}

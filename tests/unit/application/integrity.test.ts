@@ -2,7 +2,8 @@
  * DB 스냅샷 무결성 규칙 (ARCHITECTURE.md §5.2, TC-DB-001~003, TC-CUS-017).
  */
 import { describe, expect, it } from "vitest";
-import { checkIntegrity, type DatabaseSnapshot, isAutoDayMilestone } from "@/application/validation/integrity";
+import { checkIntegrity, type DatabaseSnapshot } from "@/application/validation/integrity";
+import { isAutoDayMilestoneNumber as isAutoDayMilestone } from "@/domain/anniversary/milestones";
 import {
   couple,
   draft,

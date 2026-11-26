@@ -13,7 +13,8 @@ import { Plus } from "lucide-react";
 import type { Couple, LocalDate, Settings } from "@/domain/entities";
 import type { TimelineFilter } from "@/domain/anniversary/timeline";
 import { PageHeader, SegmentedControl } from "@/components/ui/primitives";
-import { useAnniversaryExceptions, useCustomAnniversaries } from "@/hooks/useDatabase";
+import { useAnniversaryExceptions, useCustomAnniversaries, useMemories } from "@/hooks/useDatabase";
+import { MemorySheet, type MemoryTarget } from "@/features/memories/MemorySheet";
 import { futureEndFor, useTimelineStore } from "@/stores/timeline-store";
 import { AnniversaryEditorSheet, type EditorTarget } from "./components/AnniversaryEditorSheet";
 import { TimelineItem, TodayDivider } from "./components/TimelineItem";
@@ -34,6 +35,8 @@ export function AnniversaryScreen({ couple, settings, today }: { couple: Couple;
   const extend = useTimelineStore((s) => s.extend);
   const resetTimeline = useTimelineStore((s) => s.reset);
   const [editor, setEditor] = useState<EditorTarget | null>(null);
+  const [memoryTarget, setMemoryTarget] = useState<MemoryTarget | null>(null);
+  const memories = useMemories();
   const scrollRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const scrolledFor = useRef<string | null>(null);
@@ -117,6 +120,9 @@ export function AnniversaryScreen({ couple, settings, today }: { couple: Couple;
                     ddayLabel={entry.ddayLabel}
                     highlighted={entry.highlighted}
                     progress={entry.highlighted ? (model.highlight?.progress.percentage ?? null) : null}
+                    memory={memories?.get(entry.occurrence.id) ?? null}
+                    canAddMemory={entry.occurrence.date <= today}
+                    onOpenMemory={() => setMemoryTarget({ occurrenceId: entry.occurrence.id, title: entry.occurrence.title, date: entry.occurrence.date })}
                     onEdit={
                       entry.occurrence.kind === "custom" && seriesById.has(entry.occurrence.seriesId)
                         ? () => {
@@ -133,6 +139,7 @@ export function AnniversaryScreen({ couple, settings, today }: { couple: Couple;
         )}
         <div ref={sentinelRef} className="h-px" aria-hidden="true" />
       </div>
+      <MemorySheet target={memoryTarget} today={today} onClose={() => setMemoryTarget(null)} />
       <AnniversaryEditorSheet target={editor} onClose={() => setEditor(null)} startDate={couple.startDate} today={today} revision={settings.revision} />
     </div>
   );

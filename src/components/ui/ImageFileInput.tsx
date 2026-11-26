@@ -6,7 +6,7 @@
  */
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import type { DraftImage } from "@/domain/entities";
-import { IMAGE_ACCEPT_ATTRIBUTE, prepareProfileImage } from "@/application/services/profile-image";
+import { IMAGE_ACCEPT_ATTRIBUTE, prepareProfileImage } from "@/application/services/image-preparation";
 
 export interface ImageFileInputHandle {
   open: () => void;

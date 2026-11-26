@@ -17,7 +17,7 @@ import type {
 } from "@/domain/entities";
 import { parseOccurrenceId } from "@/domain/anniversary/occurrence-id";
 import { exceptionKey } from "@/domain/anniversary/exceptions";
-import { AUTO_DAY_MILESTONES_BEFORE_100, AUTO_DAY_MILESTONE_STEP } from "@/domain/anniversary/generator";
+import { isAutoDayMilestoneNumber } from "@/domain/anniversary/milestones";
 import { getLocalDateYear } from "@/domain/date/local-date";
 import {
   anniversaryExceptionSchema,
@@ -62,9 +62,6 @@ export interface IntegrityViolation {
   message: string;
 }
 
-export function isAutoDayMilestone(days: number): boolean {
-  return (AUTO_DAY_MILESTONES_BEFORE_100 as readonly number[]).includes(days) || (days > 0 && days % AUTO_DAY_MILESTONE_STEP === 0);
-}
 
 const DATE_FIELDS = new Set(["startDate", "date", "overrideDate", "createdAt", "updatedAt", "lastBackupAt"]);
 
@@ -181,7 +178,7 @@ export function checkIntegrity(snapshot: DatabaseSnapshot): IntegrityViolation[]
   const occurrenceProblem = (occurrenceId: string): { rule: IntegrityRule; message: string } | null => {
     const parsed = parseOccurrenceId(occurrenceId);
     if (!parsed) return { rule: "DB-011", message: "발생 ID 형식이 올바르지 않습니다." };
-    if (parsed.kind === "auto-day" && !isAutoDayMilestone(parsed.days)) return { rule: "DB-011", message: "존재하지 않는 자동 일수 기념일입니다." };
+    if (parsed.kind === "auto-day" && !isAutoDayMilestoneNumber(parsed.days)) return { rule: "DB-011", message: "존재하지 않는 자동 일수 기념일입니다." };
     if (parsed.kind === "custom") {
       const series = seriesById.get(parsed.seriesId);
       if (!series) return { rule: "DB-011", message: "존재하지 않는 사용자 지정 기념일입니다." };

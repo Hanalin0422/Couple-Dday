@@ -207,7 +207,7 @@ function EditorBody({
                 {error}
               </p>
             )}
-            <Button onClick={confirmDelete} disabled={busy || linked === null} className="bg-danger">
+            <Button variant="danger" onClick={confirmDelete} disabled={busy || linked === null}>
               삭제하기
             </Button>
             <Button variant="text" onClick={() => setView("form")} disabled={busy}>

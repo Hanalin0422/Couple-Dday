@@ -1,6 +1,6 @@
 # 커플 디데이 PWA — 테스트 케이스 명세
 
-- 버전: 0.5 (Phase 5 기념일 타임라인·사용자 지정 기념일 반영, 2026-11-26)
+- 버전: 0.6 (Phase 6 추억 사진·메모 반영, 2026-11-26)
 - 기준 문서: `REQUIREMENTS.md` v1.1, `ARCHITECTURE.md` v1.1, `.agents/skills/dday-design/SKILL.md`
 - 역할: 요구사항 ID ↔ 테스트 케이스 추적, 자동화/수동/실기기 검증 기준. 구현과 함께 계속 보완한다.
 
@@ -236,7 +236,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-TML-008 | TML-003, TML-004 | E | 필터 표시 | 지난 날 / 전체 / 다가오는 날, 동일 너비, 기본 전체 | 통과 `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
 | TC-TML-009 | TML-002 | E | 전체 필터 | `오늘 · 148일째` 구분선 | 통과 `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
 | TC-TML-010 | TML-007 | E | 최초 진입 | 오늘 근처 위치로 자동 스크롤 | 통과 `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
-| TC-TML-011 | TML-008, TML-009, TML-010 | E | 긴 목록 스크롤 | 제목·필터·하단 메뉴 고정, 타임라인만 스크롤 | 대기 |
+| TC-TML-011 | TML-008, TML-009, TML-010 | E | 긴 목록 스크롤 | 제목·필터·하단 메뉴 고정, 타임라인만 스크롤 | 통과 `tests/e2e/memories.spec.ts` (chromium, webkit) |
 | TC-TML-012 | TML-012, TML-013 | E | 당일/미래 카드 | 당일 D-DAY와 추억 등록 가능, 미래 D-N | 통과 `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
 | TC-TML-013 | TML-011 | E | 사진 있는 지난 기념일 | 사진·메모 조회, 접기/펼치기 | 통과 `tests/e2e/anniversary.spec.ts` (chromium, webkit) |
 | TC-TML-014 | TML-015 | E | 같은 날짜 기념일 | 개별 카드 | 대기 |
@@ -247,30 +247,30 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 
 | ID | 관련 요구사항 | 레벨 | 시나리오 / 입력 | 기대 결과 | 상태 |
 |---|---|---|---|---|---|
-| TC-MEM-001 | MEM-001, MEM-002 | I | 과거·당일·미래 발생 건에 신규 사진 등록 | 과거·당일 허용, 미래 거부 | 대기 |
-| TC-MEM-002 | MEM-003, MEM-E04, DB-004 | I | 4장 보유 상태에서 3장 추가 | 1장만 추가, 초과분 거부, 기존 유지 | 대기 |
-| TC-MEM-003 | MEM-011, MEM-E07, ARC-B01, ARC-B02, DB-008 | I | 같은 발생 건에 동일 바이트 파일 재등록 / 같은 배치 내 중복 | 차단 (unique index + 트랜잭션 재검증) | 대기 |
-| TC-MEM-004 | ARC-B01 | I | 다른 기념일에 같은 파일 | 허용 | 대기 |
+| TC-MEM-001 | MEM-001, MEM-002 | I | 과거·당일·미래 발생 건에 신규 사진 등록 | 과거·당일 허용, 미래 거부 | 통과 `tests/integration/services/memories.test.ts` |
+| TC-MEM-002 | MEM-003, MEM-E04, DB-004 | I | 4장 보유 상태에서 3장 추가 | 1장만 추가, 초과분 거부, 기존 유지 | 통과 `tests/integration/services/memories.test.ts` |
+| TC-MEM-003 | MEM-011, MEM-E07, ARC-B01, ARC-B02, DB-008 | I | 같은 발생 건에 동일 바이트 파일 재등록 / 같은 배치 내 중복 | 차단 (unique index + 트랜잭션 재검증) | 통과 `tests/integration/services/memories.test.ts` |
+| TC-MEM-004 | ARC-B01 | I | 다른 기념일에 같은 파일 | 허용 | 통과 `tests/integration/services/memories.test.ts` |
 | TC-MEM-005 | ARC-B02 | U | 원본 SHA-256 | 64자리 hex, 재압축본은 중복으로 판정하지 않음 | 대기 |
-| TC-MEM-006 | MEM-009, ARC-B03, MEM-E09, DB-005, DB-006 | I | 첫 사진 등록 / 대표 삭제 / 마지막 사진 삭제 | 첫 사진 대표, 남은 첫 사진 대표, 대표 null | 대기 |
-| TC-MEM-007 | MEM-010, ARC-B04, DB-007 | I | 순서 변경 | sortOrder 0부터 연속, 대표 ID 유지 | 대기 |
-| TC-MEM-008 | MEM-E10 | I | 순서/대표 변경 실패 주입 | 기존 순서/대표 유지 | 대기 |
-| TC-MEM-009 | MEM-013, ARC-B05, MEM-E11, DB-003 | I | 사진 없이 메모 저장, 500자/501자 | 단독 저장 허용, 501자 거부 | 대기 |
-| TC-MEM-010 | ARC-B06, SET-016, SET-E07 | I | 시작일 변경으로 미래가 된 발생 건 | 기존 사진/메모 보존·조회·메모 수정 허용, 신규 사진 거부 | 대기 |
+| TC-MEM-006 | MEM-009, ARC-B03, MEM-E09, DB-005, DB-006 | I | 첫 사진 등록 / 대표 삭제 / 마지막 사진 삭제 | 첫 사진 대표, 남은 첫 사진 대표, 대표 null | 통과 `tests/integration/services/memories.test.ts` |
+| TC-MEM-007 | MEM-010, ARC-B04, DB-007 | I | 순서 변경 | sortOrder 0부터 연속, 대표 ID 유지 | 통과 `tests/integration/services/memories.test.ts` |
+| TC-MEM-008 | MEM-E10 | I | 순서/대표 변경 실패 주입 | 기존 순서/대표 유지 | 통과 `tests/integration/services/memories.test.ts` |
+| TC-MEM-009 | MEM-013, ARC-B05, MEM-E11, DB-003 | I | 사진 없이 메모 저장, 500자/501자 | 단독 저장 허용, 501자 거부 | 통과 `tests/integration/services/memories.test.ts` |
+| TC-MEM-010 | ARC-B06, SET-016, SET-E07 | I | 시작일 변경으로 미래가 된 발생 건 | 기존 사진/메모 보존·조회·메모 수정 허용, 신규 사진 거부 | 통과 `tests/integration/services/memories.test.ts` |
 | TC-MEM-011 | MEM-006, ARC-B07 | I | 4000×3000 JPEG / 1000×800 PNG / 프로필 2000×2000 | 긴 변 1920 / 원본 크기 유지(확대 없음) / 512×512 이내, JPEG 품질 0.85 | 대기 |
-| TC-MEM-012 | MEM-014, MEM-E02 | I | 손상 파일, 지원하지 않는 형식 | 해당 항목 실패 안내, 다른 형식 선택 가능 | 대기 |
-| TC-MEM-013 | MEM-015 | I | GPS EXIF 포함 JPEG | 저장 Blob에 EXIF/GPS 없음 | 대기 |
-| TC-MEM-014 | MEM-012, MEM-E06 | I | 3장 중 2번째 실패 | 1·3번째 저장, 실패 항목 구분·재시도 가능 | 대기 |
+| TC-MEM-012 | MEM-014, MEM-E02 | I | 손상 파일, 지원하지 않는 형식 | 해당 항목 실패 안내, 다른 형식 선택 가능 | 통과 `tests/e2e/memories.spec.ts` (chromium, webkit) |
+| TC-MEM-013 | MEM-015 | I | GPS EXIF 포함 JPEG | 저장 Blob에 EXIF/GPS 없음 | 통과 `tests/e2e/memories.spec.ts` (chromium, webkit) |
+| TC-MEM-014 | MEM-012, MEM-E06 | I | 3장 중 2번째 실패 | 1·3번째 저장, 실패 항목 구분·재시도 가능 | 통과 `tests/integration/services/memories.test.ts`, `tests/e2e/memories.spec.ts` (chromium, webkit) |
 | TC-MEM-015 | MEM-E03 | I | 압축 실패 주입 | 해당 사진 미저장, 기존 사진 유지 | 대기 |
 | TC-MEM-016 | MEM-E05 | I | QuotaExceededError 주입 | 실패 안내, 백업/공간 확보 안내 | 대기 |
-| TC-MEM-017 | MEM-E08 | I | 처리 중 중단(트랜잭션 전/중) | 완료된 저장만 유지, 고아 참조 없음 | 대기 |
-| TC-MEM-018 | MEM-007 | E | 등록 후 새로고침 | 사진·메모·순서·대표 유지 | 대기 |
-| TC-MEM-019 | MEM-004, MEM-005 | E | 사진 확대(전체 화면), 삭제 확인 | 확대 표시, 확인 후 삭제 | 대기 |
-| TC-MEM-020 | MEM-016 | E | 사진 등록 Sheet | 손잡이, 기념일명, "소중한 순간을 남겨보세요", 안내, "사진 선택하기", "다음에" 순서 | 대기 |
+| TC-MEM-017 | MEM-E08 | I | 처리 중 중단(트랜잭션 전/중) | 완료된 저장만 유지, 고아 참조 없음 | 통과 `tests/integration/services/memories.test.ts` |
+| TC-MEM-018 | MEM-007 | E | 등록 후 새로고침 | 사진·메모·순서·대표 유지 | 통과 `tests/e2e/memories.spec.ts` (chromium, webkit) |
+| TC-MEM-019 | MEM-004, MEM-005 | E | 사진 확대(전체 화면), 삭제 확인 | 확대 표시, 확인 후 삭제 | 통과 `tests/e2e/memories.spec.ts` (chromium, webkit) |
+| TC-MEM-020 | MEM-016 | E | 사진 등록 Sheet | 손잡이, 기념일명, "소중한 순간을 남겨보세요", 안내, "사진 선택하기", "다음에" 순서 | 통과 `tests/e2e/memories.spec.ts` (chromium, webkit) |
 | TC-MEM-021 | MEM-E01 | E | 파일 선택 취소 | 상태 변경 없음 | 대기 |
 | TC-MEM-022 | MEM-E12 | E | 사진 없는 기록 | 예시 사진 미표시 | 대기 |
 | TC-MEM-023 | MEM-008 | I | 백업→복원 왕복 | 사진·메모·대표·순서 동일 (TC-RES-001과 함께) | 대기 |
-| TC-MEM-024 | NFR-002 | I | 썸네일 표시/해제 | 사용 종료 시 revokeObjectURL 호출 | 대기 |
+| TC-MEM-024 | NFR-002 | I | 썸네일 표시/해제 | 사용 종료 시 revokeObjectURL 호출 | 통과 `tests/unit/hooks/object-url-cache.test.ts` |
 | TC-MEM-025 | ARC-B08, MEM-007 | I/E | 사진을 이미지 바이트(ArrayBuffer)+mimeType으로 저장·조회, WebKit(임시 세션)에서 프로필 사진 저장·표시 | Blob 저장 실패 없이 저장·재조회·표시 | 통과 `tests/integration/db/database.test.ts`, `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 
 ### 3.10 설정 및 데이터 정합성
@@ -498,3 +498,6 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | 2026-11-26 | `npm run verify`, `npx playwright test --repeat-each=2` | 통과 240/240, E2E 116/116 | 공통 반응형 기준(AppFrame·--u 토큰) 적용 후 |
 | 2026-11-26 | `npm run verify`, `npx playwright test` | 통과, E2E 64/64 | 축하 효과 15초·100일 단위 재생(HOME-033) 반영 후. 실제 시간 캡처로 1.5s/7s/12.5s 분포와 16s 정리 확인 |
 | 2026-11-26 | `npm run verify`, `npx playwright test --repeat-each=2` (Phase 5) | 통과 267/267, E2E 168/168 | 기념일 타임라인·사용자 지정 기념일·반복 예외(ARC-A06~A09) |
+| 2026-11-26 | `npm run verify`, `npx playwright test --repeat-each=2` (Phase 6) | 통과 284/284, E2E 200/200 | 추억 사진·메모·대표·순서, 부분 실패, EXIF 제거, 미래 제한 |
+| 2026-11-26 | `npm run verify`, `npx playwright test --repeat-each=2` | 통과 286/286, E2E 208/208 | 추억 저장 흐름 개편(메모만·저장 한 번·보기 화면 삭제/닫기), 개발 모드 사진 깨짐 수정(객체 URL 캐시) — 개발 서버에서 편집·보기·카드 이미지 정상 확인 |
+| 2026-11-26 | `npx playwright test` | 통과 104/104 | 버튼 색을 종류(variant)로 고정: 추억 보기 "삭제" 글씨 대비 1.15→3.77:1, "수정" 강조색 적용 |

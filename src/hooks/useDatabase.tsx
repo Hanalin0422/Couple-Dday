@@ -6,7 +6,7 @@
  */
 import { createContext, useContext, type ReactNode } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import type { AnniversaryException, Couple, CustomAnniversary, Photo, Settings } from "@/domain/entities";
+import type { AnniversaryException, Couple, CustomAnniversary, Memory, Photo, Settings } from "@/domain/entities";
 import type { CoupleDatabase } from "@/infrastructure/db/database";
 
 const DatabaseContext = createContext<CoupleDatabase | null>(null);
@@ -45,4 +45,28 @@ export function useCustomAnniversaries(): CustomAnniversary[] | undefined {
 export function useAnniversaryExceptions(): AnniversaryException[] | undefined {
   const db = useDatabase();
   return useLiveQuery(() => db.anniversaryExceptions.toArray(), [db]);
+}
+
+/** 모든 추억 레코드(메모·대표 사진 ID, 이미지 바이트 미포함). */
+export function useMemories(): Map<string, Memory> | undefined {
+  const db = useDatabase();
+  return useLiveQuery(async () => new Map((await db.memories.toArray()).map((m) => [m.occurrenceId, m])), [db]);
+}
+
+/** 발생 건의 사진(순서대로). enabled=false 이면 조회하지 않는다(이미지 지연 로딩, NFR-002). */
+export function useOccurrencePhotos(occurrenceId: string, enabled = true): Photo[] | undefined {
+  const db = useDatabase();
+  return useLiveQuery(
+    async () =>
+      enabled
+        ? db.photos.where("[ownerType+ownerId+sortOrder]").between(["memory", occurrenceId, 0], ["memory", occurrenceId, Infinity]).toArray()
+        : [],
+    [db, occurrenceId, enabled],
+  );
+}
+
+/** 발생 건의 사진 수 (이미지 바이트를 읽지 않음). */
+export function useOccurrencePhotoCount(occurrenceId: string, enabled = true): number | undefined {
+  const db = useDatabase();
+  return useLiveQuery(async () => (enabled ? db.photos.where("[ownerType+ownerId]").equals(["memory", occurrenceId]).count() : 0), [db, occurrenceId, enabled]);
 }
