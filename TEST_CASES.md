@@ -1,6 +1,6 @@
 # 커플 디데이 PWA — 테스트 케이스 명세
 
-- 버전: 0.3 (Phase 2 DB 계층 반영, 2026-11-26)
+- 버전: 0.4 (Phase 4 온보딩·메인·설정 반영, 2026-11-26)
 - 기준 문서: `REQUIREMENTS.md` v1.1, `ARCHITECTURE.md` v1.1, `.agents/skills/dday-design/SKILL.md`
 - 역할: 요구사항 ID ↔ 테스트 케이스 추적, 자동화/수동/실기기 검증 기준. 구현과 함께 계속 보완한다.
 
@@ -103,11 +103,11 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-DATE-011 | DATE-001, DATE-004 | U | 시작일 입력 검증: 오늘 / 내일 | 오늘 허용, 내일 거부 | 통과 `tests/unit/domain/dday.test.ts` |
 | TC-DATE-012 | DATE-008, DATE-E01 | U | 저장 직전 재검증에 미래 날짜를 직접 전달(UI 우회) | 저장 거부 | 통과 `tests/unit/domain/dday.test.ts` |
 | TC-DATE-013 | DATE-009, CUS-003 | U | 사용자 지정 기념일 날짜: 시작일 전날 / 시작일 / 미래 | 거부 / 허용 / 허용 | 통과 `tests/unit/domain/dday.test.ts` |
-| TC-DATE-014 | DATE-002, DATE-003, DATE-005 | E | 온보딩과 설정에서 DatePicker 열기 | 동일 컴포넌트, 미래 날짜 비활성, 다음 달 이동 불가 | 대기 |
-| TC-DATE-015 | DATE-006 | E | DatePicker에서 날짜 변경 후 취소 | 기존 값 유지 | 대기 |
+| TC-DATE-014 | DATE-002, DATE-003, DATE-005 | E | 온보딩과 설정에서 DatePicker 열기 | 동일 컴포넌트, 미래 날짜 비활성, 다음 달 이동 불가 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-DATE-015 | DATE-006 | E | DatePicker에서 날짜 변경 후 취소 | 기존 값 유지 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-DATE-016 | DATE-007, DATE-E06 | E | 23:59에 DatePicker를 열고 자정 경과(clock 조작) | 선택 가능 범위가 새 오늘로 갱신, 저장 직전 재검증 | 대기 |
 | TC-DATE-017 | DATE-E03, DATE-E04, HOME-009, PWA-009 | E | 앱 활성 상태에서 자정 경과 / `visibilitychange`·`pageshow`·`focus` 복귀 | 오늘 재조회, 디데이/진행률 갱신 | 대기 |
-| TC-DATE-018 | DATE-E05 | E | 기기 날짜를 시작일 이전으로 설정 후 실행, 다시 정상 날짜로 복귀 | 날짜 확인 안내, 음수 미표시, DB 변경 없음, 복귀 시 재계산 | 대기 |
+| TC-DATE-018 | DATE-E05 | E | 기기 날짜를 시작일 이전으로 설정 후 실행, 다시 정상 날짜로 복귀 | 날짜 확인 안내, 음수 미표시, DB 변경 없음, 복귀 시 재계산 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 
 ### 3.3 자동 기념일
 
@@ -143,12 +143,12 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-HOME-013 | HOME-019, HOME-E19 | U | 사용자 지정 기념일 당일(주년 아님) | `type: 'days'` | 통과 `tests/unit/domain/home-progress.test.ts` |
 | TC-HOME-014 | HOME-020 | U | 주년 당일 진행률 | 100% | 통과 `tests/unit/domain/home-progress.test.ts` |
 | TC-HOME-015 | HOME-E14 | U | FX-LEAP 2025-02-28 / 2028-02-29 / 2028-02-28 | 주년 / 주년(4주년) / 일반 | 통과 `tests/unit/domain/home-progress.test.ts` |
-| TC-HOME-016 | HOME-001, ONB-E09 | E | 완료된 데이터로 앱 실행 | 메인 기본 진입, 온보딩 미표시 | 대기 |
-| TC-HOME-017 | HOME-006, HOME-007, HOME-008, ONB-004 | E | FX-NAMES, 사진 없음 | 원 아래 두 기본 프로필·하트·이름, 시작일 `2026.07.01` | 대기 |
-| TC-HOME-018 | HOME-010, SET-007 | E | 설정에서 이름 변경 저장 후 메인 이동 | 즉시 반영 | 대기 |
-| TC-HOME-019 | HOME-011 | E | 메인 화면 텍스트 검사 | 다음 기념일 이름/남은 일수 미표시 | 대기 |
-| TC-HOME-020 | HOME-012, HOME-E09 | E | 뷰포트 320×568, 375×667, 390×844, 430×932 | 문서 세로 스크롤 없음, 원·프로필 잘림 없음 | 대기 |
-| TC-HOME-021 | HOME-013, NAV-001 | E | 메인 하단 메뉴 | 중앙 하트 활성(accent), 텍스트 없음 | 대기 |
+| TC-HOME-016 | HOME-001, ONB-E09 | E | 완료된 데이터로 앱 실행 | 메인 기본 진입, 온보딩 미표시 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-HOME-017 | HOME-006, HOME-007, HOME-008, ONB-004 | E | FX-NAMES, 사진 없음 | 원 아래 두 기본 프로필·하트·이름, 시작일 `2026.07.01` | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-HOME-018 | HOME-010, SET-007 | E | 설정에서 이름 변경 저장 후 메인 이동 | 즉시 반영 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-HOME-019 | HOME-011 | E | 메인 화면 텍스트 검사 | 다음 기념일 이름/남은 일수 미표시 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-HOME-020 | HOME-012, HOME-E09 | E | 뷰포트 320×568, 375×667, 390×844, 430×932 | 문서 세로 스크롤 없음, 원·프로필 잘림 없음 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-HOME-021 | HOME-013, NAV-001 | E | 메인 하단 메뉴 | 중앙 하트 활성(accent), 텍스트 없음 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-HOME-022 | HOME-016, HOME-E16 | E | 1, 2, 10, 99주년 표시 | 숫자 Cormorant Garamond Italic, '주년' 마루 부리, 한 줄, 원 내부에서 잘림·줄바꿈·말줄임 없음 | 대기 |
 | TC-HOME-023 | HOME-029 | E | 일반일/주년 당일 레이아웃 비교 | 원 크기, 프로필 위치, 하단 메뉴 위치 동일 | 대기 |
 | TC-HOME-024 | HOME-E18 | E | 주년 당일 23:59:59 → 자정 경과 | 애니메이션 정리, 일반 디데이 디자인 복귀 | 대기 |
@@ -157,46 +157,46 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 
 | ID | 관련 요구사항 | 레벨 | 시나리오 / 입력 | 기대 결과 | 상태 |
 |---|---|---|---|---|---|
-| TC-CEL-001 | HOME-022, HOME-023 | U | 자동 재생 판정: 주년 당일 + 이력 없음 / 같은 날짜·시작일 이력 있음 | 재생 / 미재생 | 대기 |
-| TC-CEL-002 | HOME-E17 | U | 이력 키가 시작일을 포함하는지 (시작일 변경 후 새 주년) | 다른 식별자로 판정 | 대기 |
-| TC-CEL-003 | HOME-E29 | I | localStorage 접근 시 예외 발생 | 앱 오류 없음, 같은 실행 세션에서 재자동재생 없음, 주년 디자인 유지 | 대기 |
-| TC-CEL-004 | HOME-024 | I | 수동 재생 후 이력 확인 | 자동 재생 이력 변경 없음 | 대기 |
+| TC-CEL-001 | HOME-022, HOME-023 | U | 자동 재생 판정: 주년 당일 + 이력 없음 / 같은 날짜·시작일 이력 있음 | 재생 / 미재생 | 통과 `tests/unit/home/celebration.test.ts` |
+| TC-CEL-002 | HOME-E17 | U | 이력 키가 시작일을 포함하는지 (시작일 변경 후 새 주년) | 다른 식별자로 판정 | 통과 `tests/unit/home/celebration.test.ts` |
+| TC-CEL-003 | HOME-E29 | I | localStorage 접근 시 예외 발생 | 앱 오류 없음, 같은 실행 세션에서 재자동재생 없음, 주년 디자인 유지 | 통과 `tests/unit/home/celebration.test.ts` |
+| TC-CEL-004 | HOME-024 | I | 수동 재생 후 이력 확인 | 자동 재생 이력 변경 없음 | 통과 `tests/unit/home/celebration.test.ts` |
 | TC-CEL-005 | RST-006 | I | 전체 초기화 | `couple-dday:celebration:last-auto-played` 키 제거 | 대기 |
 | TC-CEL-006 | BAK-001 | I | 백업 생성 | 축하 재생 이력 미포함 | 대기 |
 | TC-CEL-007 | HOME-E22 | I | 재생 중 다시 재생 요청 | 이전 rAF 취소 후 1개 루프만 실행 | 대기 |
 | TC-CEL-008 | HOME-025 | I | 가짜 시계로 7초 진행 | 종료 구간에서 투명도 감소 후 종료, 입자 0, 캔버스 초기화 | 대기 |
-| TC-CEL-009 | HOME-022 | E | 주년 당일 최초 메인 진입 | 오버레이 캔버스 재생 시작 | 대기 |
-| TC-CEL-010 | HOME-E20, HOME-E21 | E | 같은 날 설정/기념일 다녀오기, 앱 재실행 | 자동 재생 반복 없음, 주년 디자인 유지 | 대기 |
-| TC-CEL-011 | HOME-024, HOME-031 | E | 원형 디데이 영역 터치 | 재생, 별도 재생 버튼/설정 메뉴 없음 | 대기 |
-| TC-CEL-012 | HOME-026 | E | 재생 중 하단 메뉴 탭, 좌우 스와이프 | 정상 이동 (캔버스 `pointer-events: none`) | 대기 |
+| TC-CEL-009 | HOME-022 | E | 주년 당일 최초 메인 진입 | 오버레이 캔버스 재생 시작 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-CEL-010 | HOME-E20, HOME-E21 | E | 같은 날 설정/기념일 다녀오기, 앱 재실행 | 자동 재생 반복 없음, 주년 디자인 유지 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-CEL-011 | HOME-024, HOME-031 | E | 원형 디데이 영역 터치 | 재생, 별도 재생 버튼/설정 메뉴 없음 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-CEL-012 | HOME-026 | E | 재생 중 하단 메뉴 탭, 좌우 스와이프 | 정상 이동 (캔버스 `pointer-events: none`) | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-CEL-013 | HOME-E23, HOME-E26, PWA-015 | E | 재생 중 화면 이동 / `visibilitychange: hidden` | cancelAnimationFrame 호출, 리소스 정리 | 대기 |
-| TC-CEL-014 | HOME-027, HOME-E24 | E | `reducedMotion: 'reduce'`로 주년 당일 진입 후 원형 터치 | 자동 재생 없음, 주년 디자인 유지, 터치 시 재생 | 대기 |
+| TC-CEL-014 | HOME-027, HOME-E24 | E | `reducedMotion: 'reduce'`로 주년 당일 진입 후 원형 터치 | 자동 재생 없음, 주년 디자인 유지, 터치 시 재생 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-CEL-015 | HOME-028 | E | 일반 날짜, 100일 당일 | 캔버스 애니메이션 실행 없음 | 대기 |
 | TC-CEL-016 | HOME-E25 | E | Canvas `getContext`가 null을 반환하도록 주입 | 메인 정상 렌더링, 주년 디자인 표시 | 대기 |
 | TC-CEL-017 | HOME-030, HOME-E27, PWA-014 | E | SW 캐시 후 오프라인에서 주년 당일 | 주년 폰트·애니메이션 정상 | 대기 |
-| TC-CEL-018 | HOME-032 | R | 코드 검토 | Audio/사운드 API 미사용 | 대기 |
-| TC-CEL-019 | HOME-025 | R | 입자 설정 검토 | 약 65개, 2~6px, 타원 꽃가루+4각 별빛, celebration 토큰 색상, 경과 시간 기반 프레임, devicePixelRatio 반영 | 대기 |
+| TC-CEL-018 | HOME-032 | R | 코드 검토 | Audio/사운드 API 미사용 | 통과 (코드 검토: Audio API 미사용) |
+| TC-CEL-019 | HOME-025 | R | 입자 설정 검토 | 약 65개, 2~6px, 타원 꽃가루+4각 별빛, celebration 토큰 색상, 경과 시간 기반 프레임, devicePixelRatio 반영 | 통과 `tests/unit/home/celebration.test.ts`, 코드 검토 |
 
 ### 3.6 온보딩
 
 | ID | 관련 요구사항 | 레벨 | 시나리오 / 입력 | 기대 결과 | 상태 |
 |---|---|---|---|---|---|
-| TC-ONB-001 | ONB-001, PWA-008 | E | 빈 DB 최초 실행 | DB 조회 완료 후 온보딩 표시. 조회 전에는 온보딩 미표시 | 대기 |
-| TC-ONB-002 | ONB-002, ONB-003, ONB-E01 | U | 이름 `""`, `"   "`, `" 하늘 "` | 거부 / 거부 / `하늘`로 저장 | 대기 |
-| TC-ONB-003 | ONB-E02, DB-003 | U | 10자 / 11자, 이모지·결합 문자 포함 | 10자 허용, 11자 거부. 사용자 인식 문자(grapheme) 기준 제안을 구현·테스트함(`tests/unit/application/entity-schemas.test.ts`), 기준 확정 대기 | 보류 |
+| TC-ONB-001 | ONB-001, PWA-008 | E | 빈 DB 최초 실행 | DB 조회 완료 후 온보딩 표시. 조회 전에는 온보딩 미표시 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-ONB-002 | ONB-002, ONB-003, ONB-E01 | U | 이름 `""`, `"   "`, `" 하늘 "` | 거부 / 거부 / `하늘`로 저장 | 통과 `tests/integration/services/onboarding-settings.test.ts` |
+| TC-ONB-003 | ONB-E02, DB-003 | U | 10자 / 11자, 이모지·결합 문자 포함 | 사용자 인식 문자 기준 10자 허용, 11자 거부 (2026-11-26 확정) | 통과 `tests/unit/application/entity-schemas.test.ts` |
 | TC-ONB-004 | ONB-E02 | E | 한글 IME 조합 중 10자 경계 입력 | 조합이 깨지지 않음 | 대기 |
-| TC-ONB-005 | ONB-005, ONB-E04 | E | 날짜 미선택 / 미래 날짜 | 시작하기 비활성 | 대기 |
-| TC-ONB-006 | ONB-008 | E | 두 이름과 날짜 입력 | 시작하기 활성화 | 대기 |
-| TC-ONB-007 | ONB-009, DB-002, DB-013 | I | 완료 저장 | couple/settings/photos/draft 단일 트랜잭션, draft 삭제, onboardingCompleted=true | 대기 |
-| TC-ONB-008 | ONB-E07 | I | 완료 트랜잭션 중 실패 주입 | 완료 플래그 미설정, 데이터 변경 없음, 온보딩 유지·재시도 가능 | 대기 |
-| TC-ONB-009 | ONB-012, ONB-E05 | E | 이름·날짜·방식·사진 입력 중 새로고침 | 마지막 임시 저장 상태 복구, 완료로 간주하지 않음 | 대기 |
+| TC-ONB-005 | ONB-005, ONB-E04 | E | 날짜 미선택 / 미래 날짜 | 시작하기 비활성 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-ONB-006 | ONB-008 | E | 두 이름과 날짜 입력 | 시작하기 활성화 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-ONB-007 | ONB-009, DB-002, DB-013 | I | 완료 저장 | couple/settings/photos/draft 단일 트랜잭션, draft 삭제, onboardingCompleted=true | 통과 `tests/integration/services/onboarding-settings.test.ts` |
+| TC-ONB-008 | ONB-E07 | I | 완료 트랜잭션 중 실패 주입 | 완료 플래그 미설정, 데이터 변경 없음, 온보딩 유지·재시도 가능 | 통과 `tests/integration/services/onboarding-settings.test.ts` |
+| TC-ONB-009 | ONB-012, ONB-E05 | E | 이름·날짜·방식·사진 입력 중 새로고침 | 마지막 임시 저장 상태 복구, 완료로 간주하지 않음 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-ONB-010 | ONB-E06 | I | draft 저장 실패 주입 | 오류 안내, 현재 입력 유지 | 대기 |
-| TC-ONB-011 | ONB-013 | I | 완료 / 복원 성공 | draft 제거 | 대기 |
-| TC-ONB-012 | ONB-004, ONB-E03 | E | 사진 선택 취소 | 기본 이미지 또는 기존 선택 유지 | 대기 |
+| TC-ONB-011 | ONB-013 | I | 완료 / 복원 성공 | draft 제거 | 통과 `tests/integration/services/onboarding-settings.test.ts` |
+| TC-ONB-012 | ONB-004, ONB-E03 | E | 사진 선택 취소 | 기본 이미지 또는 기존 선택 유지 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-ONB-013 | ONB-010, RES-007 | E | "기존 데이터 복원하기" | 복원 흐름 진입 | 대기 |
 | TC-ONB-014 | ONB-E08 | E | 온보딩 복원 취소/실패 | 기존 임시 입력 유지 | 대기 |
-| TC-ONB-015 | ONB-011 | E | 온보딩 화면 | 하단 내비게이션 없음 | 대기 |
-| TC-ONB-016 | ONB-E09 | E | 완료 후 재실행, 설정 변경, 프로필 삭제 | 온보딩 재표시 없음 | 대기 |
+| TC-ONB-015 | ONB-011 | E | 온보딩 화면 | 하단 내비게이션 없음 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-ONB-016 | ONB-E09 | E | 완료 후 재실행, 설정 변경, 프로필 삭제 | 온보딩 재표시 없음 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 
 ### 3.7 사용자 지정 기념일 및 반복
 
@@ -270,22 +270,23 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-MEM-022 | MEM-E12 | E | 사진 없는 기록 | 예시 사진 미표시 | 대기 |
 | TC-MEM-023 | MEM-008 | I | 백업→복원 왕복 | 사진·메모·대표·순서 동일 (TC-RES-001과 함께) | 대기 |
 | TC-MEM-024 | NFR-002 | I | 썸네일 표시/해제 | 사용 종료 시 revokeObjectURL 호출 | 대기 |
+| TC-MEM-025 | ARC-B08, MEM-007 | I/E | 사진을 이미지 바이트(ArrayBuffer)+mimeType으로 저장·조회, WebKit(임시 세션)에서 프로필 사진 저장·표시 | Blob 저장 실패 없이 저장·재조회·표시 | 통과 `tests/integration/db/database.test.ts`, `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 
 ### 3.10 설정 및 데이터 정합성
 
 | ID | 관련 요구사항 | 레벨 | 시나리오 / 입력 | 기대 결과 | 상태 |
 |---|---|---|---|---|---|
-| TC-SET-001 | SET-001, SET-002, SET-E02 | I | 이름 변경 (유효/무효) | 유효값만 저장 | 대기 |
-| TC-SET-002 | SET-003, SET-004, SET-E03, DB-004 | I | 프로필 사진 교체 / 삭제 | 신규 사진·참조·기존 사진 삭제를 한 트랜잭션, 삭제 시 기본 이미지 | 대기 |
-| TC-SET-003 | SET-005 | E | 연애 시작일 변경 DatePicker | 오늘까지만 선택 | 대기 |
-| TC-SET-004 | SET-006, SET-014 | E | 계산 방식 변경 | 영향 안내·확인 후 저장, 안내 문구 `처음 사귄 날을 N일로 계산해요.` | 대기 |
-| TC-SET-005 | SET-007, ARC-E03, SET-E04 | I | 저장 실패 주입 | 변경 전 데이터 유지, 성공 표시 없음, UI는 커밋 후에만 갱신 | 대기 |
-| TC-SET-006 | SET-E01 | E | 변경 Sheet 취소 | 기존 값 유지 | 대기 |
-| TC-SET-007 | SET-015, SET-E05, DB-012 | I | 시작일 07-01→07-05 변경 (`auto:day:100`에 사진 있음) | 100일 날짜 10-08→10-12, 사진/메모/대표/순서 유지 | 대기 |
+| TC-SET-001 | SET-001, SET-002, SET-E02 | I | 이름 변경 (유효/무효) | 유효값만 저장 | 통과 `tests/integration/services/onboarding-settings.test.ts` |
+| TC-SET-002 | SET-003, SET-004, SET-E03, DB-004 | I | 프로필 사진 교체 / 삭제 | 신규 사진·참조·기존 사진 삭제를 한 트랜잭션, 삭제 시 기본 이미지 | 통과 `tests/integration/services/onboarding-settings.test.ts` |
+| TC-SET-003 | SET-005 | E | 연애 시작일 변경 DatePicker | 오늘까지만 선택 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-SET-004 | SET-006, SET-014 | E | 계산 방식 변경 | 영향 안내·확인 후 저장, 안내 문구 `처음 사귄 날을 N일로 계산해요.` | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-SET-005 | SET-007, ARC-E03, SET-E04 | I | 저장 실패 주입 | 변경 전 데이터 유지, 성공 표시 없음, UI는 커밋 후에만 갱신 | 통과 `tests/integration/services/onboarding-settings.test.ts` |
+| TC-SET-006 | SET-E01 | E | 변경 Sheet 취소 | 기존 값 유지 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-SET-007 | SET-015, SET-E05, DB-012 | I | 시작일 07-01→07-05 변경 (`auto:day:100`에 사진 있음) | 100일 날짜 10-08→10-12, 사진/메모/대표/순서 유지 | 통과 `tests/integration/services/onboarding-settings.test.ts` |
 | TC-SET-008 | SET-E06, ARC-A01 | I | 시작일 이후로 변경하여 기존 사용자 지정 기념일이 시작일 이전이 됨 | 기념일·추억 유지, 신규 등록은 새 시작일 이상만 허용 | 대기 |
-| TC-SET-009 | SET-008, SET-009, SET-010 | E | 설정 데이터 관리 카드 | 데이터 백업 / 데이터 복원 / 데이터 초기화(danger) 순서 | 대기 |
+| TC-SET-009 | SET-008, SET-009, SET-010 | E | 설정 데이터 관리 카드 | 데이터 백업 / 데이터 복원 / 데이터 초기화(danger) 순서 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-SET-010 | SET-011 | E | 화면 꾸미기 카드 | 테마 `Dusty Rose` 표시, 추가 테마 선택 없음 (행 조작 여부 보류) | 대기 |
-| TC-SET-011 | SET-012 | E | 설정 스크롤 | 콘텐츠만 스크롤, 하단 메뉴 고정 | 대기 |
+| TC-SET-011 | SET-012 | E | 설정 스크롤 | 콘텐츠만 스크롤, 하단 메뉴 고정 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-SET-012 | SET-013, ARC-D01 | E | 백업 성공 후 / 복원 후 | 마지막 백업 일시 표시(상세 배치 보류), 복원 후 백업 생성 일시 | 대기 |
 
 ### 3.11 데이터베이스 및 무결성
@@ -355,14 +356,14 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-BTS-001 | BTS-001, BTS-002, BTS-004, BTS-011 | E | Sheet 열기 | 하단에서 표시, dim, 핸들, Safe Area 반영 | 대기 |
 | TC-BTS-002 | BTS-003 | E | Sheet 표시 중 배경 스크롤/터치 | 차단 (닫기 동작 제외) | 대기 |
 | TC-BTS-003 | BTS-005, BTS-006, BTS-013 | E | 변경 없음 상태에서 아래 스와이프 / 취소 / 배경 터치 | 닫힘 | 대기 |
-| TC-BTS-004 | BTS-014 | E | 입력 변경 후 모든 닫기 경로 | 변경 취소 확인 | 대기 |
+| TC-BTS-004 | BTS-014 | E | 입력 변경 후 모든 닫기 경로 | 변경 취소 확인 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-BTS-005 | BTS-007 | E | 긴 내용 | Sheet 내부만 스크롤 | 대기 |
 | TC-BTS-006 | BTS-008 | D | 키보드 표시 | 입력과 주요 버튼 가림 없음 | 대기 |
 | TC-BTS-007 | BTS-009, BTS-015 | E | 처리 중 버튼 연타 / 닫기 | 중복 실행 없음, 완료까지 닫기 제한 | 대기 |
 | TC-BTS-008 | BTS-010 | E | Sheet 위에서 다른 Sheet 호출 | 중첩 없음, 동시에 1개 | 대기 |
 | TC-BTS-009 | BTS-012 | V | Sheet 스타일 | 흰 배경, 핸들, 보조 문구, Pretendard 제목, 안내 카드, 주요 버튼, 취소 문구 (세부 픽셀 보류) | 보류 |
-| TC-NAV-001 | NAV-001, PWA-013 | E | 설정/메인/기념일 하단 메뉴 | 순서 설정/하트/기념일, 활성 스타일, 일반 화면에서 동일 위치 | 대기 |
-| TC-NAV-002 | NAV-002, NAV-003, ARC-C04, PWA-012 | E | 각 화면 좌우 스와이프 | §12 표대로 이동, 양 끝에서 중단 | 대기 |
+| TC-NAV-001 | NAV-001, PWA-013 | E | 설정/메인/기념일 하단 메뉴 | 순서 설정/하트/기념일, 활성 스타일, 일반 화면에서 동일 위치 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
+| TC-NAV-002 | NAV-002, NAV-003, ARC-C04, PWA-012 | E | 각 화면 좌우 스와이프 | §12 표대로 이동, 양 끝에서 중단 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-NAV-003 | NAV-004 | E | Sheet/사진 확대/입력/순서 조작 중 스와이프 | 화면 전환 없음 | 대기 |
 | TC-NAV-004 | ARC-C05 | R/E | 화면 전환 | 단일 AppShell 내부 전환, URL별 페이지 라우팅 없음 | 대기 |
 | TC-NAV-005 | NAV-002 | D | 세로 스크롤과 스와이프 동시 | 의도하지 않은 화면 전환 없음, iOS 뒤로가기 제스처 방해 없음 (임계값 60px 보류) | 보류 |
@@ -473,7 +474,6 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 
 | 관련 테스트 | 미확정 사항 | 근거 |
 |---|---|---|
-| TC-ONB-003 | 문자 수 산정 단위(grapheme 제안) | ARCHITECTURE.md §17 |
 | TC-CUS-012 | 전체 반복 수정 시 기존 override/cancelled 처리, 최초 연도 변경 | ARCHITECTURE.md §17 |
 | TC-CUS-018 | 반복 유형 전환 시 ID 매핑 | ARCHITECTURE.md §17 |
 | TC-TML-016 | 빈 상태 문구, 동률 정렬 우선순위 | ARCHITECTURE.md §17 |
@@ -493,3 +493,4 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | 2026-11-26 | `npx playwright test --project=webkit-iphone` | 통과 5/5 | 사용자 install-deps 후. chromium도 우회 경로 없이 통과 |
 | 2026-11-26 | `npm test` (Phase 1) | 통과 155/155 | Domain 단위 테스트 추가. 오프셋 결함 주입 시 11건 실패 확인 후 복원 |
 | 2026-11-26 | `npm test` (Phase 2) | 통과 215/215 | DB 스키마·무결성·revision 트랜잭션·시작 상태 판정. revision 검사 제거 결함 주입 시 2건 실패 확인 후 복원 |
+| 2026-11-26 | `npm test`, `npx playwright test --repeat-each=3` (Phase 4) | 통과 240/240, E2E 168/168 | 온보딩·메인·주년·설정·스와이프 E2E(chromium, webkit). 사진 Blob→ArrayBuffer 전환(ARC-B08) 후 WebKit 사진 저장 통과 |

@@ -59,18 +59,18 @@ export function memory(overrides: Partial<Memory> = {}): Memory {
 }
 
 export function photo(overrides: Partial<Photo> = {}): Photo {
-  const blob = overrides.blob ?? new Blob([new Uint8Array([0xff, 0xd8, 0xff, 1, 2, 3])], { type: "image/jpeg" });
+  const data = overrides.data ?? new Uint8Array([0xff, 0xd8, 0xff, 1, 2, 3]).buffer;
   return {
     id: uuid(),
     ownerType: "memory",
     ownerId: "auto:day:100",
-    blob,
+    data,
     sourceHash: hash(uuid()),
     contentHash: hash("c"),
     mimeType: "image/jpeg",
     width: 100,
     height: 80,
-    size: blob.size,
+    size: data.byteLength,
     sortOrder: 0,
     createdAt: T0,
     ...overrides,

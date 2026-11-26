@@ -43,3 +43,10 @@ export function validateOptionalText(value: string, max: number): TextRuleViolat
 export function normalizeRequiredText(value: string): string {
   return value.trim();
 }
+
+/** max 자(사용자 인식 문자)를 넘는 부분을 잘라낸다. 이모지·결합 문자를 중간에서 자르지 않는다 (ONB-E02). */
+export function truncateToMaxCharacters(value: string, max: number): string {
+  const seg = getSegmenter();
+  const parts = seg ? Array.from(seg.segment(value), (s) => s.segment) : Array.from(value);
+  return parts.length <= max ? value : parts.slice(0, max).join("");
+}

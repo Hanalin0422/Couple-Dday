@@ -102,7 +102,7 @@ export const memorySchema = z.strictObject({
 }) satisfies z.ZodType<Memory>;
 
 const imageFields = {
-  blob: z.instanceof(Blob),
+  data: z.instanceof(ArrayBuffer),
   sourceHash: sha256HexSchema,
   contentHash: sha256HexSchema,
   mimeType: mimeTypeSchema,
@@ -111,7 +111,7 @@ const imageFields = {
   size: positiveInt,
 };
 
-const blobSizeMatches = (v: { blob: Blob; size: number }) => v.blob.size === v.size;
+const dataSizeMatches = (v: { data: ArrayBuffer; size: number }) => v.data.byteLength === v.size;
 
 export const photoSchema = z
   .strictObject({
@@ -122,7 +122,7 @@ export const photoSchema = z
     sortOrder: z.number().int().nonnegative(),
     createdAt: instantSchema,
   })
-  .refine(blobSizeMatches, { message: "Blob 크기와 size 가 다릅니다.", path: ["size"] })
+  .refine(dataSizeMatches, { message: "이미지 바이트 크기와 size 가 다릅니다.", path: ["size"] })
   .refine(
     (v) => (v.ownerType === "profile" ? v.ownerId === "self" || v.ownerId === "partner" : parseOccurrenceId(v.ownerId) !== null),
     { message: "소유자 ID 형식이 올바르지 않습니다.", path: ["ownerId"] },
@@ -131,7 +131,7 @@ export const photoSchema = z
 
 export const draftImageSchema = z
   .strictObject(imageFields)
-  .refine(blobSizeMatches, { message: "Blob 크기와 size 가 다릅니다.", path: ["size"] }) satisfies z.ZodType<DraftImage>;
+  .refine(dataSizeMatches, { message: "이미지 바이트 크기와 size 가 다릅니다.", path: ["size"] }) satisfies z.ZodType<DraftImage>;
 
 /** 온보딩 임시 입력은 작성 중 상태이므로 공백/빈 값을 허용하되 길이 상한은 지킨다. */
 const draftNameSchema = z.string().refine((v) => countCharacters(v) <= NAME_MAX_LENGTH, `${NAME_MAX_LENGTH}자 이하여야 합니다.`);

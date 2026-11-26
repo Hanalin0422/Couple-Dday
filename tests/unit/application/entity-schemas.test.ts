@@ -126,7 +126,8 @@ describe("엔티티 스키마", () => {
     expect(ok(photoSchema, photo({ ownerType: "profile", ownerId: "auto:day:100" }))).toBe(false);
     expect(ok(photoSchema, photo({ ownerType: "memory", ownerId: "self" }))).toBe(false);
     expect(ok(photoSchema, photo({ ownerType: "profile", ownerId: "self", sortOrder: 1 }))).toBe(false);
-    expect(ok(photoSchema, { ...photo(), blob: "not-a-blob" })).toBe(false);
+    expect(ok(photoSchema, { ...photo(), data: "not-bytes" })).toBe(false);
+    expect(ok(photoSchema, { ...photo(), data: new Blob([new Uint8Array(6)]) })).toBe(false);
     expect(ok(photoSchema, photo({ width: 0 }))).toBe(false);
   });
 
@@ -134,5 +135,15 @@ describe("엔티티 스키마", () => {
     expect(ok(onboardingDraftSchema, draft({ myName: "", partnerName: " " }))).toBe(true);
     expect(ok(onboardingDraftSchema, draft({ myName: "가".repeat(11) }))).toBe(false);
     expect(ok(onboardingDraftSchema, draft({ startDate: "2026-02-30" }))).toBe(false);
+  });
+});
+
+describe("최대 글자 수 자르기 (ONB-E02)", () => {
+  it("사용자 인식 문자 단위로 자르며 결합 문자를 깨뜨리지 않는다", async () => {
+    const { truncateToMaxCharacters } = await import("@/domain/policies/text-rules");
+    expect(truncateToMaxCharacters("가나다", 10)).toBe("가나다");
+    expect(truncateToMaxCharacters("가".repeat(12), 10)).toBe("가".repeat(10));
+    expect(truncateToMaxCharacters("👩‍❤️‍👨".repeat(11), 10)).toBe("👩‍❤️‍👨".repeat(10));
+    expect(truncateToMaxCharacters("áb́c", 2)).toBe("áb́");
   });
 });

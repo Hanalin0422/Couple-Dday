@@ -33,14 +33,14 @@ describe("스키마 v1", () => {
     expect(db.table("anniversaryExceptions").schema.primKey.keyPath).toEqual(["seriesId", "occurrenceYear"]);
   });
 
-  it("Blob 사진을 저장·조회한다 (MEM-006)", async () => {
+  it("압축 이미지 바이트(ArrayBuffer)를 저장·조회한다 (MEM-006, ARC-B08)", async () => {
     const db = await freshDb();
     const p = photo();
     await db.photos.add(p);
     const loaded = await db.photos.get(p.id);
-    expect(loaded?.blob).toBeInstanceOf(Blob);
-    expect(loaded?.blob.size).toBe(p.size);
-    expect(new Uint8Array(await loaded!.blob.arrayBuffer())).toEqual(new Uint8Array(await p.blob.arrayBuffer()));
+    expect(loaded?.data).toBeInstanceOf(ArrayBuffer);
+    expect(loaded?.data.byteLength).toBe(p.size);
+    expect(new Uint8Array(loaded!.data)).toEqual(new Uint8Array(p.data));
   });
 
   it("같은 소유자 내 동일 sourceHash 는 unique 인덱스로 차단, 다른 소유자는 허용 (DB-008, ARC-B01)", async () => {

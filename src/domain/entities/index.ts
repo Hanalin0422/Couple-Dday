@@ -62,11 +62,15 @@ export interface Memory {
   updatedAt: Instant;
 }
 
+/**
+ * 사진 이미지는 압축된 바이트(ArrayBuffer)와 mimeType 으로 저장한다(2026-11-26 사용자 승인, ARC-B08).
+ * Safari(WebKit) 임시 세션에서 IndexedDB Blob 저장이 실패하는 문제를 피하기 위함이며, 표시·내보내기 시 Blob 으로 변환한다.
+ */
 export interface Photo {
   id: string;
   ownerType: "profile" | "memory";
   ownerId: string;
-  blob: Blob;
+  data: ArrayBuffer;
   sourceHash: string;
   contentHash: string;
   mimeType: string;
@@ -78,7 +82,7 @@ export interface Photo {
 }
 
 export interface DraftImage {
-  blob: Blob;
+  data: ArrayBuffer;
   sourceHash: string;
   contentHash: string;
   mimeType: string;

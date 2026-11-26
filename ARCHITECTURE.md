@@ -32,6 +32,7 @@
 | ARC-B05 | 사진 없는 메모 단독 등록 허용 | MEM-013 |
 | ARC-B06 | 설정 변경으로 미래가 된 기존 메모 조회 및 수정 허용 | SET-016 |
 | ARC-B07 | 프로필 512px, 추억 1920px, 품질 0.85 초기값 | MEM-006 |
+| ARC-B08 | 사진은 압축 이미지 바이트(ArrayBuffer)+mimeType으로 저장하고 표시·내보내기 시 Blob으로 변환 (2026-11-26 승인) | MEM-006, MEM-007 |
 | ARC-C01 | 가장 가까운 기념일 강조, 카드 진행률은 직전 기념일부터 별도 계산 | TML-016, ANN-009 |
 | ARC-C02 | 가장 가까운 날짜에 겹치는 기념일 모두 강조 | TML-015 |
 | ARC-C03 | 미래 자동 기념일 1년씩 추가 로딩 | TML-014 |
@@ -190,12 +191,12 @@ interface Memory {
 }
 interface Photo {
   id: string; ownerType: 'profile' | 'memory'; ownerId: string;
-  blob: Blob; sourceHash: string; contentHash: string;
+  data: ArrayBuffer; sourceHash: string; contentHash: string;
   mimeType: string; width: number; height: number; size: number;
   sortOrder: number; createdAt: Instant;
 }
 interface DraftImage {
-  blob: Blob; sourceHash: string; contentHash: string;
+  data: ArrayBuffer; sourceHash: string; contentHash: string;
   mimeType: string; width: number; height: number; size: number;
 }
 interface OnboardingDraft {
@@ -232,7 +233,7 @@ class CoupleDatabase extends Dexie {
 }
 ```
 
-Blob에는 인덱스를 만들지 않는다. 이름/날짜는 UNIQUE가 아니다. 사진 중복 인덱스는 소유자 단위로 적용한다. 프로필 ownerId는 `self` 또는 `partner`, 추억 ownerId는 occurrenceId. 모든 ID 참조는 애플리케이션에서 검증한다.
+이미지 바이트에는 인덱스를 만들지 않는다. 이름/날짜는 UNIQUE가 아니다. 사진 중복 인덱스는 소유자 단위로 적용한다. 프로필 ownerId는 `self` 또는 `partner`, 추억 ownerId는 occurrenceId. 모든 ID 참조는 애플리케이션에서 검증한다.
 
 ### 5.2 무결성 규칙
 
@@ -254,7 +255,7 @@ Blob에는 인덱스를 만들지 않는다. 이름/날짜는 UNIQUE가 아니�
 | DB-014 | 날짜 및 UTC 일시 형식 엄격 검증 |
 | DB-015 | 모든 영속 변경은 revision 증가 및 충돌 검사 |
 
-문자 수는 사용자 인식 문자(grapheme) 기준을 구현 제안으로 사용한다. Intl.Segmenter 지원 검증 및 대체 구현 필요. 한글 IME 조합 중 잘라내지 않는다.
+문자 수는 사용자 인식 문자(grapheme) 기준으로 센다(2026-11-26 사용자 확정). Intl.Segmenter 미지원 시 코드 포인트 수로 대체한다. 한글 IME 조합 중 잘라내지 않는다.
 
 ### 5.3 초기화 및 마이그레이션
 
@@ -272,7 +273,7 @@ DB open → 읽기 성공 → 상태/참조 검증 → 온보딩 또는 메인. 
 | 쓰기 트랜잭션 | `runWriteTransaction(db, stores, {expectedRevision}, work)`: settings를 항상 포함, revision 불일치 시 `RevisionConflictError`, 성공 시 revision +1·updatedAt 갱신, 실패 시 전체 롤백. `expectedRevision`은 필수 인자 | §8.1, DB-013, DB-015 |
 | 시작 상태 판정 | `loadAppState`: 모든 store가 빈 경우에만 기본 settings(revision 0) 생성 후 온보딩. settings 없음+다른 데이터 존재, 완료 플래그·데이터 불일치, 형식 오류, 프로필 참조 오류는 `corrupt`(수정·삭제 없음). 열기 실패는 `error` | §5.3, PWA-E03 |
 | 무결성 검사 | `checkIntegrity(snapshot)`가 DB-001~011, DB-014 위반을 ID만 포함해 보고. 저장소 상세 점검과 백업 생성/복원 검증에서 재사용 | §5.2 |
-| 문자 수 | `Intl.Segmenter` 기반 사용자 인식 문자(grapheme) 수(§5.2 제안). 미지원 시 코드 포인트 수. 사용자 확정 전 잠정 | §5.2, §17 |
+| 문자 수 | `Intl.Segmenter` 기반 사용자 인식 문자(grapheme) 수. 미지원 시 코드 포인트 수. 2026-11-26 사용자 확정 | §5.2 |
 | 임시 입력 검증 | 온보딩 draft는 작성 중 상태이므로 빈 값·공백을 허용하되 길이 상한(10자)은 적용 | ONB-012 |
 
 ## 6. 기념일 식별자와 반복 예외
@@ -483,18 +484,18 @@ const CELEBRATION_STORAGE_KEY =
 | 개수 | 역할당 1장 | 발생 건당 5장 |
 | 최대 해상도 | 512×512px 이내 | 긴 변 1920px |
 | 압축 품질 초기값 | 0.85 | 0.85 |
-| 저장 | 압축 Blob | 압축 Blob |
+| 저장 | 압축 이미지 바이트(ArrayBuffer) | 압축 이미지 바이트(ArrayBuffer) |
 | 출력 제안 | JPEG, 투명도 필요 시 PNG | JPEG, 투명도 필요 시 PNG |
 
 품질 0.85는 JPEG 등 손실 압축 인코더에 적용하며 PNG에는 적용되지 않는다. 작은 이미지를 강제 확대하지 않는다. 원본은 앱 내부에 저장하지 않으며 사용자 사진 앱의 원본을 변경하지 않는다.
 
 ### 9.1 등록 파이프라인
 
-파일 선택 → 형식/크기 검증 → 원본 SHA-256 → 동일 기념일 중복 검사 → 디코딩 및 방향 보정 → 리사이징/압축 → EXIF 등 메타데이터 제거 → 저장 Blob 해시 → DB 트랜잭션 → UI 갱신.
+파일 선택 → 형식/크기 검증 → 원본 SHA-256 → 동일 기념일 중복 검사 → 디코딩 및 방향 보정 → 리사이징/압축 → EXIF 등 메타데이터 제거 → 저장 바이트 해시 → DB 트랜잭션 → UI 갱신.
 
 - JPEG/PNG/WebP 및 브라우저에서 변환 가능한 HEIC/HEIF. 디코딩 실패 시 다른 형식 안내. HEIC 지원 보장 금지.
 - 원본 해시: crypto.subtle.digest('SHA-256', await file.arrayBuffer()). 64자리 hex. 파일 바이트가 같을 때만 중복이며 재압축/편집된 사진의 시각적 중복은 탐지하지 않는다.
-- contentHash는 저장된 Blob의 SHA-256이며 백업 무결성 검증용.
+- contentHash는 저장된 이미지 바이트의 SHA-256이며 백업 무결성 검증용.
 - 같은 기념일에 한해 중복 차단. 다른 기념일에는 같은 파일 허용. 배치 내 중복 및 동시 등록은 unique index와 트랜잭션으로 재검증.
 - 사진 순차 처리, 개별 사진별 트랜잭션. 일부 실패 시 성공 사진 유지, 실패 항목과 원인 안내. 개수 초과/공간 부족/압축 실패/손상/선택 취소 처리.
 - 객체 URL은 사용 종료 시 revokeObjectURL. 이미지 지연 로딩 및 메모리 해제. 원본 파일 크기/디코딩 픽셀 상한은 실기기 검증 후 결정.
@@ -538,7 +539,7 @@ couple-dday-backup-YYYYMMDD-HHmmss.zip
 }
 ```
 
-couple/settings는 객체, 나머지 JSON은 배열. photos.json은 Photo에서 blob을 제외하고 path를 추가한 구조. MIME과 확장자 일치. sourceHash 및 contentHash 모두 포함. 예외 정보 및 취소 tombstone도 반드시 백업. 백업 포맷 버전과 DB 버전 독립 관리.
+couple/settings는 객체, 나머지 JSON은 배열. photos.json은 Photo에서 data를 제외하고 path를 추가한 구조. MIME과 확장자 일치. sourceHash 및 contentHash 모두 포함. 예외 정보 및 취소 tombstone도 반드시 백업. 백업 포맷 버전과 DB 버전 독립 관리.
 
 ### 10.1 내보내기
 
@@ -600,6 +601,26 @@ couple/settings는 객체, 나머지 JSON은 배열. photos.json은 Photo에서 
 - prefers-reduced-motion을 확인하여 자동 재생 여부를 결정한다. 모션 감소 설정에서도 원형 터치 수동 재생은 허용한다(HOME-027).
 - 애니메이션 실행 오류가 메인 화면 렌더링 실패로 이어지지 않도록 분리한다.
 - 일반 날짜에는 Canvas 애니메이션을 실행하지 않는다.
+
+### 12.0 화면 구현 노트 (Phase 4, 2026-11-26)
+
+구현 위치: `src/components/layout/{App,AppShell,BottomNavigation,StatusScreens}.tsx`, `src/components/ui/*`, `src/features/{onboarding,home,settings,anniversary}/`, `src/hooks/*`, `src/stores/*`, `src/application/services/{onboarding,couple-settings,profile-image}.ts`, `src/infrastructure/{browser,image}/*`. E2E: `tests/e2e/app-flow.spec.ts`.
+
+| 항목 | 결정 | 근거 |
+|---|---|---|
+| 화면 전환 | 새 화면만 짧게 슬라이드 인하고 이전 화면은 즉시 언마운트. Motion 퇴장 애니메이션(`AnimatePresence`)이 주년 화면에서 완료되지 않아 메인·축하 효과가 남는 문제가 확인되어 사용하지 않음 | HOME-E23, NAV-002 |
+| 스와이프 | Motion 가로 드래그(방향 잠금), 임계값 60px 또는 속도 500px/s, 양 끝 정지, Sheet 표시 중 비활성 | ARC-C04, NAV-004 |
+| 날짜 갱신 | `watchLocalDate`: focus·pageshow·visibilitychange 복귀와 다음 현지 자정 타이머로 오늘 재조회 | PWA-009 |
+| 시작 상태 | DB 조회 완료 전 빈 화면(온보딩 미표시), 오류/손상/버전 변경은 안내 화면(자동 삭제 버튼 없음) | PWA-008, PWA-E03 |
+| 메인 크기 | 원 `min(272px, 100vw-80px, 100dvh-380px-safe area)`, 원 내부 글자는 원 너비 비례(cqw), 다자릿수 주년은 원 너비 70% 안에 맞춰 축소 | HOME-E09, HOME-E16 |
+| 축하 효과 | Canvas 오버레이(pointer-events none), 자동 재생 이력은 localStorage(날짜+시작일), 모션 감소 시 자동 재생 생략·터치 재생 허용 | §8, HOME-027 |
+| 임시 저장 | 입력 400ms 후 draft 저장(직렬 처리), 실패 시 안내하고 입력 유지 | ONB-012, ONB-E06 |
+| 편집 충돌 | Sheet를 연 시점의 revision으로 저장해 다른 탭 변경을 덮어쓰지 않음 | DB-015, PWA-E05 |
+| Bottom Sheet | 핸들 32×4, 제목 20px/600, 상단 모서리 24px(REQUIREMENTS.md §14 이전 제안 수치 잠정 적용). 취소 버튼도 공통 닫기 경로(변경 취소 확인) 사용 | BTS-001~015 |
+| 날짜 선택 | 월 이동 + 연·월 빠른 선택 보기(시작일이 수년 전일 수 있음) | DATE-002~006 |
+| 미연결 항목 | 온보딩 "기존 데이터 복원하기", 설정 데이터 백업/복원/초기화는 Phase 7에서 연결. 테마 행은 표시만(조작 여부 미확정). 기념일 화면은 제목·+ 아이콘만 있고 타임라인은 Phase 5 | §16 |
+
+신규 안내 문구(확인 Sheet, 오류·손상 안내, 날짜 오류 안내, 사진 선택 실패 등)는 명세에 없는 미확정 UI 문구로 사용자 검수 대상이다.
 
 ### 12.1 공통 디자인 계약
 
@@ -794,7 +815,7 @@ Device Test:
 | 특정 연도 날짜 수정 | 같은 연도 내 변경으로 제한할지, 다른 연도 이동을 허용할지 확인. ID는 원래 발생 연도 유지. |
 | 미래 메모 | 기존 메모 수정 허용은 확정. 신규 메모는 제한하는 해석이며 삭제 후 재작성 등 경계 확인. |
 | 기존 시작일 이전 기념일 | 이름만 수정 허용, 날짜 변경 시 새 시작일 이상 검증 제안. |
-| 입력 문자 수 | grapheme 기준 제안, IME 검증 필요. |
+| 입력 문자 수 | grapheme 기준 확정(2026-11-26). 한글 IME 동작은 실기기 검증 필요. |
 | 동률 정렬/빈 상태 | 안정적인 정렬 필요. 구체적 우선순위와 문구 확인. |
 | 사진/ZIP 자원 제한 | 원본 파일 크기, 디코딩 픽셀, ZIP 입력 크기/파일 수, JSON 크기 등 별도 안전 상한 실기기 검증. 256MiB 해제 상한은 확정 초기값. |
 | ZIP 구현 | Phase 0 스파이크에서 JSZip `internalStream` 기반 실제 해제 상한 강제가 Node 환경에서 가능함을 확인(§4.4). 추가 라이브러리 불필요 전망. 브라우저/iOS 메모리 동작은 Phase 7 및 실기기 재검증. |
