@@ -1,6 +1,6 @@
 # 커플 디데이 PWA — 테스트 케이스 명세
 
-- 버전: 0.2 (Phase 1 Domain 엔진 반영, 2026-11-26)
+- 버전: 0.3 (Phase 2 DB 계층 반영, 2026-11-26)
 - 기준 문서: `REQUIREMENTS.md` v1.1, `ARCHITECTURE.md` v1.1, `.agents/skills/dday-design/SKILL.md`
 - 역할: 요구사항 ID ↔ 테스트 케이스 추적, 자동화/수동/실기기 검증 기준. 구현과 함께 계속 보완한다.
 
@@ -183,7 +183,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 |---|---|---|---|---|---|
 | TC-ONB-001 | ONB-001, PWA-008 | E | 빈 DB 최초 실행 | DB 조회 완료 후 온보딩 표시. 조회 전에는 온보딩 미표시 | 대기 |
 | TC-ONB-002 | ONB-002, ONB-003, ONB-E01 | U | 이름 `""`, `"   "`, `" 하늘 "` | 거부 / 거부 / `하늘`로 저장 | 대기 |
-| TC-ONB-003 | ONB-E02, DB-003 | U | 10자 / 11자, 이모지·결합 문자 포함 | 10자 허용, 11자 거부 (문자 단위는 §6 보류 항목 확정 후 확정) | 보류 |
+| TC-ONB-003 | ONB-E02, DB-003 | U | 10자 / 11자, 이모지·결합 문자 포함 | 10자 허용, 11자 거부. 사용자 인식 문자(grapheme) 기준 제안을 구현·테스트함(`tests/unit/application/entity-schemas.test.ts`), 기준 확정 대기 | 보류 |
 | TC-ONB-004 | ONB-E02 | E | 한글 IME 조합 중 10자 경계 입력 | 조합이 깨지지 않음 | 대기 |
 | TC-ONB-005 | ONB-005, ONB-E04 | E | 날짜 미선택 / 미래 날짜 | 시작하기 비활성 | 대기 |
 | TC-ONB-006 | ONB-008 | E | 두 이름과 날짜 입력 | 시작하기 활성화 | 대기 |
@@ -292,16 +292,16 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 
 | ID | 관련 요구사항 | 레벨 | 시나리오 / 입력 | 기대 결과 | 상태 |
 |---|---|---|---|---|---|
-| TC-DB-001 | DB-001 | I | couple/settings/draft에 id≠default 저장 시도 | 거부 | 대기 |
-| TC-DB-002 | DB-002, PWA-007 | I | 완료 플래그 true + couple 없음 | 손상 상태로 판정, 자동 덮어쓰기 없음 | 대기 |
-| TC-DB-003 | DB-011 | I | 존재하지 않는 발생 ID로 추억 저장 | 거부 | 대기 |
-| TC-DB-004 | DB-013, NFR-006 | I | 복합 변경 중 실패 | 전체 롤백 | 대기 |
+| TC-DB-001 | DB-001 | I | couple/settings/draft에 id≠default 저장 시도 | 거부 | 통과 `tests/unit/application/integrity.test.ts` |
+| TC-DB-002 | DB-002, PWA-007 | I | 완료 플래그 true + couple 없음 | 손상 상태로 판정, 자동 덮어쓰기 없음 | 통과 `tests/integration/db/app-bootstrap.test.ts` |
+| TC-DB-003 | DB-011 | I | 존재하지 않는 발생 ID로 추억 저장 | 거부 | 통과 `tests/unit/application/integrity.test.ts` |
+| TC-DB-004 | DB-013, NFR-006 | I | 복합 변경 중 실패 | 전체 롤백 | 통과 `tests/integration/db/write-transaction.test.ts` |
 | TC-DB-005 | DB-014 | U | Instant `2026-11-25T06:30:00Z` 유효, 오프셋 없는 시각/잘못된 형식 거부 | 엄격 검증 | 통과 `tests/unit/domain/local-date.test.ts` |
-| TC-DB-006 | DB-015, PWA-E05 | I | 두 연결에서 같은 revision 기반으로 수정 | 두 번째 쓰기 충돌 감지, 덮어쓰기 없음 | 대기 |
-| TC-DB-007 | NFR-007, PWA-E04 | I | v1→v2 migration 실패 주입 | 데이터 보존, 오류 안내, 자동 삭제 없음 | 대기 |
-| TC-DB-008 | PWA-E03 | I | DB open 실패 / 일부 store 누락 | 오류·재시도 화면, 신규 사용자로 판단하지 않음 | 대기 |
-| TC-DB-009 | NFR-010 | I | 신규 DB 기본값 | dayOffset=1, lastBackupAt=null, onboardingCompleted=false | 대기 |
-| TC-DB-010 | ARC-E01 | I | Zod 스키마로 각 엔티티 검증 | 유효/무효 픽스처 판정 | 대기 |
+| TC-DB-006 | DB-015, PWA-E05 | I | 두 연결에서 같은 revision 기반으로 수정 | 두 번째 쓰기 충돌 감지, 덮어쓰기 없음 | 통과 `tests/integration/db/write-transaction.test.ts` |
+| TC-DB-007 | NFR-007, PWA-E04 | I | v1→v2 migration 실패 주입 | 데이터 보존, 오류 안내, 자동 삭제 없음 | 통과 `tests/integration/db/database.test.ts` |
+| TC-DB-008 | PWA-E03 | I | DB open 실패 / 일부 store 누락 | 오류·재시도 화면, 신규 사용자로 판단하지 않음 | 통과 `tests/integration/db/app-bootstrap.test.ts` |
+| TC-DB-009 | NFR-010 | I | 신규 DB 기본값 | dayOffset=1, lastBackupAt=null, onboardingCompleted=false | 통과 `tests/integration/db/app-bootstrap.test.ts` |
+| TC-DB-010 | ARC-E01 | I | Zod 스키마로 각 엔티티 검증 | 유효/무효 픽스처 판정 | 통과 `tests/unit/application/entity-schemas.test.ts` |
 | TC-DB-011 | ARC-E01 | I | `useLiveQuery` 반영 | 커밋 후에만 UI 데이터 갱신, Optimistic Update 없음 | 대기 |
 | TC-DB-012 | PWA-E05 | E | 두 탭에서 동시 수정 | 최신 상태 반영, 충돌 안내 | 대기 |
 
@@ -407,7 +407,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 |---|---|---|---|---|---|
 | TC-SYS-001 | SYS-001, SYS-002, SYS-003, SYS-011 | R | 코드·의존성 검토 | 로그인/광고/계정/공유/동기화 코드 및 의존성 없음 | 통과 (Phase 0 의존성 검토) |
 | TC-SYS-002 | SYS-004, NFR-003, NFR-004 | E | 전체 흐름 중 네트워크 요청 감시 | 동일 출처 정적 리소스 외 요청 없음, 개인 데이터 전송 없음, 추적 스크립트 없음 | 대기 |
-| TC-SYS-003 | SYS-010 | I | 커플 레코드 2건 저장 시도 | 1건만 허용 (DB-001) | 대기 |
+| TC-SYS-003 | SYS-010 | I | 커플 레코드 2건 저장 시도 | 1건만 허용 (DB-001) | 통과 `tests/unit/application/entity-schemas.test.ts` |
 | TC-SYS-004 | SYS-012 | R | 디자인 변경 PR 검토 | SKILL.md 변경 및 사용자 승인 근거 존재 | 대기 |
 | TC-NFR-001 | NFR-001 | E | 실행 후 메인 표시 시간 | 로컬 조회 후 빠른 표시 (기준은 실기기 측정 후 확정) | 대기 |
 | TC-NFR-002 | NFR-005 | U/E | 이름·메모에 `<img src=x onerror=...>` 입력 | 텍스트로 표시, 스크립트 실행 없음, `dangerouslySetInnerHTML` 미사용 | 대기 |
@@ -492,3 +492,4 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | 2026-11-26 | `npm run verify`, chromium E2E | 통과 (24 / 5) | 앱 이름 D-Day·아이콘 반영 후 재실행. SW precache 25개 3.6MB |
 | 2026-11-26 | `npx playwright test --project=webkit-iphone` | 통과 5/5 | 사용자 install-deps 후. chromium도 우회 경로 없이 통과 |
 | 2026-11-26 | `npm test` (Phase 1) | 통과 155/155 | Domain 단위 테스트 추가. 오프셋 결함 주입 시 11건 실패 확인 후 복원 |
+| 2026-11-26 | `npm test` (Phase 2) | 통과 215/215 | DB 스키마·무결성·revision 트랜잭션·시작 상태 판정. revision 검사 제거 결함 주입 시 2건 실패 확인 후 복원 |

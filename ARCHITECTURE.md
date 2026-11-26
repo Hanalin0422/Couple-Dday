@@ -260,6 +260,21 @@ Blob에는 인덱스를 만들지 않는다. 이름/날짜는 UNIQUE가 아니�
 
 DB open → 읽기 성공 → 상태/참조 검증 → 온보딩 또는 메인. DB 오류/일부 누락은 신규 사용자로 판단하지 않는다. 빈 DB와 손상 상태를 구분한다. 신규 기본값 dayOffset=1, lastBackupAt=null, onboardingCompleted=false. 버전 업그레이드는 Dexie migration으로 처리하고 실패 시 자동 삭제 금지. 구버전 탭은 versionchange 시 연결 종료 및 안전한 재실행 안내.
 
+### 5.4 DB 계층 구현 노트 (Phase 2, 2026-11-26)
+
+구현 위치: `src/infrastructure/db/database.ts`(스키마·연결·오류 변환), `src/application/validation/{entity-schemas,integrity}.ts`, `src/application/services/{write-transaction,app-bootstrap}.ts`, `src/application/errors.ts`, `src/domain/policies/text-rules.ts`. 테스트: `tests/unit/application/*`, `tests/integration/db/*`.
+
+| 항목 | 결정 | 근거 |
+|---|---|---|
+| 신버전 DB 보호 | Dexie 4는 더 높은 버전의 DB도 열고 누락 store를 추가해 구조를 변경한다. 열기 전에 `indexedDB.databases()`로 네이티브 버전을 확인해 앱 버전(×10)보다 높으면 `StorageError('version')`로 거부하고 DB를 건드리지 않는다. `databases()` 미지원 환경에서는 확인을 생략한다 | §5.3, PWA-E04 |
+| versionchange | 연결을 닫고 콜백으로 UI에 알리며 Dexie 기본 reload를 막는다 | §5.3 |
+| 저장소 오류 | Dexie/DOMException 오류만 `StorageError(kind: version/quota/constraint/closed/open-failed/unknown)`로 변환. 애플리케이션 오류는 원인 그대로 전달. 메시지에 개인 데이터 미포함 | NFR-003, MEM-E05 |
+| 쓰기 트랜잭션 | `runWriteTransaction(db, stores, {expectedRevision}, work)`: settings를 항상 포함, revision 불일치 시 `RevisionConflictError`, 성공 시 revision +1·updatedAt 갱신, 실패 시 전체 롤백. `expectedRevision`은 필수 인자 | §8.1, DB-013, DB-015 |
+| 시작 상태 판정 | `loadAppState`: 모든 store가 빈 경우에만 기본 settings(revision 0) 생성 후 온보딩. settings 없음+다른 데이터 존재, 완료 플래그·데이터 불일치, 형식 오류, 프로필 참조 오류는 `corrupt`(수정·삭제 없음). 열기 실패는 `error` | §5.3, PWA-E03 |
+| 무결성 검사 | `checkIntegrity(snapshot)`가 DB-001~011, DB-014 위반을 ID만 포함해 보고. 저장소 상세 점검과 백업 생성/복원 검증에서 재사용 | §5.2 |
+| 문자 수 | `Intl.Segmenter` 기반 사용자 인식 문자(grapheme) 수(§5.2 제안). 미지원 시 코드 포인트 수. 사용자 확정 전 잠정 | §5.2, §17 |
+| 임시 입력 검증 | 온보딩 draft는 작성 중 상태이므로 빈 값·공백을 허용하되 길이 상한(10자)은 적용 | ONB-012 |
+
 ## 6. 기념일 식별자와 반복 예외
 
 | 종류 | 발생 ID |
