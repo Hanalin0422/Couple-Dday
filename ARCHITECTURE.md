@@ -565,7 +565,7 @@ couple/settings는 객체, 나머지 JSON은 배열. photos.json은 Photo에서 
 - 수동 재생 시 기존 애니메이션을 취소한 후 새 애니메이션을 시작한다.
 - 중복 requestAnimationFrame 루프 실행을 금지한다.
 - 컴포넌트 unmount, 화면 이동, 앱 백그라운드 전환, 주년 날짜 종료 시 cancelAnimationFrame을 호출한다.
-- prefers-reduced-motion을 확인하여 자동 재생 여부를 결정한다.
+- prefers-reduced-motion을 확인하여 자동 재생 여부를 결정한다. 모션 감소 설정에서도 원형 터치 수동 재생은 허용한다(HOME-027).
 - 애니메이션 실행 오류가 메인 화면 렌더링 실패로 이어지지 않도록 분리한다.
 - 일반 날짜에는 Canvas 애니메이션을 실행하지 않는다.
 
@@ -583,7 +583,7 @@ couple/settings는 객체, 나머지 JSON은 배열. photos.json은 Photo에서 
 
 ## 13. PWA 및 배포
 
-- manifest: standalone, start_url/scope 앱 배포 경로에 일치, 앱 아이콘, theme/background color 확정 토큰 사용. HTTPS.
+- manifest: name/short_name "D-Day", standalone, start_url/scope 앱 배포 경로에 일치, 앱 아이콘(192/512/maskable 512, apple-touch-icon 180, SKILL.md §5.1), theme/background color 확정 토큰 사용. HTTPS.
 - Serwist: 앱 셸, JS/CSS, 로컬 폰트, 기본 프로필 SVG 및 아이콘 precache. 개인 데이터는 IndexedDB에만 저장. 오프라인에서 필요한 페이지/청크가 모두 캐싱되는지 검증.
 - 최초 온라인 로딩 및 캐싱 전 오프라인 실행은 보장하지 않는다. 캐시 준비 후 오프라인 기능 지원.
 - 새 SW는 안전한 시점에 활성화. 저장/복원/백업 중 강제 reload 금지. 다른 탭 및 버전 변경 조율. 앱 리소스 갱신과 DB migration 분리.
@@ -766,7 +766,7 @@ Device Test:
 | 동률 정렬/빈 상태 | 안정적인 정렬 필요. 구체적 우선순위와 문구 확인. |
 | 사진/ZIP 자원 제한 | 원본 파일 크기, 디코딩 픽셀, ZIP 입력 크기/파일 수, JSON 크기 등 별도 안전 상한 실기기 검증. 256MiB 해제 상한은 확정 초기값. |
 | ZIP 구현 | Phase 0 스파이크에서 JSZip `internalStream` 기반 실제 해제 상한 강제가 Node 환경에서 가능함을 확인(§4.4). 추가 라이브러리 불필요 전망. 브라우저/iOS 메모리 동작은 Phase 7 및 실기기 재검증. |
-| UI | 반복 범위 선택, 메모/대표/순서/백업 일시, Bottom Sheet 세부 수치 및 테마 행 조작 여부 확인. 앱 표시 이름과 홈 화면 아이콘(manifest/apple-touch-icon)은 명세에 없어 확인 필요(현재 임시 이름 "커플 디데이", 아이콘 없음). |
+| UI | 반복 범위 선택, 메모/대표/순서/백업 일시, Bottom Sheet 세부 수치 및 테마 행 조작 여부 확인. 앱 이름(D-Day)과 아이콘은 2026-11-26 확정(SKILL.md §5.1). |
 | 스와이프 | 60px 초기 제안, 방향/속도 및 실제 기기 조정. |
 | 호환성 | 패키지 버전·Serwist 빌드·폰트 라이선스는 2026-11-26 검증 완료(§4.1~4.3). iOS 최소 지원 버전, Playwright WebKit 실행(로컬 시스템 라이브러리 필요) 및 실기기 동작은 미검증. |
 

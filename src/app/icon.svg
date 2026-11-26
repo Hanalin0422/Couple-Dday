@@ -18,7 +18,7 @@
     </filter>
   </defs>
   <rect width="512" height="512" fill="#FFF8FA"/>
-  <g transform="translate(256 262) scale(0.74) translate(-256 -257)">
+  <g transform="translate(244 268) scale(0.74) translate(-256 -257)">
     <path id="heart" filter="url(#softShadow)" fill="url(#heartFill)"
       d="M256 438C240 426 88 330 72 206C62 128 116 76 178 76C216 76 242 98 256 124C270 98 296 76 334 76C396 76 450 128 440 206C424 330 272 426 256 438Z"/>
     <path fill="url(#heartShade)"

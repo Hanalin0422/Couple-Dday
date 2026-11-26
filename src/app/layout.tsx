@@ -6,6 +6,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: APP_NAME,
   applicationName: APP_NAME,
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   appleWebApp: {
     capable: true,
     title: APP_NAME,

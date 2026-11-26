@@ -170,7 +170,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-CEL-011 | HOME-024, HOME-031 | E | 원형 디데이 영역 터치 | 재생, 별도 재생 버튼/설정 메뉴 없음 | 대기 |
 | TC-CEL-012 | HOME-026 | E | 재생 중 하단 메뉴 탭, 좌우 스와이프 | 정상 이동 (캔버스 `pointer-events: none`) | 대기 |
 | TC-CEL-013 | HOME-E23, HOME-E26, PWA-015 | E | 재생 중 화면 이동 / `visibilitychange: hidden` | cancelAnimationFrame 호출, 리소스 정리 | 대기 |
-| TC-CEL-014 | HOME-027, HOME-E24 | E | `reducedMotion: 'reduce'`로 주년 당일 진입 | 자동 재생 없음, 주년 디자인 유지. 수동 재생 허용 여부는 보류(§6) | 대기 |
+| TC-CEL-014 | HOME-027, HOME-E24 | E | `reducedMotion: 'reduce'`로 주년 당일 진입 후 원형 터치 | 자동 재생 없음, 주년 디자인 유지, 터치 시 재생 | 대기 |
 | TC-CEL-015 | HOME-028 | E | 일반 날짜, 100일 당일 | 캔버스 애니메이션 실행 없음 | 대기 |
 | TC-CEL-016 | HOME-E25 | E | Canvas `getContext`가 null을 반환하도록 주입 | 메인 정상 렌더링, 주년 디자인 표시 | 대기 |
 | TC-CEL-017 | HOME-030, HOME-E27, PWA-014 | E | SW 캐시 후 오프라인에서 주년 당일 | 주년 폰트·애니메이션 정상 | 대기 |
@@ -371,7 +371,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 
 | ID | 관련 요구사항 | 레벨 | 시나리오 / 입력 | 기대 결과 | 상태 |
 |---|---|---|---|---|---|
-| TC-PWA-001 | PWA-001, PWA-002, SYS-006 | E | manifest 조회 | display standalone, start_url `/`, background_color `#FFF8FA`, lang ko | 통과 `tests/e2e/smoke.spec.ts` (chromium) |
+| TC-PWA-001 | PWA-001, PWA-002, SYS-006 | E | manifest 및 아이콘 조회 | name/short_name `D-Day`, display standalone, start_url `/`, background_color `#FFF8FA`, lang ko, 192/512/maskable 아이콘과 apple-touch-icon 200 응답 | 통과 `tests/e2e/smoke.spec.ts` (chromium) |
 | TC-PWA-002 | SYS-005, PWA-003, PWA-004, PWA-014 | E | `/serwist/sw.js` precache 목록 | 앱 셸 `/`, 로컬 폰트 5종 포함, `Service-Worker-Allowed: /` | 통과 `tests/e2e/smoke.spec.ts` (chromium) |
 | TC-PWA-003 | PWA-004 | E | 페이지 로드 시 폰트 요청 | 동일 출처 `/fonts/*`만 요청, 5종 모두 로드 | 통과 `tests/e2e/smoke.spec.ts` (chromium) |
 | TC-PWA-004 | PWA-011, SYS-007 | E | `colorScheme: dark` 에뮬레이션 | 배경 `#FFF8FA` 유지 | 통과 `tests/e2e/smoke.spec.ts` (chromium) |
@@ -390,7 +390,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 |---|---|---|---|---|---|
 | TC-DSN-001 | NFR-011, SYS-008 | U | SKILL.md §3 토큰 표 ↔ `src/styles/tokens.css` | 24개 토큰 값 일치, 임의 색상 토큰 없음, 다크모드 분기 없음 | 통과 `tests/unit/design-tokens.test.ts` |
 | TC-DSN-002 | PWA-004, PWA-014 | U | 로컬 폰트 파일·라이선스 | 5개 @font-face, `/fonts/` 로컬 경로, 유효한 WOFF2, OFL 1.1 라이선스 동봉 | 통과 `tests/unit/fonts.test.ts` |
-| TC-DSN-003 | SYS-009 | E | 기본 셸 | `<html lang="ko">`, 콘솔 오류 없음 | 통과 `tests/e2e/smoke.spec.ts` (chromium) |
+| TC-DSN-003 | SYS-009 | E | 기본 셸 | `<html lang="ko">`, 제목 `D-Day`, 콘솔 오류 없음 | 통과 `tests/e2e/smoke.spec.ts` (chromium) |
 | TC-DSN-004 | NFR-011 | E | 페이지 제목 계산 스타일 | 온보딩/설정/기념일 제목 MaruBuri 28px 600, 동일 정렬·여백 | 대기 |
 | TC-DSN-005 | NFR-011 | E | 메인 타이포그래피 | TOGETHER MaruBuri 18px 600 중앙, 디데이 Pretendard 72px 700, 하단 메뉴 11px 500 | 대기 |
 | TC-DSN-006 | NFR-011 | E | 주년 타이포그래피 | 주년 숫자 Cormorant Garamond Italic 88px 500(비례 축소 허용), '주년' MaruBuri 38px 400, HAPPY ANNIVERSARY 12px 400 자간 2px accent, 색 text-primary | 대기 |
@@ -451,7 +451,7 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 
 | ID | 관련 요구사항 | 항목 | 기대 결과 | 상태 |
 |---|---|---|---|---|
-| TC-DEV-001 | PWA-001, PWA-002 | Safari 공유 → 홈 화면에 추가 → 실행 | standalone 실행, 앱 이름/아이콘 표시 | 미검증 |
+| TC-DEV-001 | PWA-001, PWA-002 | Safari 공유 → 홈 화면에 추가 → 실행 | standalone 실행, 이름 "D-Day"와 하트 아이콘 표시 | 미검증 |
 | TC-DEV-002 | PWA-003, PWA-E01 | 비행기 모드에서 설치형 앱 재실행 | 앱 셸·폰트·데이터 정상 | 미검증 |
 | TC-DEV-003 | PWA-006, BTS-011 | 노치/Dynamic Island/홈 인디케이터 기기 | Safe Area 가림 없음 | 미검증 |
 | TC-DEV-004 | BTS-008, ONB-E02 | 온보딩/Sheet 입력 시 키보드, 한글 IME | 입력·버튼 가림 없음, 조합 정상 | 미검증 |
@@ -479,8 +479,6 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-TML-016 | 빈 상태 문구, 동률 정렬 우선순위 | ARCHITECTURE.md §17 |
 | TC-BTS-009 | Bottom Sheet 세부 픽셀 | REQUIREMENTS.md §14 |
 | TC-NAV-005 | 스와이프 임계값 | ARCHITECTURE.md §12, §17 |
-| TC-CEL-014 | 모션 감소 설정에서 원형 터치 수동 재생 허용 여부 (명세는 자동 재생만 규정) | SKILL.md §7.2, HOME-027 |
-| TC-DEV-001 | 앱 표시 이름·홈 화면 아이콘 디자인 | ARCHITECTURE.md §17 UI |
 
 ## 7. 실행 기록
 
@@ -491,3 +489,4 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | 2026-11-26 | `npm test` | 통과 | unit/integration (TC-ENV-002~004, TC-DSN-001~002, TC-NFR-005) |
 | 2026-11-26 | `npm run build` | 통과 | Next 16.4.6 Turbopack, SW precache 20개 3.5MB |
 | 2026-11-26 | `npm run test:e2e -- --project=chromium-iphone` | 통과 5/5 | 시스템 라이브러리(libnss3 등) 부재로 로컬 우회 경로 사용. webkit-iphone 미실행(시스템 라이브러리 필요) |
+| 2026-11-26 | `npm run verify`, chromium E2E | 통과 (24 / 5) | 앱 이름 D-Day·아이콘 반영 후 재실행. SW precache 25개 3.6MB |
