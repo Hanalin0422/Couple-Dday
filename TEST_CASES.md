@@ -398,10 +398,10 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-DSN-006 | NFR-011 | E | 주년 타이포그래피 | 주년 숫자 Cormorant Garamond Italic 88px 500(비례 축소 허용), '주년' MaruBuri 38px 400, HAPPY ANNIVERSARY 12px 400 자간 2px accent, 색 text-primary | 대기 |
 | TC-DSN-007 | NFR-011 | E | 원형 진행률 | 12시 시작 시계 방향, 둥근 끝, 시안 272×272/r121/트랙 5/진행 7 비례 | 대기 |
 | TC-DSN-008 | NFR-011 | R | 실제 iOS 상태바/홈 인디케이터를 HTML로 복제하지 않음, 임의 장식·버튼·메뉴 없음 | 위반 없음 | 대기 |
-| TC-DSN-009 | NFR-011, ARC-E02 | V | 일반 디데이 화면 (FX-TODAY, 모션 감소) | 승인 기준 이미지와 일치 | 기준 이미지 생성 `tests/e2e/visual.spec.ts` (chromium, webkit) — 사용자 승인 대기 |
-| TC-DSN-010 | NFR-011, ARC-E02 | V | 1주년 / 2주년 / 10주년, 축하 효과 종료 후 | 승인 기준 이미지와 일치 (입자 비활성) | 기준 이미지 생성 `tests/e2e/visual.spec.ts` (chromium, webkit) — 사용자 승인 대기 |
-| TC-DSN-011 | NFR-011, ARC-E02 | V | 온보딩 / 설정 / 기념일 화면 | 승인 기준 이미지와 일치 | 기준 이미지 생성 `tests/e2e/visual.spec.ts` (chromium, webkit) — 사용자 승인 대기 |
-| TC-DSN-012 | NFR-011 | V | 긴 이름(10자), 사진 있음/없음 | 레이아웃 잘림 없음 | 기준 이미지 생성 `tests/e2e/visual.spec.ts` (chromium, webkit) — 사용자 승인 대기 |
+| TC-DSN-009 | NFR-011, ARC-E02 | V | 일반 디데이 화면 (FX-TODAY, 모션 감소) | 승인 기준 이미지와 일치 | 통과 `tests/e2e/visual.spec.ts` (chromium, webkit), 기준 이미지 2026-11-26 승인 |
+| TC-DSN-010 | NFR-011, ARC-E02 | V | 1주년 / 2주년 / 10주년, 축하 효과 종료 후 | 승인 기준 이미지와 일치 (입자 비활성) | 통과 `tests/e2e/visual.spec.ts` (chromium, webkit), 기준 이미지 2026-11-26 승인 |
+| TC-DSN-011 | NFR-011, ARC-E02 | V | 온보딩 / 설정 / 기념일 화면 | 승인 기준 이미지와 일치 | 통과 `tests/e2e/visual.spec.ts` (chromium, webkit), 기준 이미지 2026-11-26 승인 |
+| TC-DSN-012 | NFR-011 | V | 긴 이름(10자), 사진 있음/없음 | 레이아웃 잘림 없음 | 통과 `tests/e2e/visual.spec.ts` (chromium, webkit), 기준 이미지 2026-11-26 승인 |
 | TC-DSN-013 | NFR-008, NFR-011, PWA-010 | E | 320×568~860×810에서 설정·메인·기념일 전환 | 같은 viewport에서 하단 메뉴 크기·위치 동일, 하단 메뉴 높이·아이콘·원·제목이 공통 단위(--u)의 배수, 터치 영역 ≥44px, 문서 스크롤 없음, 앱 폭 ≤480px, 390×844에서 SKILL.md 수치(제목 28, 원 272, 하단 메뉴 64, 아이콘 22) | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 
 ### 3.18 서비스 범위 및 비기능
