@@ -671,6 +671,17 @@ couple/settings는 객체, 나머지 JSON은 배열. photos.json은 Photo에서 
 - 1차·2차 구조 전용 테스트는 `tests/archive/transition-experiments/` 에 보관(미적용 사유 README). `tests/perf/transition.perf.ts`(`npm run test:perf`, 마우스 스와이프 기준)는 현재 구조에도 적용 가능하다.
 - 교훈: 에뮬레이션(Chromium/데스크톱 WebKit)·DOM 기하 기반 측정은 iOS 실제 터치·페인트 동작을 재현하지 못했다. 화면 전환 변경은 실기기 확인을 완료 조건으로 한다.
 
+### 12.3 실기기 렌더링 비교 환경 /lab (임시, 2026-11-27)
+
+화면 전환 사용감 원인을 iPhone 실기기에서 비교하기 위한 테스트 전용 경로. 운영 화면 전환 구현·디자인·기능은 바꾸지 않는다. 상세·제거 방법: `src/lab/README.md` (반영 전 커밋 `b62394a`).
+
+- 모드: A 실제 화면+실제 데이터 처리(테스트 DB) / B 실제 화면+정적 데이터(전환 중 DB 조회 없음) / C 최소 정적 UI. 같은 `AppShell` 사용.
+- 테스트 데이터: 별도 IndexedDB `couple-dday-lab`(사용자 DB `couple-dday` 미사용). 오늘이 정확히 3650일째가 되도록 매일 다시 만들어 축하 효과가 실행되지 않는다(축하 재생 기록 localStorage 미사용).
+- 계측: React 커밋 수(`/lab` 경로에서만 React 로드 전 설치되는 DevTools 훅, 프로덕션 빌드라 커밋 시간은 측정 불가), 화면 Mount/Unmount, IndexedDB 요청, Blob URL, 이미지 load, 프레임 간격(HUD, 전환 구간에만 rAF).
+- 일반 앱 영향: 계측 코드는 `/lab` 페이지 번들에만 있다. 일반 경로에는 경로 확인 후 종료하는 인라인 스크립트, `useDatabase` 훅의 정적 데이터 컨텍스트 조회(Provider 없음 → null), 설정 제목의 숨은 탭 처리만 추가(`[LAB]` 표시). `npm run test:perf` 결과 변경 전과 같은 범위.
+- 진입·복귀: 설정 제목 "설정" 3초 안에 7번 탭 → `/lab`(전체 새로고침, 홈 화면 앱 안에서 이동). 패널의 "앱으로 돌아가기" → `/`.
+- Service Worker: `/lab` 은 precache 대상이 아니며 기본 런타임 규칙(네트워크 우선)으로 처리된다(첫 진입은 온라인 필요). 앱 셸 `/` precache 와 충돌 없음. lab JS 청크 2개가 precache 에 추가(약 22KB).
+
 ### 12.1 공통 디자인 계약
 
 - SKILL.md 전체 토큰 유지: 배경 #FFF8FA, 카드 #FFFFFF, accent #B57889, 라이트모드만.

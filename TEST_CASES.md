@@ -1,6 +1,6 @@
 # 커플 디데이 PWA — 테스트 케이스 명세
 
-- 버전: 0.11 (화면 전환 구조 `8ff2ead` 복구, 2026-11-27)
+- 버전: 0.12 (실기기 비교 환경 /lab 임시 추가, 2026-11-27)
 - 기준 문서: `REQUIREMENTS.md` v1.1, `ARCHITECTURE.md` v1.1, `.agents/skills/dday-design/SKILL.md`
 - 역할: 요구사항 ID ↔ 테스트 케이스 추적, 자동화/수동/실기기 검증 기준. 구현과 함께 계속 보완한다.
 
@@ -510,3 +510,4 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | 2026-11-27 | `npm run verify`, `npx playwright test --repeat-each=2`, `npm run test:perf` (화면 전환 개선) | 통과 306/306, E2E 310 통과·2 skip(WebKit SW 오프라인), 성능 측정 4/4 | 깜빡임 프레임 0, 전환당 IDB·Object URL·DOM 변경 0. 드래그 후 클릭·늦은 완료 콜백·축하 효과 재개 버그 수정 |
 | 2026-11-27 | `npm run verify`, `npx playwright test --repeat-each=2`, `npm run test:perf` (Scroll Snap 2차) | 통과 306/306, E2E 312 통과·8 skip(WebKit 터치 불가 3건×2, SW 오프라인×2), 성능 측정 통과 | Motion 드래그 → CSS Scroll Snap. 스와이프 E2E 를 실제 터치(Chromium)/코드 스크롤(WebKit)로 변경 |
 | 2026-11-27 | `npm run verify`, `npx playwright test --repeat-each=2`, `npm run test:perf` (화면 전환 `8ff2ead` 복구) | 통과 306/306, E2E 286 통과·2 skip(WebKit SW 오프라인), 성능 측정 4/4(최초 측정값과 동일: 메뉴 전환 약 223ms·반투명 프레임 약 10) | `AppShell.tsx`·`app-flow.spec.ts` 를 `8ff2ead` 로 복구, 실험 구조 테스트 보관 |
+| 2026-11-27 | `npm run verify`, `npx playwright test --repeat-each=2`, `npm run test:perf` (/lab 임시 비교 환경) | 통과 306/306, E2E 306 통과·2 skip(WebKit SW 오프라인), `tests/e2e/lab.spec.ts` 5종×2 브라우저, 일반 앱 성능 측정 변경 전과 같은 범위 | 사용자 DB 불변·DB 분리·일반 앱 계측 미동작 확인. 제거 시 `tests/e2e/lab.spec.ts` 함께 삭제 |
