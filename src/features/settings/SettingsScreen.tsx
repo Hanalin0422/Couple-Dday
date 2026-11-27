@@ -31,7 +31,6 @@ import { useNavigationStore } from "@/stores/navigation-store";
 import { useTimelineStore } from "@/stores/timeline-store";
 import { BackupSheet, formatBackupTime, ResetSheet, RestoreSheet } from "../backup/DataSheets";
 import { DAY_OFFSET_OPTIONS } from "../onboarding/OnboardingScreen";
-import { useLabEntryTap } from "@/lab/useLabEntryTap"; // [LAB]
 
 type Editing =
   | { kind: "name"; role: ProfileRole; revision: number }
@@ -48,7 +47,6 @@ export function SettingsScreen({ couple, settings, today }: { couple: Couple; se
   const db = useDatabase();
   const [editing, setEditing] = useState<Editing>(null);
   const close = () => setEditing(null);
-  const labEntryTap = useLabEntryTap(); // [LAB]
   const resetNavigation = useNavigationStore((s) => s.reset);
   const resetTimeline = useTimelineStore((s) => s.reset);
   const myPhoto = usePhoto(couple.myPhotoId);
@@ -71,8 +69,7 @@ export function SettingsScreen({ couple, settings, today }: { couple: Couple; se
 
   return (
     <div className="flex h-full flex-col">
-      {/* [LAB] 제목 7번 탭 → /lab (실기기 비교 후 제거: src/lab/README.md) */}
-      <PageHeader title={<span onClick={labEntryTap}>설정</span>} />
+      <PageHeader title="설정" />
       <div className="min-h-0 flex-1 overflow-y-auto px-gutter pb-6" data-testid="settings-scroll">
         <div className="flex flex-col gap-4">
           <Card>

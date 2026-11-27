@@ -104,12 +104,14 @@ test.describe("메인", () => {
     await onboard(page);
     await expect(page.getByTestId("dday-number")).toHaveText("148");
     await expect(page.getByText("DAYS", { exact: true })).toBeVisible();
-    await expect(page.getByText("2026.07.01")).toBeVisible();
+    await expect(page.locator("[data-active]").getByText("2026.07.01")).toBeVisible();
     await expect(page.getByTestId("name-self")).toHaveText("하늘");
     await expect(page.getByTestId("name-partner")).toHaveText("바다");
     await expect(page.locator("svg[data-progress]")).toHaveAttribute("data-progress", "48.00");
-    await expect(page.getByText(/D-\d+/)).toHaveCount(0);
-    await expect(page.getByText("200일")).toHaveCount(0);
+    // 화면을 유지하는 AppShell: 숨겨진 기념일 화면은 제외하고 메인 화면 안에서만 확인한다
+    const home = page.locator("[data-screen=home]");
+    await expect(home.getByText(/D-\d+/)).toHaveCount(0);
+    await expect(home.getByText("200일")).toHaveCount(0);
   });
 
   test("완료 후 재실행하면 온보딩 없이 메인으로 진입한다 (ONB-E09)", async ({ page }) => {

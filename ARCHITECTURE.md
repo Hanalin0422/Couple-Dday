@@ -637,8 +637,8 @@ couple/settings는 객체, 나머지 JSON은 배열. photos.json은 Photo에서 
 
 | 항목 | 결정 | 근거 |
 |---|---|---|
-| 화면 전환 | 새 화면만 짧게 슬라이드 인하고 이전 화면은 즉시 언마운트. Motion 퇴장 애니메이션(`AnimatePresence`)이 주년 화면에서 완료되지 않아 메인·축하 효과가 남는 문제가 확인되어 사용하지 않음 | HOME-E23, NAV-002 |
-| 스와이프 | Motion 가로 드래그(방향 잠금), 임계값 60px 또는 속도 500px/s, 양 끝 정지, Sheet 표시 중 비활성 | ARC-C04, NAV-004 |
+| 화면 전환 | (2026-11-27) 세 화면을 가로로 나란히 붙여 항상 표시하고 트랙 전체를 transform 으로 이동. 화면 재생성 없음. 메인 이탈 시 축하 효과 중단(`HomeScreen` 의 `screen === "home"` 조건) | HOME-E23, NAV-002 |
+| 스와이프 | Motion 가로 드래그(방향 잠금), 손가락을 따라 트랙 이동, 임계값 60px 또는 속도 500px/s 로 정착(되튐 없는 스프링), 미만이면 복귀, 양 끝 약한 저항, Sheet 표시 중 비활성, 드래그 후 클릭 무시 | ARC-C04, NAV-004 |
 | 날짜 갱신 | `watchLocalDate`: focus·pageshow·visibilitychange 복귀와 다음 현지 자정 타이머로 오늘 재조회 | PWA-009 |
 | 시작 상태 | DB 조회 완료 전 빈 화면(온보딩 미표시), 오류/손상/버전 변경은 안내 화면(자동 삭제 버튼 없음) | PWA-008, PWA-E03 |
 | 공통 반응형 기준 | `AppFrame`(최대 폭 480px size container)의 `.app-scale`에서 공통 단위 `--u` = clamp(0.5px, min(프레임 폭/390, 프레임 높이/720), 1.15px)를 한 번 정의(`@property` 등록 길이). 여백·모서리·컨트롤·하단 메뉴 높이·아이콘·글자 크기 토큰(`src/styles/tokens.css`)과 Tailwind 간격 단위(`--spacing` = 4u)가 모두 `--u`를 따른다. 페이지별 배율 없음. 터치 최소 44px, 글자 최소 크기 보장. 390×844에서 SKILL.md 수치 그대로 | SKILL.md §5.0, NFR-008, PWA-010, HOME-E09 |
@@ -658,29 +658,20 @@ couple/settings는 객체, 나머지 JSON은 배열. photos.json은 Photo에서 
 
 ### 12.2 화면 전환 구조 변경 이력 (2026-11-27)
 
-현재 구현: 커밋 `8ff2ead` 의 최초 구조(§12.0 "화면 전환"·"스와이프" 행). `src/components/layout/AppShell.tsx` 는 `8ff2ead` 와 동일하다.
+현재 구현: 단순 트랙(§12.0 "화면 전환"·"스와이프" 행).
 
 | 시점 | 커밋 | 구조 | 결과 |
 |---|---|---|---|
 | 최초 | `8ff2ead` | 현재 화면 1개만 렌더링(`key={screen}` 재마운트), 새 화면 16% 슬라이드 + opacity 0→1(0.22초), Motion 드래그(제약 0, 탄성 0.18, 원위치 복귀), 60px/500px·s | 실기기: 다소 무겁고 버벅임 |
 | 1차 | `fed928f` | 세 화면 상시 유지 가로 트랙, MotionValue 드래그·스프링 스냅, 정지 시 비활성 화면 `visibility:hidden`, 이동 시 `will-change` | 실기기: 뻑뻑함, 빈 배경, 하단 메뉴 시점 어긋남 |
 | 2차 | `21ebd49` | 가로 스크롤 + CSS Scroll Snap, 스크롤 중 선택 상태·`inert` 변경 | 실기기: 빈 배경, 위치 불안정, 불연속 |
-| 복구 | (미커밋) | `AppShell.tsx` 를 `8ff2ead` 로 복구(사용자 결정 A안) | 실기기 재확인 대기 |
+| 복구 | `b62394a` | `AppShell.tsx` 를 `8ff2ead` 로 복구(사용자 결정 A안) | 실기기: 여전히 끊김 |
+| 실기기 비교 /lab | `6493af7` | 임시 A/B/C 비교 환경 | Vercel 미배포 상태에서 사용자 요청으로 제거 |
+| 단순 트랙 | (이번) | 세 화면 상시 표시 + Motion 드래그로 트랙 이동, 부가 처리(화면 숨김·will-change·opacity·Scroll Snap) 없음 | 실기기 확인 대기 |
 
 - 유지한 1차 변경: `HomeScreen.tsx` 의 메인 표시 여부(`screen === "home"`) 조건과 `useCelebration.ts` 의 비활성 시 재생 상태 폐기. 최초 구조에서는 메인을 벗어나면 메인이 언마운트되므로 동작 차이가 없고(HOME-E21/E23 E2E 통과) 향후 구조 변경 시 안전장치로 남긴다.
-- 1차·2차 구조 전용 테스트는 `tests/archive/transition-experiments/` 에 보관(미적용 사유 README). `tests/perf/transition.perf.ts`(`npm run test:perf`, 마우스 스와이프 기준)는 현재 구조에도 적용 가능하다.
+- 실험 테스트·성능 측정 스크립트·/lab 환경은 제거했다(git 이력에 남음).
 - 교훈: 에뮬레이션(Chromium/데스크톱 WebKit)·DOM 기하 기반 측정은 iOS 실제 터치·페인트 동작을 재현하지 못했다. 화면 전환 변경은 실기기 확인을 완료 조건으로 한다.
-
-### 12.3 실기기 렌더링 비교 환경 /lab (임시, 2026-11-27)
-
-화면 전환 사용감 원인을 iPhone 실기기에서 비교하기 위한 테스트 전용 경로. 운영 화면 전환 구현·디자인·기능은 바꾸지 않는다. 상세·제거 방법: `src/lab/README.md` (반영 전 커밋 `b62394a`).
-
-- 모드: A 실제 화면+실제 데이터 처리(테스트 DB) / B 실제 화면+정적 데이터(전환 중 DB 조회 없음) / C 최소 정적 UI. 같은 `AppShell` 사용.
-- 테스트 데이터: 별도 IndexedDB `couple-dday-lab`(사용자 DB `couple-dday` 미사용). 오늘이 정확히 3650일째가 되도록 매일 다시 만들어 축하 효과가 실행되지 않는다(축하 재생 기록 localStorage 미사용).
-- 계측: React 커밋 수(`/lab` 경로에서만 React 로드 전 설치되는 DevTools 훅, 프로덕션 빌드라 커밋 시간은 측정 불가), 화면 Mount/Unmount, IndexedDB 요청, Blob URL, 이미지 load, 프레임 간격(HUD, 전환 구간에만 rAF).
-- 일반 앱 영향: 계측 코드는 `/lab` 페이지 번들에만 있다. 일반 경로에는 경로 확인 후 종료하는 인라인 스크립트, `useDatabase` 훅의 정적 데이터 컨텍스트 조회(Provider 없음 → null), 설정 제목의 숨은 탭 처리만 추가(`[LAB]` 표시). `npm run test:perf` 결과 변경 전과 같은 범위.
-- 진입·복귀: 설정 제목 "설정" 3초 안에 7번 탭 → `/lab`(전체 새로고침, 홈 화면 앱 안에서 이동). 패널의 "앱으로 돌아가기" → `/`.
-- Service Worker: `/lab` 은 precache 대상이 아니며 기본 런타임 규칙(네트워크 우선)으로 처리된다(첫 진입은 온라인 필요). 앱 셸 `/` precache 와 충돌 없음. lab JS 청크 2개가 precache 에 추가(약 22KB).
 
 ### 12.1 공통 디자인 계약
 

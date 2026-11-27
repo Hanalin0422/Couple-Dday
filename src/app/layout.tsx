@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { ServiceWorkerRegistration } from "@/components/layout/ServiceWorkerRegistration";
-import Script from "next/script";
 import { APP_NAME } from "@/constants/app";
-import { LAB_DEVTOOLS_HOOK_SCRIPT } from "@/lab/config"; // [LAB]
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -41,10 +39,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           type="font/woff2"
           crossOrigin="anonymous"
         />
-        {/* [LAB] /lab 경로에서만 React 커밋 계측 훅 설치(일반 경로는 경로 확인 후 즉시 종료). 제거: src/lab/README.md */}
-        <Script id="lab-commit-hook" strategy="beforeInteractive">
-          {LAB_DEVTOOLS_HOOK_SCRIPT}
-        </Script>
       </head>
       <body>
         <ServiceWorkerRegistration>{children}</ServiceWorkerRegistration>
