@@ -16,6 +16,7 @@ import { DdayInner } from "./components/AnniversaryDdayDisplay";
 import { CelebrationCanvas } from "./components/CelebrationCanvas";
 import { CircularProgress } from "./components/CircularProgress";
 import { CoupleProfiles } from "./components/CoupleProfiles";
+import { useNavigationStore } from "@/stores/navigation-store";
 import { useCelebration } from "./hooks/useCelebration";
 import { celebrationTargetId } from "./utils/celebration-history";
 
@@ -34,8 +35,10 @@ export function HomeScreen({ couple, settings, today }: { couple: Couple; settin
   const occasion = useMemo(() => getCelebrationOccasion(couple.startDate, settings.dayOffset, today), [couple.startDate, settings.dayOffset, today]);
   const celebrating = occasion !== null;
   const reducedMotion = useReducedMotion();
+  // 화면을 유지하는 AppShell 에서 메인을 벗어나면 재생 중인 효과를 중단·정리한다 (HOME-E23, PWA-015).
+  const visible = useNavigationStore((s) => s.screen === "home");
   const { runKey, replay, stop } = useCelebration({
-    active: celebrating,
+    active: celebrating && visible,
     targetId: celebrating ? celebrationTargetId(today, couple.startDate) : null,
     reducedMotion,
   });
