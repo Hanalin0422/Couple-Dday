@@ -4,6 +4,7 @@
  *       TC-DATE-014/015/018, TC-CEL-009~012, TC-CEL-014, TC-HOME-022/023
  */
 import { expect, test, type Page } from "@playwright/test";
+import { swipe, touchSession } from "./support/swipe";
 
 const FX_TODAY = new Date("2026-11-25T10:00:00+09:00");
 
@@ -26,16 +27,6 @@ async function onboard(page: Page, { myName = "하늘", partnerName = "바다", 
   await expect(page.getByText("TOGETHER")).toBeVisible();
 }
 
-async function swipe(page: Page, dx: number) {
-  const { width, height } = page.viewportSize()!;
-  const startX = dx < 0 ? width * 0.8 : width * 0.2;
-  const y = height * 0.45;
-  await page.mouse.move(startX, y);
-  await page.mouse.down();
-  for (let i = 1; i <= 8; i++) await page.mouse.move(startX + (dx * i) / 8, y + i);
-  await page.mouse.up();
-  await page.waitForTimeout(400);
-}
 
 test.beforeEach(async ({ page }) => {
   await page.clock.setFixedTime(FX_TODAY);
@@ -315,8 +306,11 @@ test.describe("화면 전환", () => {
     await expect(page.getByRole("heading", { name: "설정", exact: true })).toBeVisible();
     await swipe(page, 160); // 끝: 이동 없음
     await expect(page.getByRole("heading", { name: "설정", exact: true })).toBeVisible();
-    await swipe(page, -30); // 임계값 미만
-    await expect(page.getByRole("heading", { name: "설정", exact: true })).toBeVisible();
+    if (await touchSession(page)) {
+      // 짧게 천천히 끌었다 놓기: 제자리로 정렬 (실제 터치가 가능한 Chromium 만, WebKit 은 실기기 확인)
+      await swipe(page, -30, { speed: "slow" });
+      await expect(page.getByRole("heading", { name: "설정", exact: true })).toBeVisible();
+    }
   });
 });
 
