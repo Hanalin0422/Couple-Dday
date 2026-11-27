@@ -41,8 +41,7 @@ export function AnniversaryScreen({ couple, settings, today }: { couple: Couple;
   const sentinelRef = useRef<HTMLDivElement>(null);
   const scrolledFor = useRef<string | null>(null);
 
-  // 최초 진입은 기본 필터(전체)·최초 1년 범위로 시작한다 (TML-004). AppShell 이 화면을 유지하므로 앱 실행 중에는
-  // 다른 화면에 다녀와도 필터·스크롤 위치가 그대로 유지되고, 화면이 해제될 때(초기화 등)만 기본값으로 되돌린다.
+  // 화면에 들어올 때마다 기본 필터(전체)와 최초 1년 범위로 시작한다 (TML-004).
   useEffect(() => resetTimeline, [resetTimeline]);
 
   const futureEnd = futureEndFor(today, extraYears);

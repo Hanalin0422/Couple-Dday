@@ -1,6 +1,6 @@
 # 커플 디데이 PWA — 테스트 케이스 명세
 
-- 버전: 0.10 (화면 전환 CSS Scroll Snap 전환, 2026-11-27)
+- 버전: 0.11 (화면 전환 구조 `8ff2ead` 복구, 2026-11-27)
 - 기준 문서: `REQUIREMENTS.md` v1.1, `ARCHITECTURE.md` v1.1, `.agents/skills/dday-design/SKILL.md`
 - 역할: 요구사항 ID ↔ 테스트 케이스 추적, 자동화/수동/실기기 검증 기준. 구현과 함께 계속 보완한다.
 
@@ -366,12 +366,12 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | TC-NAV-001 | NAV-001, PWA-013 | E | 설정/메인/기념일 하단 메뉴 | 순서 설정/하트/기념일, 활성 스타일, 일반 화면에서 동일 위치 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-NAV-002 | NAV-002, NAV-003, ARC-C04, PWA-012 | E | 각 화면 좌우 스와이프 | §12 표대로 이동, 양 끝에서 중단 | 통과 `tests/e2e/app-flow.spec.ts` (chromium, webkit) |
 | TC-NAV-003 | NAV-004 | E | Sheet/사진 확대/입력/순서 조작 중 스와이프 | 화면 전환 없음 | 대기 |
-| TC-NAV-004 | ARC-C05 | R/E | 화면 전환 | 단일 AppShell 내부 전환, URL별 페이지 라우팅 없음 | 통과 `tests/e2e/navigation.spec.ts` (chromium, webkit), 코드 검토 |
+| TC-NAV-004 | ARC-C05 | R/E | 화면 전환 | 단일 AppShell 내부 전환, URL별 페이지 라우팅 없음 | 통과 (코드 검토: 단일 AppShell, URL 라우팅 없음) — `tests/e2e/app-flow.spec.ts` 하단 메뉴·스와이프 전환 |
 | TC-NAV-005 | NAV-002 | D | 세로 스크롤과 스와이프 동시 | 의도하지 않은 화면 전환 없음, iOS 뒤로가기 제스처 방해 없음 (임계값 60px 보류) | 보류 |
-| TC-NAV-006 | ARC-C05, TML-004, TML-007 | E | 기념일→메인→설정→기념일 | 화면 재생성 없음(같은 DOM), 필터·스크롤 위치 유지 | 통과 `tests/e2e/navigation.spec.ts` (chromium, webkit) |
-| TC-NAV-007 | NAV-002 | E | 스와이프 중 / 놓은 뒤 / 짧게 끌기 / 양 끝 / 선택 상태 | 손가락 따라 이동(실제 터치), 인접 화면 미리 렌더링, 다음 화면 정렬, 짧게 끌면 복귀, 양 끝 정지, 하단 메뉴 선택 = 실제 화면 | 통과 `tests/e2e/navigation.spec.ts` (chromium 실제 터치; webkit 은 코드 스크롤로 정렬·양 끝·선택 상태만, 손가락 추적은 실기기) |
-| TC-NAV-008 | NAV-002, PWA-012 | E/P | 메뉴·스와이프 전환 프레임 | 모든 프레임 빈 영역·투명 단계 없음, 모션 감소 시 즉시 이동 | 통과 `tests/e2e/navigation.spec.ts`, `tests/perf/transition.perf.ts` (chromium, webkit) |
-| TC-NAV-009 | NAV-004 | E | 설정 행 위에서 시작한 스와이프 / Sheet 표시 중 | 손을 떼도 행(Sheet)이 열리지 않음, 탭은 정상 / Sheet 중 가로 스크롤 차단 | 통과 `tests/e2e/navigation.spec.ts` (chromium 실제 터치; Sheet 차단은 chromium, webkit) |
+| TC-NAV-006 | ARC-C05, TML-004, TML-007 | E | 기념일→메인→설정→기념일 | 화면 재생성 없음(같은 DOM), 필터·스크롤 위치 유지 | 미적용 — 2026-11-27 `8ff2ead` 화면 전환 구조 복구로 대상 동작 없음. 테스트 보관 `tests/archive/transition-experiments/` |
+| TC-NAV-007 | NAV-002 | E | 스와이프 중 / 놓은 뒤 / 짧게 끌기 / 양 끝 / 선택 상태 | 손가락 따라 이동(실제 터치), 인접 화면 미리 렌더링, 다음 화면 정렬, 짧게 끌면 복귀, 양 끝 정지, 하단 메뉴 선택 = 실제 화면 | 미적용 — 2026-11-27 `8ff2ead` 화면 전환 구조 복구로 대상 동작 없음. 테스트 보관 `tests/archive/transition-experiments/` |
+| TC-NAV-008 | NAV-002, PWA-012 | E/P | 메뉴·스와이프 전환 프레임 | 모든 프레임 빈 영역·투명 단계 없음, 모션 감소 시 즉시 이동 | 미적용 — 2026-11-27 `8ff2ead` 화면 전환 구조 복구로 대상 동작 없음. 테스트 보관 `tests/archive/transition-experiments/` |
+| TC-NAV-009 | NAV-004 | E | 설정 행 위에서 시작한 스와이프 / Sheet 표시 중 | 손을 떼도 행(Sheet)이 열리지 않음, 탭은 정상 / Sheet 중 가로 스크롤 차단 | 미적용 — 2026-11-27 `8ff2ead` 화면 전환 구조 복구로 대상 동작 없음. 테스트 보관 `tests/archive/transition-experiments/` |
 
 ### 3.16 PWA 및 오프라인
 
@@ -509,3 +509,4 @@ FX-START 기준 자동 기념일 (1일 방식 / 0일 방식):
 | 2026-11-26 | `npm run verify`, `npx playwright test --repeat-each=2` (Phase 8) | 통과 306/306, E2E 286 통과·2 skip(WebKit SW 오프라인) | 오프라인·자정·여러 탭·외부 요청·XSS·터치 영역·시각 회귀 기준 이미지 18장. 세그먼트 터치 영역·긴 이름 겹침 수정 |
 | 2026-11-27 | `npm run verify`, `npx playwright test --repeat-each=2`, `npm run test:perf` (화면 전환 개선) | 통과 306/306, E2E 310 통과·2 skip(WebKit SW 오프라인), 성능 측정 4/4 | 깜빡임 프레임 0, 전환당 IDB·Object URL·DOM 변경 0. 드래그 후 클릭·늦은 완료 콜백·축하 효과 재개 버그 수정 |
 | 2026-11-27 | `npm run verify`, `npx playwright test --repeat-each=2`, `npm run test:perf` (Scroll Snap 2차) | 통과 306/306, E2E 312 통과·8 skip(WebKit 터치 불가 3건×2, SW 오프라인×2), 성능 측정 통과 | Motion 드래그 → CSS Scroll Snap. 스와이프 E2E 를 실제 터치(Chromium)/코드 스크롤(WebKit)로 변경 |
+| 2026-11-27 | `npm run verify`, `npx playwright test --repeat-each=2`, `npm run test:perf` (화면 전환 `8ff2ead` 복구) | 통과 306/306, E2E 286 통과·2 skip(WebKit SW 오프라인), 성능 측정 4/4(최초 측정값과 동일: 메뉴 전환 약 223ms·반투명 프레임 약 10) | `AppShell.tsx`·`app-flow.spec.ts` 를 `8ff2ead` 로 복구, 실험 구조 테스트 보관 |

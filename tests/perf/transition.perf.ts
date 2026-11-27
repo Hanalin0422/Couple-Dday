@@ -5,7 +5,6 @@
  * 제한: React 렌더 횟수는 프로덕션 빌드에서 직접 셀 수 없어 DOM 변경 수로 대신한다. 실제 iPhone 수치를 대체하지 않는다.
  */
 import { expect, test, type Page } from "@playwright/test";
-import { swipe } from "../e2e/support/swipe";
 
 const PHOTOS = "tests/fixtures/photos";
 
@@ -152,8 +151,17 @@ async function viaNav(page: Page, label: string, target: string): Promise<Result
 }
 
 async function viaSwipe(page: Page, dx: number, target: string): Promise<Result> {
+  const { width, height } = page.viewportSize()!;
+  const startX = dx < 0 ? width * 0.8 : width * 0.2;
+  const y = height * 0.45;
   const result = page.evaluate((t) => (window as unknown as { __perf: { track: (t: string, ms: number) => Promise<Result> } }).__perf.track(t, 4000), target);
-  await swipe(page, dx * 1.4); // 빠른 튕기기(Chromium 실제 터치 / WebKit 코드 스크롤)
+  await page.mouse.move(startX, y);
+  await page.mouse.down();
+  for (let i = 1; i <= 12; i++) {
+    await page.mouse.move(startX + (dx * i) / 12, y + i * 0.5);
+    await page.waitForTimeout(16);
+  }
+  await page.mouse.up();
   return result;
 }
 
